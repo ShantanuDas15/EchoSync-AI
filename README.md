@@ -60,6 +60,7 @@ All comprehensive project specifications, phase execution blueprints, system arc
 * ⚡ [Master Tech Stack Specification](docs/architecture/TECH_STACK.md)
 * 📁 [Repository Directory Structure Specification](docs/architecture/PROJECT_STRUCTURE.md)
 * 🚀 [Phase 1 Development Execution Plan](docs/plans/PHASE_1_DEVELOPMENT_PLAN.md)
+* 📡 [Phase 2 Async & WebSocket Execution Plan](docs/plans/PHASE_2_DEVELOPMENT_PLAN.md)
 
 ---
 
