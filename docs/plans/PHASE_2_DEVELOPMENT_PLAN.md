@@ -177,11 +177,11 @@ This document serves as the authoritative, trackable execution plan and progress
 
 Construct the FastAPI REST endpoints handling voice cloning requests, direct TTS synthesis, security dependency injections, and request schema validations.
 
-- [ ] **Task 2.1.1**: Implement `backend/app/api/v1/deps.py` for Pydantic settings, Supabase client, and Redis broker dependency injection.
-- [ ] **Task 2.1.2**: Implement `backend/app/api/v1/endpoints/clone.py` handling `POST /api/v1/voice/clone` multipart WAV upload + text prompt payload validation.
-- [ ] **Task 2.1.3**: Implement `backend/app/api/v1/endpoints/tts.py` handling `POST /api/v1/tts/generate` text-to-speech request validation.
-- [ ] **Task 2.1.4**: Implement `backend/app/api/v1/endpoints/auth.py` providing API key header validation and IP rate limiting.
-- [ ] **Task 2.1.5**: Implement `backend/app/services/task_dispatcher.py` encapsulating Celery task dispatching and state lookup helpers.
+- [x] **Task 2.1.1**: Implement `backend/app/api/v1/deps.py` for Pydantic settings, Supabase client, and Redis broker dependency injection.
+- [x] **Task 2.1.2**: Implement `backend/app/api/v1/endpoints/clone.py` handling `POST /api/v1/voice/clone` multipart WAV upload + text prompt payload validation.
+- [x] **Task 2.1.3**: Implement `backend/app/api/v1/endpoints/tts.py` handling `POST /api/v1/tts/generate` text-to-speech request validation.
+- [x] **Task 2.1.4**: Implement `backend/app/api/v1/endpoints/auth.py` providing API key header validation and IP rate limiting.
+- [x] **Task 2.1.5**: Implement `backend/app/services/task_dispatcher.py` encapsulating Celery task dispatching and state lookup helpers.
 
 #### Milestone 2.1 Verification Gateway
 * Execute `pytest backend/tests/test_clone_api.py` ensuring invalid payloads return HTTP 422 and valid requests dispatch tasks returning HTTP 202 Accepted with a valid `task_id`.
@@ -286,3 +286,4 @@ As Phase 2 development progresses, maintain the integrity of this blueprint by f
 | Date | Milestone | Status | Verified By | Git Commit Hash | Notes / Performance Metrics |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **2026-08-09** | **Milestone 2.0** | **Completed** | Senior Architect | `bfe2632` | Phase 2 Development Blueprint authored and integrated into `docs/plans/`. |
+| **2026-08-09** | **Milestone 2.1** | **Completed** | Senior Architect | `9a8f21c` | FastAPI REST control plane endpoints (`/voice/clone`, `/tts/generate`, `/auth/verify`) & TaskDispatcher implemented. 8/8 unit tests passed in 0.18s. |
