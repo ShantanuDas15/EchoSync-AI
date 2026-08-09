@@ -192,9 +192,9 @@ Construct the FastAPI REST endpoints handling voice cloning requests, direct TTS
 
 Establish the asynchronous task processing pool using Celery and Upstash Redis with TLS/SSL transport security.
 
-- [ ] **Task 2.2.1**: Configure `backend/app/celery_app/config.py` with Upstash Redis TLS broker URL (`rediss://`), task visibility timeouts, and result expiration policies.
-- [ ] **Task 2.2.2**: Implement `backend/app/celery_app/worker.py` configuring concurrency limits ($N=2$ worker threads to fit free-tier CPU constraints).
-- [ ] **Task 2.2.3**: Implement `backend/app/celery_app/tasks.py` defining `process_voice_cloning_task` and `process_tts_task` pipeline handlers.
+- [x] **Task 2.2.1**: Configure `backend/app/celery_app/config.py` with Upstash Redis TLS broker URL (`rediss://`), task visibility timeouts, and result expiration policies.
+- [x] **Task 2.2.2**: Implement `backend/app/celery_app/worker.py` configuring concurrency limits ($N=2$ worker threads to fit free-tier CPU constraints).
+- [x] **Task 2.2.3**: Implement `backend/app/celery_app/tasks.py` defining `process_voice_cloning_task` and `process_tts_task` pipeline handlers.
 
 #### Milestone 2.2 Verification Gateway
 * Launch Celery worker (`celery -A app.celery_app.worker worker --loglevel=info`) and dispatch a dummy task via Python REPL, verifying task completion state in Redis result backend.
@@ -287,3 +287,4 @@ As Phase 2 development progresses, maintain the integrity of this blueprint by f
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **2026-08-09** | **Milestone 2.0** | **Completed** | Senior Architect | `bfe2632` | Phase 2 Development Blueprint authored and integrated into `docs/plans/`. |
 | **2026-08-09** | **Milestone 2.1** | **Completed** | Senior Architect | `9a8f21c` | FastAPI REST control plane endpoints (`/voice/clone`, `/tts/generate`, `/auth/verify`) & TaskDispatcher implemented. 8/8 unit tests passed in 0.18s. |
+| **2026-08-09** | **Milestone 2.2** | **Completed** | Senior Architect | `pending` | Celery Worker & Upstash Redis Task Broker implementation complete. Tasks verified asynchronously. |
