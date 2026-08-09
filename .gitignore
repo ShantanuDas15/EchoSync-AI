@@ -1,0 +1,93 @@
+# ==============================================================================
+# EchoSync AI - Master Git Ignore Specification
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Python & Virtual Environments
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+echo/
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+*.egg-info/
+.eggs/
+
+# ------------------------------------------------------------------------------
+# Model Weights & Binary Checkpoints (Keep .gitkeep in weights directory)
+# ------------------------------------------------------------------------------
+ml_services/weights/*.onnx
+ml_services/weights/*.pt
+ml_services/weights/*.bin
+ml_services/weights/*.pth
+ml_services/weights/*.safetensors
+ml_services/weights/*.ckpt
+ml_services/weights/*.tflite
+!ml_services/weights/.gitkeep
+
+# ------------------------------------------------------------------------------
+# Frontend, Node & Web Build Artifacts
+# ------------------------------------------------------------------------------
+frontend/node_modules/
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.pnpm-store/
+.npm/
+.yarn/
+
+# ------------------------------------------------------------------------------
+# Environment Variables & Secrets (Exclude actual env files, keep templates)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+*.pem
+*.key
+*.p12
+*.crt
+*.pfx
+secrets/
+
+# ------------------------------------------------------------------------------
+# Logs & Diagnostic Exports
+# ------------------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ------------------------------------------------------------------------------
+# Operating System & IDE Files
+# ------------------------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
