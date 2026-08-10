@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     SUPABASE_URL: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     MAX_UPLOAD_SIZE_MB: int = 10
+
+    # Hugging Face Spaces Config
+    HF_SPACE_URL: str = "https://your-space.hf.space"
+    HF_API_TOKEN: str = ""
     
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
