@@ -18,3 +18,15 @@ Whenever a feature or implementation from any phase/milestone of the project pla
    - Use proper, clean, and professional commit headings and messages (e.g., `feat: Implement Milestone X.X ...`).
    - Push the implementation to the GitHub repository.
 5. **Track Progress**: Update the relevant Markdown planning files (e.g., `PHASE_2_DEVELOPMENT_PLAN.md`) by checking off completed tasks and appending the exact Git commit hash to the status logs.
+
+## Phase Plan Generation & Test Design Guidelines
+Whenever generating, drafting, or updating Phase Development Plans or Milestone specifications, YOU MUST adhere to the following rules:
+
+1. **Structured & Professional Test Design**:
+   - Every feature or implementation milestone in the phase plan MUST include explicit, clean, and professionally structured test specifications (e.g., unit tests, integration tests, boundary condition checks, and API Verification Gateways).
+2. **Deployment Safety & Zero Error Guarantee**:
+   - Designed tests MUST be robust and deployment-safe so that automated test execution runs cleanly without breaking builds, throwing unhandled runtime errors, or failing CI/CD deployment pipelines.
+   - Tests must isolate external dependencies (e.g., using mocks, stubs, or sandboxed test environments) to ensure deterministic execution without relying on live external networks, third-party APIs, or production databases during deployment.
+3. **Fixture Scrubbing & Environment Isolation**:
+   - Test suites must clean up temporary test artifacts, mock tokens, and database entries automatically, ensuring zero residual pollution or leaks in deployment environments.
+
