@@ -219,9 +219,9 @@ Deploy the ONNX FP16 optimized inference server on Hugging Face Spaces to offloa
 
 Implement binary WebSocket audio streaming for progressive playback with initial Time-To-First-Byte (TTFB) $< 450\text{ms}$.
 
-- [ ] **Task 2.4.1**: Implement `backend/app/api/v1/endpoints/stream.py` handling `/ws/v1/stream/{task_id}` connections.
-- [ ] **Task 2.4.2**: Integrate 50ms sliding window audio chunking in Celery worker task publisher, pushing 16-bit PCM binary frames directly to Redis pub/sub channels.
-- [ ] **Task 2.4.3**: Add WebSocket heartbeats, client disconnect cleanup handlers, and stream termination sequence framing (`0x00FF` EOF packet).
+- [x] **Task 2.4.1**: Implement `backend/app/api/v1/endpoints/stream.py` handling `/ws/v1/stream/{task_id}` connections.
+- [x] **Task 2.4.2**: Integrate 50ms sliding window audio chunking in Celery worker task publisher, pushing 16-bit PCM binary frames directly to Redis pub/sub channels.
+- [x] **Task 2.4.3**: Add WebSocket heartbeats, client disconnect cleanup handlers, and stream termination sequence framing (`0x00FF` EOF packet).
 
 #### Milestone 2.4 Verification Gateway
 * Run `pytest backend/tests/test_websocket.py` using `TestClient` to verify binary audio chunk reception order and stream EOF token.
@@ -288,4 +288,5 @@ As Phase 2 development progresses, maintain the integrity of this blueprint by f
 | **2026-08-09** | **Milestone 2.0** | **Completed** | Senior Architect | `bfe2632` | Phase 2 Development Blueprint authored and integrated into `docs/plans/`. |
 | **2026-08-09** | **Milestone 2.1** | **Completed** | Senior Architect | `9a8f21c` | FastAPI REST control plane endpoints (`/voice/clone`, `/tts/generate`, `/auth/verify`) & TaskDispatcher implemented. 8/8 unit tests passed in 0.18s. |
 | **2026-08-09** | **Milestone 2.2** | **Completed** | Senior Architect | `4f0310b` | Celery Worker & Upstash Redis Task Broker implementation complete. Tasks verified asynchronously. |
-| **2026-08-10** | **Milestone 2.3** | **Completed** | Senior Architect | `c79695c` | Hugging Face Spaces ML Inference Microservice implemented safely. Mocks provided for `numpy` fallback to pass tests. |
+| **2026-08-10** | **Milestone 2.3** | **Completed** | Senior Architect | `3ff9b34` | Hugging Face Spaces ML Inference Microservice implemented safely. Mocks provided for `numpy` fallback to pass tests. |
+| **2026-08-10** | **Milestone 2.4** | **Completed** | Senior Architect | `pending` | Real-Time WebSocket PCM Chunk Streaming Gateway implemented with Redis pub/sub and EOF packet framing. |

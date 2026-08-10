@@ -27,6 +27,10 @@ def create_app() -> FastAPI:
     # Mount root level health check endpoint (/healthz)
     app.include_router(health.router, prefix="", tags=["health"])
 
+    # Mount WebSocket stream router
+    from app.api.v1.endpoints import stream
+    app.include_router(stream.router, prefix="", tags=["streaming"])
+
     return app
 
 app = create_app()
