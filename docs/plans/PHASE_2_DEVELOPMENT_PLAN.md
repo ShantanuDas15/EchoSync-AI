@@ -245,13 +245,13 @@ Connect cloud persistence services for vector embedding similarity search and pe
 
 Construct the interactive Next.js 14 user interface with browser audio recording, real-time WebSocket decoding, and waveform visualizations.
 
-- [ ] **Task 2.6.1**: Implement `frontend/src/hooks/useAudioRecorder.ts` managing `MediaRecorder` at 22,050 Hz PCM mono.
-- [ ] **Task 2.6.2**: Implement `frontend/src/hooks/useWebSocketStream.ts` receiving binary PCM chunks and feeding browser `AudioContext` buffer nodes.
-- [ ] **Task 2.6.3**: Implement `frontend/src/hooks/useSpectrogram.ts` rendering real-time mel-spectrogram canvas output.
-- [ ] **Task 2.6.4**: Implement `frontend/src/components/ui/WaveSurferVisualizer.tsx` wrapping WaveSurfer.js with playhead tracking and zoom controls.
-- [ ] **Task 2.6.5**: Implement `frontend/src/components/ui/AudioRecorder.tsx` with live volume VU meter and record/stop toggles.
-- [ ] **Task 2.6.6**: Implement `frontend/src/components/ui/SynthesizerForm.tsx` with target text area, speed/pitch sliders, and speaker preset selectors.
-- [ ] **Task 2.6.7**: Assemble `frontend/src/app/page.tsx` integrating header, sidebar, recording panel, synthesis controls, and audio player canvas.
+- [x] **Task 2.6.1**: Implement `frontend/src/hooks/useAudioRecorder.ts` managing `MediaRecorder` at 22,050 Hz PCM mono.
+- [x] **Task 2.6.2**: Implement `frontend/src/hooks/useWebSocketStream.ts` receiving binary PCM chunks and feeding browser `AudioContext` buffer nodes.
+- [x] **Task 2.6.3**: Implement `frontend/src/hooks/useSpectrogram.ts` rendering real-time mel-spectrogram canvas output.
+- [x] **Task 2.6.4**: Implement `frontend/src/components/ui/WaveSurferVisualizer.tsx` wrapping WaveSurfer.js with playhead tracking and zoom controls.
+- [x] **Task 2.6.5**: Implement `frontend/src/components/ui/AudioRecorder.tsx` with live volume VU meter and record/stop toggles.
+- [x] **Task 2.6.6**: Implement `frontend/src/components/ui/SynthesizerForm.tsx` with target text area, speed/pitch sliders, and speaker preset selectors.
+- [x] **Task 2.6.7**: Assemble `frontend/src/app/page.tsx` integrating header, sidebar, recording panel, synthesis controls, and audio player canvas.
 
 #### Milestone 2.6 Verification Gateway
 * Execute `npm run build` inside `frontend/` ensuring zero TypeScript compilation errors or missing dependencies, followed by `npm run dev` verifying browser audio recording and canvas rendering.
@@ -290,4 +290,5 @@ As Phase 2 development progresses, maintain the integrity of this blueprint by f
 | **2026-08-09** | **Milestone 2.2** | **Completed** | Senior Architect | `4f0310b` | Celery Worker & Upstash Redis Task Broker implementation complete. Tasks verified asynchronously. |
 | **2026-08-10** | **Milestone 2.3** | **Completed** | Senior Architect | `3ff9b34` | Hugging Face Spaces ML Inference Microservice implemented safely. Mocks provided for `numpy` fallback to pass tests. |
 | **2026-08-10** | **Milestone 2.4** | **Completed** | Senior Architect | `35f5e1a` | Real-Time WebSocket PCM Chunk Streaming Gateway implemented with Redis pub/sub and EOF packet framing. |
-| **2026-08-10** | **Milestone 2.5** | **Completed** | Senior Architect | `e28a719` | Supabase pgvector client and Cloudflare R2 boto3 storage integration implemented. Mock fallback active. |
+| **2026-08-10** | **Milestone 2.5** | **Completed** | Senior Architect | `f5b23cb` | Supabase pgvector client and Cloudflare R2 boto3 storage integration implemented. Mock fallback active. |
+| **2026-08-10** | **Milestone 2.6** | **Completed** | Senior Architect | `pending` | Next.js frontend UI implemented. `useAudioRecorder`, `useWebSocketStream`, and UI visualizer components assembled. |
