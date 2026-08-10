@@ -1,0 +1,57 @@
+{
+  "title": "EchoSync AI Telemetry Overview",
+  "uid": "echosync_overview",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total API Requests",
+      "targets": [
+        {
+          "expr": "echosync_requests_total",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "Real-Time Factor (RTF)",
+      "targets": [
+        {
+          "expr": "echosync_rtf",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.35 },
+              { "color": "red", "value": 0.5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Time-To-First-Byte (TTFB)",
+      "targets": [
+        {
+          "expr": "echosync_ttfb_ms",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        }
+      }
+    }
+  ],
+  "schemaVersion": 38,
+  "tags": ["echosync", "voice-cloning"]
+}

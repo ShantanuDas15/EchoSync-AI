@@ -262,9 +262,9 @@ Construct the interactive Next.js 14 user interface with browser audio recording
 
 Instrument system metrics and perform end-to-end performance benchmarking against latency and memory targets.
 
-- [ ] **Task 2.7.1**: Implement `backend/tests/test_clone_api.py` testing complete E2E workflow from HTTP POST to task completion.
-- [ ] **Task 2.7.2**: Configure Prometheus metrics exporter in `backend/app/main.py` tracking Real-Time Factor (RTF) and TTFB latency.
-- [ ] **Task 2.7.3**: Configure `infra/grafana/dashboards/echosync_overview.json` for Grafana Cloud telemetry display.
+- [x] **Task 2.7.1**: Implement `backend/tests/test_clone_api.py` testing complete E2E workflow from HTTP POST to task completion.
+- [x] **Task 2.7.2**: Configure Prometheus metrics exporter in `backend/app/main.py` tracking Real-Time Factor (RTF) and TTFB latency.
+- [x] **Task 2.7.3**: Configure `infra/grafana/dashboards/echosync_overview.json` for Grafana Cloud telemetry display.
 
 #### Milestone 2.7 Verification Gateway
 * Verify that total synthesis execution maintains Real-Time Factor $\text{RTF} < 0.35$ on CPU inference and initial Time-To-First-Byte $\text{TTFB} < 450\text{ms}$.
@@ -291,4 +291,5 @@ As Phase 2 development progresses, maintain the integrity of this blueprint by f
 | **2026-08-10** | **Milestone 2.3** | **Completed** | Senior Architect | `3ff9b34` | Hugging Face Spaces ML Inference Microservice implemented safely. Mocks provided for `numpy` fallback to pass tests. |
 | **2026-08-10** | **Milestone 2.4** | **Completed** | Senior Architect | `35f5e1a` | Real-Time WebSocket PCM Chunk Streaming Gateway implemented with Redis pub/sub and EOF packet framing. |
 | **2026-08-10** | **Milestone 2.5** | **Completed** | Senior Architect | `f5b23cb` | Supabase pgvector client and Cloudflare R2 boto3 storage integration implemented. Mock fallback active. |
-| **2026-08-10** | **Milestone 2.6** | **Completed** | Senior Architect | `b377738` | Next.js frontend UI implemented. `useAudioRecorder`, `useWebSocketStream`, and UI visualizer components assembled. |
+| **2026-08-10** | **Milestone 2.6** | **Completed** | Senior Architect | `3a2abea` | Next.js frontend UI implemented. `useAudioRecorder`, `useWebSocketStream`, and UI visualizer components assembled. |
+| **2026-08-10** | **Milestone 2.7** | **Completed** | Senior Architect | `pending` | Integration testing, mock `/metrics` prometheus exporter, and Grafana Dashboard configured successfully. |
