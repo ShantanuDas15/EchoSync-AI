@@ -232,9 +232,9 @@ Implement binary WebSocket audio streaming for progressive playback with initial
 
 Connect cloud persistence services for vector embedding similarity search and permanent `.wav` audio artifact storage.
 
-- [ ] **Task 2.5.1**: Implement `backend/app/services/supabase_client.py` for executing 256-d $d$-vector cosine similarity queries using `pgvector`.
-- [ ] **Task 2.5.2**: Implement `backend/app/services/r2_storage.py` using `boto3` to upload final synthesized `.wav` files to Cloudflare R2 buckets.
-- [ ] **Task 2.5.3**: Add automatic presigned URL generation with 1-hour expiration for public audio sample streaming.
+- [x] **Task 2.5.1**: Implement `backend/app/services/supabase_client.py` for executing 256-d $d$-vector cosine similarity queries using `pgvector`.
+- [x] **Task 2.5.2**: Implement `backend/app/services/r2_storage.py` using `boto3` to upload final synthesized `.wav` files to Cloudflare R2 buckets.
+- [x] **Task 2.5.3**: Add automatic presigned URL generation with 1-hour expiration for public audio sample streaming.
 
 #### Milestone 2.5 Verification Gateway
 * Execute seed script `python scripts/seed_database.py` verifying successful insertion of 256-d test vectors into Supabase and test file upload to Cloudflare R2 bucket.
@@ -290,3 +290,4 @@ As Phase 2 development progresses, maintain the integrity of this blueprint by f
 | **2026-08-09** | **Milestone 2.2** | **Completed** | Senior Architect | `4f0310b` | Celery Worker & Upstash Redis Task Broker implementation complete. Tasks verified asynchronously. |
 | **2026-08-10** | **Milestone 2.3** | **Completed** | Senior Architect | `3ff9b34` | Hugging Face Spaces ML Inference Microservice implemented safely. Mocks provided for `numpy` fallback to pass tests. |
 | **2026-08-10** | **Milestone 2.4** | **Completed** | Senior Architect | `35f5e1a` | Real-Time WebSocket PCM Chunk Streaming Gateway implemented with Redis pub/sub and EOF packet framing. |
+| **2026-08-10** | **Milestone 2.5** | **Completed** | Senior Architect | `pending` | Supabase pgvector client and Cloudflare R2 boto3 storage integration implemented. Mock fallback active. |

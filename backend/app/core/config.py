@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     HF_SPACE_URL: str = "https://your-space.hf.space"
     HF_API_TOKEN: str = ""
     
+    # Cloudflare R2 Storage Config
+    R2_ACCOUNT_ID: str = ""
+    R2_ACCESS_KEY_ID: str = ""
+    R2_SECRET_ACCESS_KEY: str = ""
+    R2_BUCKET_NAME: str = "echosync-artifacts"
+    
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()
