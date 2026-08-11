@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { SynthesizerForm } from '@/components/ui/SynthesizerForm';
 import { AudioRecorder } from '@/components/ui/AudioRecorder';
 import { WaveSurferVisualizer } from '@/components/ui/WaveSurferVisualizer';
+import { MetricBadge } from '@/components/ui/MetricBadge';
 import { useWebSocketStream } from '@/hooks/useWebSocketStream';
 import { Waves, Mic, Radio, Activity } from 'lucide-react';
 
@@ -34,6 +35,8 @@ export default function Dashboard() {
             </h1>
           </div>
           <div className="flex items-center gap-4 text-sm font-medium">
+            <MetricBadge label="Target RTF" value="< 0.35" type="rtf" />
+            <MetricBadge label="Target TTFB" value="< 450" unit="ms" type="ttfb" />
             <span className="flex items-center gap-2 text-emerald-400 bg-emerald-400/10 px-3 py-1.5 rounded-full border border-emerald-400/20">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Systems Online
