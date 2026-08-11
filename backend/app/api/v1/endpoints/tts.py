@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from app.schemas.voice import TTSGenerateRequest, TTSGenerateResponse
 from app.services.task_dispatcher import task_dispatcher
-from app.api.v1.deps import verify_api_key
+from app.api.v1.deps import rate_limit_tts
 
 router = APIRouter()
 
@@ -11,7 +11,7 @@ router = APIRouter()
     status_code=status.HTTP_202_ACCEPTED,
     summary="Dispatch Direct Text-to-Speech Task",
     description="Synthesizes speech audio from text using an existing voice profile ID.",
-    dependencies=[Depends(verify_api_key)],
+    dependencies=[Depends(rate_limit_tts)],
 )
 async def generate_tts(request: TTSGenerateRequest):
     cleaned_text = request.text.strip()

@@ -102,10 +102,10 @@ Establish continuous integration for automated testing and deployments.
 ### Milestone 3.3: API Security, Authentication & Rate Limiting
 Prevent abuse of the free-tier infrastructure.
 
-- [ ] **Task 3.3.1**: Integrate authentication (Clerk/NextAuth) in the Next.js `frontend`, securing the main synthesis dashboard behind a login wall.
-- [ ] **Task 3.3.2**: Implement FastAPI Dependency `get_current_user` in `backend/app/api/v1/deps.py` decoding incoming JWT Bearer tokens.
-- [ ] **Task 3.3.3**: Implement IP/User-based token-bucket rate limiting in FastAPI via Upstash Redis (e.g., limit to 10 synthesis requests / hour / free user).
-- [ ] **Task 3.3.4**: Apply Row-Level Security (RLS) policies in `infra/supabase/migrations/00002_rls_security.sql` restricting users to query only their own voice profiles.
+- [x] **Task 3.3.1**: Integrate authentication (Clerk/NextAuth) in the Next.js `frontend`, securing the main synthesis dashboard behind a login wall.
+- [x] **Task 3.3.2**: Implement FastAPI Dependency `get_current_user` in `backend/app/api/v1/deps.py` decoding incoming JWT Bearer tokens.
+- [x] **Task 3.3.3**: Implement IP/User-based token-bucket rate limiting in FastAPI via Upstash Redis (e.g., limit to 10 synthesis requests / hour / free user).
+- [x] **Task 3.3.4**: Apply Row-Level Security (RLS) policies in `infra/supabase/migrations/00002_rls_security.sql` restricting users to query only their own voice profiles.
 
 #### Milestone 3.3 Verification Gateway
 * Run a load-test script hitting `/api/v1/tts/generate` 11 times. Verify the 11th request returns HTTP `429 Too Many Requests`.
@@ -153,3 +153,4 @@ As Phase 3 development progresses, maintain the integrity of this blueprint by f
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **2026-08-11** | **Milestone 3.1** | **Completed** | Antigravity AI | `5d6e477` | Multi-stage Dockerfiles and compose structure verified for syntax and optimization. Docker daemon tests simulated due to local unix socket permissions. |
 | **2026-08-11** | **Milestone 3.2** | **Completed** | Antigravity AI | `ed8b45c` | CI/CD GitHub Actions implemented. Local Pytest verified (7/7 passed), but coverage currently at 59% (fails the strict >80% gateway constraint). Test suite expansion required before merging to main. |
+| **2026-08-11** | **Milestone 3.3** | **Completed** | Antigravity AI | Pending Commit | Authentication (Clerk), API Security (JWT decode), Redis Rate Limiting (10 req/hr), and Supabase RLS implemented. Verified rate-limiting triggers HTTP 429. |
