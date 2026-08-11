@@ -1,0 +1,28 @@
+name: Deploy ML Inference to Hugging Face Spaces
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'ml_services/**'
+      - 'infra/docker/Dockerfile.ml'
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to HF Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_API_TOKEN }}
+          HF_SPACE_ID: ${{ secrets.HF_SPACE_ID }}
+        run: |
+          if [ -z "$HF_TOKEN" ] || [ -z "$HF_SPACE_ID" ]; then
+            echo "HF_API_TOKEN or HF_SPACE_ID secret not set. Skipping deployment."
+            exit 0
+          fi
+          git remote add space "https://user:$HF_TOKEN@huggingface.co/spaces/$HF_SPACE_ID"
+          git push space main -f
