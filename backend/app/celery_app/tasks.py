@@ -2,12 +2,22 @@ import time
 import logging
 import math
 import redis
+from celery import Task
 from app.celery_app.worker import celery_app
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 EOF_PACKET = b"\x00\xFF"
+
+class DLQTask(Task):
+    """Custom Task class that implements a Dead Letter Queue (DLQ) by logging permanently failed tasks."""
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        logger.error(
+            f"[DLQ ALERT] Task {self.name}[{task_id}] failed after max retries. "
+            f"Possible OOM or severe network error. Exception: {exc}"
+        )
+        super().on_failure(exc, task_id, args, kwargs, einfo)
 
 def simulate_audio_generation_and_publish(task_id: str, duration_sec: float = 2.0):
     redis_client = redis.from_url(settings.REDIS_URL)
@@ -37,7 +47,14 @@ def simulate_audio_generation_and_publish(task_id: str, duration_sec: float = 2.
     redis_client.close()
 
 
-@celery_app.task(name="process_voice_cloning_task", bind=True)
+@celery_app.task(
+    name="process_voice_cloning_task", 
+    bind=True,
+    base=DLQTask,
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_kwargs={'max_retries': 3}
+)
 def process_voice_cloning_task(self, task_id: str, filename: str, text: str):
     logger.info(f"Starting voice cloning task: {task_id}, file: {filename}, text: {text}")
     simulate_audio_generation_and_publish(task_id, duration_sec=1.5)
@@ -49,7 +66,14 @@ def process_voice_cloning_task(self, task_id: str, filename: str, text: str):
         "message": "Voice cloning completed successfully."
     }
 
-@celery_app.task(name="process_tts_task", bind=True)
+@celery_app.task(
+    name="process_tts_task", 
+    bind=True,
+    base=DLQTask,
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_kwargs={'max_retries': 3}
+)
 def process_tts_task(self, task_id: str, text: str, voice_id: str, speed: float = 1.0, pitch: float = 1.0):
     logger.info(f"Starting TTS task: {task_id}, voice_id: {voice_id}, text: {text}, speed: {speed}, pitch: {pitch}")
     simulate_audio_generation_and_publish(task_id, duration_sec=1.5)

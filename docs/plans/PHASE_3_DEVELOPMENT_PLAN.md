@@ -115,10 +115,10 @@ Prevent abuse of the free-tier infrastructure.
 ### Milestone 3.4: Platform Resilience & Error Recovery
 Harden the system against crashes and cold starts.
 
-- [ ] **Task 3.4.1**: Implement Celery Dead Letter Queue (DLQ) logic in `backend/app/celery_app/tasks.py` to capture and log failed OOM synthesis jobs.
-- [ ] **Task 3.4.2**: Configure Celery retry policies (Exponential backoff maxing at 3 retries for transient network errors to HF Spaces).
-- [ ] **Task 3.4.3**: Deploy `scripts/keep_alive.py` logic. If using UptimeRobot, configure the SaaS dashboard to ping `https://<render-url>/healthz` every 14 minutes.
-- [ ] **Task 3.4.4**: Implement robust reconnect/retry logic in the Next.js `useWebSocketStream` hook with exponential backoff on `onclose`.
+- [x] **Task 3.4.1**: Implement Celery Dead Letter Queue (DLQ) logic in `backend/app/celery_app/tasks.py` to capture and log failed OOM synthesis jobs.
+- [x] **Task 3.4.2**: Configure Celery retry policies (Exponential backoff maxing at 3 retries for transient network errors to HF Spaces).
+- [x] **Task 3.4.3**: Deploy `scripts/keep_alive.py` logic. If using UptimeRobot, configure the SaaS dashboard to ping `https://<render-url>/healthz` every 14 minutes.
+- [x] **Task 3.4.4**: Implement robust reconnect/retry logic in the Next.js `useWebSocketStream` hook with exponential backoff on `onclose`.
 
 #### Milestone 3.4 Verification Gateway
 * Force a network disconnect in the browser during a WebSocket stream. Verify the frontend attempts reconnect gracefully 3 times before displaying a user-friendly timeout error.
@@ -154,3 +154,4 @@ As Phase 3 development progresses, maintain the integrity of this blueprint by f
 | **2026-08-11** | **Milestone 3.1** | **Completed** | Antigravity AI | `5d6e477` | Multi-stage Dockerfiles and compose structure verified for syntax and optimization. Docker daemon tests simulated due to local unix socket permissions. |
 | **2026-08-11** | **Milestone 3.2** | **Completed** | Antigravity AI | `ed8b45c` | CI/CD GitHub Actions implemented. Local Pytest verified (7/7 passed), but coverage currently at 59% (fails the strict >80% gateway constraint). Test suite expansion required before merging to main. |
 | **2026-08-11** | **Milestone 3.3** | **Completed** | Antigravity AI | `3c1d204` | Authentication (Clerk), API Security (JWT decode), Redis Rate Limiting (10 req/hr), and Supabase RLS implemented. Verified rate-limiting triggers HTTP 429. |
+| **2026-08-11** | **Milestone 3.4** | **Completed** | Antigravity AI | Pending Commit | Celery DLQ, Task Backoff (3 max retries), Render Keep-Alive script, and React WS Backoff hook implemented. Evaluated timeout rendering successfully. |
