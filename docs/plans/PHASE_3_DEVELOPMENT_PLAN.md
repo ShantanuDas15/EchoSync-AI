@@ -128,9 +128,9 @@ Harden the system against crashes and cold starts.
 ### Milestone 3.5: Final Open-Source Documentation & Polish
 Prepare the repository for portfolio presentation.
 
-- [ ] **Task 3.5.1**: Clean and format the OpenAPI specification (Swagger UI) at `/docs` with detailed summaries, response schemas, and authentication schemes.
-- [ ] **Task 3.5.2**: Update the master `README.md` with high-quality badges (Build Status, Coverage), architecture diagrams, and a 5-minute Quickstart Docker Compose guide.
-- [ ] **Task 3.5.3**: Add a "How to Contribute" (`CONTRIBUTING.md`) and GitHub Issue templates (`.github/ISSUE_TEMPLATE/bug_report.md`).
+- [x] **Task 3.5.1**: Clean and format the OpenAPI specification (Swagger UI) at `/docs` with detailed summaries, response schemas, and authentication schemes.
+- [x] **Task 3.5.2**: Update the master `README.md` with high-quality badges (Build Status, Coverage), architecture diagrams, and a 5-minute Quickstart Docker Compose guide.
+- [x] **Task 3.5.3**: Add a "How to Contribute" (`CONTRIBUTING.md`) and GitHub Issue templates (`.github/ISSUE_TEMPLATE/bug_report.md`).
 
 #### Milestone 3.5 Verification Gateway
 * Review the repository structure. Ensure all stray `__pycache__`, `.env` files, and dummy scripts are git-ignored, and `README.md` accurately guides a new developer from `git clone` to `docker compose up`.
@@ -155,3 +155,4 @@ As Phase 3 development progresses, maintain the integrity of this blueprint by f
 | **2026-08-11** | **Milestone 3.2** | **Completed** | Antigravity AI | `ed8b45c` | CI/CD GitHub Actions implemented. Local Pytest verified (7/7 passed), but coverage currently at 59% (fails the strict >80% gateway constraint). Test suite expansion required before merging to main. |
 | **2026-08-11** | **Milestone 3.3** | **Completed** | Antigravity AI | `3c1d204` | Authentication (Clerk), API Security (JWT decode), Redis Rate Limiting (10 req/hr), and Supabase RLS implemented. Verified rate-limiting triggers HTTP 429. |
 | **2026-08-11** | **Milestone 3.4** | **Completed** | Antigravity AI | `a03d026` | Celery DLQ, Task Backoff (3 max retries), Render Keep-Alive script, and React WS Backoff hook implemented. Evaluated timeout rendering successfully. |
+| **2026-08-11** | **Milestone 3.5** | **Completed** | Antigravity AI | Pending Commit | Updated OpenAPI schemas with rich markdown logic. Refactored master README with Mermaid graphs, quickstarts and CI badges. Added CONTRIBUTING.md and Bug templates. |
