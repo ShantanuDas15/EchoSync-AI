@@ -152,14 +152,14 @@ Transform the basic recording component into an interactive audio capture panel 
 
 Upgrade the text prompt input into a feature-rich Studio Script Editor complete with character counter, pre-built prompt templates, SSML tag helper buttons, and fine-grained prosody sliders.
 
-- [ ] **Task 1.3.1**: Upgrade `frontend/src/components/ui/SynthesizerForm.tsx` with a multi-line auto-expanding textarea, character/token counter ($0 / 1000$ chars), and clear prompt button.
-- [ ] **Task 1.3.2**: Add Quick SSML/Tag helper toolbar buttons:
+- [x] **Task 1.3.1**: Upgrade `frontend/src/components/ui/SynthesizerForm.tsx` with a multi-line auto-expanding textarea, character/token counter ($0 / 1000$ chars), and clear prompt button.
+- [x] **Task 1.3.2**: Add Quick SSML/Tag helper toolbar buttons:
   - `+ Pause (500ms)` (`<break time="500ms"/>`)
   - `+ Emphasis` (`<emphasis level="strong">...</emphasis>`)
   - `+ Whisper` (`<prosody volume="soft">...</prosody>`)
-- [ ] **Task 1.3.3**: Implement Quick Sample Prompt presets (e.g. "Commercial Voiceover", "Podcast Introduction", "News Broadcast", "Interactive Gaming Voice") allowing 1-click text population.
-- [ ] **Task 1.3.4**: Redesign Advanced Prosody Controls with polished sliders for Speaking Speed ($0.5\text{x} - 2.0\text{x}$), Pitch Shift ($-12\text{ semitones} \dots +12\text{ semitones}$), and Energy/Emotion intensity.
-- [ ] **Task 1.3.5**: Add `Cmd+Enter` keyboard listener directly inside the prompt textarea for rapid synthesis iteration.
+- [x] **Task 1.3.3**: Implement Quick Sample Prompt presets (e.g. "Commercial Voiceover", "Podcast Introduction", "News Broadcast", "Interactive Gaming Voice") allowing 1-click text population.
+- [x] **Task 1.3.4**: Redesign Advanced Prosody Controls with polished sliders for Speaking Speed ($0.5\text{x} - 2.0\text{x}$), Pitch Shift ($-12\text{ semitones} \dots +12\text{ semitones}$), and Energy/Emotion intensity.
+- [x] **Task 1.3.5**: Add `Cmd+Enter` keyboard listener directly inside the prompt textarea for rapid synthesis iteration.
 
 #### Milestone 1.3 Verification Gateway & Test Design
 * **Automated Unit Test (`frontend/__tests__/SynthesizerForm.test.tsx`):** Assert prompt population, SSML tag insertion at cursor position, slider value change, and form submission with correct `SynthesizerPayload`.
@@ -232,6 +232,7 @@ Synthesize all studio panels into `frontend/src/app/page.tsx`, integrate accessi
 | `2026-08-12T21:25:00+05:30` | `Milestone 1.0` | **COMPLETED** | Phase 1 UI/UX Execution Plan authored & stored in `docs/plans/UI_UX_PHASE_1_DEVELOPMENT_PLAN.md`. | Antigravity AI |
 | `2026-08-12T21:35:00+05:30` | `Milestone 1.1` | **COMPLETED** | Implemented HSL design tokens, studio types, keyboard hook, NavigationHeader & KeyboardShortcutFooter. Passed 3/3 Node unit tests in 1.84ms & Next.js build. | Antigravity AI |
 | `2026-08-12T21:43:00+05:30` | `Milestone 1.2` | **COMPLETED** | Upgraded useAudioRecorder with FloatTimeDomainData dBFS calculation. Built AudioRecorder UI with device select, VU meter, and playback. Passed unit tests & build. | Antigravity AI |
+| `2026-08-12T21:51:00+05:30` | `Milestone 1.3` | **COMPLETED** | Upgraded SynthesizerForm with SSML helpers, prompts, advanced prosody, char limits, and Cmd+Enter support. Unit tests passed & next build clean. | Antigravity AI |
 
 ---
 
