@@ -45,6 +45,7 @@ frontend/build/
 frontend/.pnpm-store/
 .npm/
 .yarn/
+*.tsbuildinfo
 
 # ------------------------------------------------------------------------------
 # Environment Variables & Secrets (Exclude actual env files, keep templates)

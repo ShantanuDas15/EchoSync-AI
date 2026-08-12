@@ -1,8 +1,12 @@
+"use client";
+
 import { useState, useRef, useCallback, useEffect } from 'react';
 
 export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
-  const [volume, setVolume] = useState(0);
+  const [volume, setVolume] = useState(0); // 0 to 100 scale
+  const [isClipping, setIsClipping] = useState(false);
+  
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -12,25 +16,56 @@ export function useAudioRecorder() {
 
   const updateVolume = useCallback(() => {
     if (analyserRef.current) {
-      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-      analyserRef.current.getByteFrequencyData(dataArray);
-      const sum = dataArray.reduce((a, b) => a + b, 0);
-      const avg = sum / dataArray.length;
-      setVolume(avg);
+      const dataArray = new Float32Array(analyserRef.current.fftSize);
+      analyserRef.current.getFloatTimeDomainData(dataArray);
+
+      let max = 0;
+      let sumSquares = 0;
+
+      for (let i = 0; i < dataArray.length; i++) {
+        const val = dataArray[i];
+        sumSquares += val * val;
+        const absVal = Math.abs(val);
+        if (absVal > max) {
+          max = absVal;
+        }
+      }
+
+      // Check for clipping (> 0 dBFS practically >= 0.99 amplitude)
+      if (max >= 0.99) {
+        setIsClipping(true);
+      } else {
+        setIsClipping(false);
+      }
+
+      const rms = Math.sqrt(sumSquares / dataArray.length);
+      // dBFS calculation (reference is 1.0)
+      let dbfs = 20 * Math.log10(rms);
+      
+      // Silence gives -Infinity
+      if (dbfs === -Infinity || Number.isNaN(dbfs)) dbfs = -100;
+
+      // Map -60 dBFS (silence) to 0 dBFS (max) -> 0 to 100 scale
+      const mappedVolume = Math.max(0, Math.min(100, (dbfs + 60) * (100 / 60)));
+      
+      setVolume(mappedVolume);
     }
     animationFrameRef.current = requestAnimationFrame(updateVolume);
   }, []);
 
-  const startRecording = useCallback(async () => {
+  const startRecording = useCallback(async (deviceId?: string) => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const constraints: MediaStreamConstraints = {
         audio: {
           channelCount: 1,
           sampleRate: 22050,
           echoCancellation: true,
           noiseSuppression: true,
+          ...(deviceId ? { deviceId: { exact: deviceId } } : {})
         },
-      });
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
 
       const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 22050 });
@@ -38,7 +73,7 @@ export function useAudioRecorder() {
       
       const source = audioCtx.createMediaStreamSource(stream);
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
+      analyser.fftSize = 2048; // better resolution for time domain
       source.connect(analyser);
       analyserRef.current = analyser;
 
@@ -52,9 +87,11 @@ export function useAudioRecorder() {
 
       mediaRecorder.start(100);
       setIsRecording(true);
+      setIsClipping(false);
       updateVolume();
     } catch (err) {
       console.error("Failed to start recording:", err);
+      setIsRecording(false);
     }
   }, [updateVolume]);
 
@@ -83,6 +120,7 @@ export function useAudioRecorder() {
         audioContextRef.current.close();
       }
       setVolume(0);
+      setIsClipping(false);
     });
   }, []);
 
@@ -94,5 +132,5 @@ export function useAudioRecorder() {
     };
   }, []);
 
-  return { isRecording, volume, startRecording, stopRecording };
+  return { isRecording, volume, isClipping, startRecording, stopRecording };
 }
