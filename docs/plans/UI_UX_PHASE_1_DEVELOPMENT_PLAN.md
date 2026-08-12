@@ -171,13 +171,13 @@ Upgrade the text prompt input into a feature-rich Studio Script Editor complete 
 
 Replace static audio containers with a full-featured WaveSurfer.js playhead canvas, audio export engine, loop toggles, and real-time HTML5 spectro-temporal visualizer.
 
-- [ ] **Task 1.4.1**: Upgrade `frontend/src/components/ui/WaveSurferVisualizer.tsx` adding interactive playhead scrubbing, zoom slider ($10\text{px/s} - 200\text{px/s}$), volume control slider, and playback rate selector ($0.75\text{x}, 1.0\text{x}, 1.25\text{x}, 1.5\text{x}, 2.0\text{x}$).
-- [ ] **Task 1.4.2**: Add Audio Export & Action Menu:
+- [x] **Task 1.4.1**: Upgrade `frontend/src/components/ui/WaveSurferVisualizer.tsx` adding interactive playhead scrubbing, zoom slider ($10\text{px/s} - 200\text{px/s}$), volume control slider, and playback rate selector ($0.75\text{x}, 1.0\text{x}, 1.25\text{x}, 1.5\text{x}, 2.0\text{x}$).
+- [x] **Task 1.4.2**: Add Audio Export & Action Menu:
   - Download `.WAV` (22.05 kHz uncompressed PCM)
   - Download `.MP3` (192 kbps compressed audio)
   - Copy presigned public URL to clipboard
-- [ ] **Task 1.4.3**: Upgrade `frontend/src/components/ui/SpectrogramCanvas.tsx` with 60 FPS HTML5 Canvas rendering of incoming binary WebSocket PCM audio frames.
-- [ ] **Task 1.4.4**: Implement dynamic color palette themes for the spectrogram visualizer (e.g., `Inferno`, `Magma`, `Viridis`, `Electric Neon Indigo`).
+- [x] **Task 1.4.3**: Upgrade `frontend/src/components/ui/SpectrogramCanvas.tsx` with 60 FPS HTML5 Canvas rendering of incoming binary WebSocket PCM audio frames.
+- [x] **Task 1.4.4**: Implement dynamic color palette themes for the spectrogram visualizer (e.g., `Inferno`, `Magma`, `Viridis`, `Electric Neon Indigo`).
 
 #### Milestone 1.4 Verification Gateway & Test Design
 * **Automated Unit Test (`frontend/__tests__/WaveSurferVisualizer.test.tsx`):** Mock WaveSurfer instance and verify play, pause, seek, volume change, and download trigger operations.
@@ -233,6 +233,7 @@ Synthesize all studio panels into `frontend/src/app/page.tsx`, integrate accessi
 | `2026-08-12T21:35:00+05:30` | `Milestone 1.1` | **COMPLETED** | Implemented HSL design tokens, studio types, keyboard hook, NavigationHeader & KeyboardShortcutFooter. Passed 3/3 Node unit tests in 1.84ms & Next.js build. | Antigravity AI |
 | `2026-08-12T21:43:00+05:30` | `Milestone 1.2` | **COMPLETED** | Upgraded useAudioRecorder with FloatTimeDomainData dBFS calculation. Built AudioRecorder UI with device select, VU meter, and playback. Passed unit tests & build. | Antigravity AI |
 | `2026-08-12T21:51:00+05:30` | `Milestone 1.3` | **COMPLETED** | Upgraded SynthesizerForm with SSML helpers, prompts, advanced prosody, char limits, and Cmd+Enter support. Unit tests passed & next build clean. | Antigravity AI |
+| `2026-08-12T22:01:00+05:30` | `Milestone 1.4` | **COMPLETED** | Upgraded WaveSurferVisualizer with zoom/volume/speed controls and export menu. Built 60 FPS HTML5 SpectrogramCanvas with themes. Unit tests passed & next build clean. | Antigravity AI |
 
 ---
 
