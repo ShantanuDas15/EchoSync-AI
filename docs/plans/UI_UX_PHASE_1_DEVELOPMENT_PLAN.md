@@ -189,9 +189,9 @@ Replace static audio containers with a full-featured WaveSurfer.js playhead canv
 
 Create a dedicated Voice Library view (`frontend/src/app/library/page.tsx`) enabling users to organize cloned voices, inspect 256-d vector embeddings, and search speaker profiles.
 
-- [ ] **Task 1.5.1**: Implement `frontend/src/components/ui/VoiceCard.tsx` displaying speaker profile avatar, name, creation date, reference sample waveform preview, and 256-d cosine similarity score badge.
-- [ ] **Task 1.5.2**: Construct `frontend/src/app/library/page.tsx` with search input, tag filtering (e.g., `Cloned`, `Preset`, `Female`, `Male`, `Broadcast`), grid/list view toggles, and new voice upload modal.
-- [ ] **Task 1.5.3**: Add Modal/Drawer for inspecting 256-d $d$-vector embedding distribution stats and Euclidean norm $\|e\|_2 = 1.0$.
+- [x] **Task 1.5.1**: Implement `frontend/src/components/ui/VoiceCard.tsx` displaying speaker profile avatar, name, creation date, reference sample waveform preview, and 256-d cosine similarity score badge.
+- [x] **Task 1.5.2**: Construct `frontend/src/app/library/page.tsx` with search input, tag filtering (e.g., `Cloned`, `Preset`, `Female`, `Male`, `Broadcast`), grid/list view toggles, and new voice upload modal.
+- [x] **Task 1.5.3**: Add Modal/Drawer for inspecting 256-d $d$-vector embedding distribution stats and Euclidean norm $\|e\|_2 = 1.0$.
 
 #### Milestone 1.5 Verification Gateway & Test Design
 * **Automated Unit Test (`frontend/__tests__/VoiceLibrary.test.tsx`):** Test rendering of voice cards, search string filtering, and profile selection event firing.
@@ -234,6 +234,7 @@ Synthesize all studio panels into `frontend/src/app/page.tsx`, integrate accessi
 | `2026-08-12T21:43:00+05:30` | `Milestone 1.2` | **COMPLETED** | Upgraded useAudioRecorder with FloatTimeDomainData dBFS calculation. Built AudioRecorder UI with device select, VU meter, and playback. Passed unit tests & build. | Antigravity AI |
 | `2026-08-12T21:51:00+05:30` | `Milestone 1.3` | **COMPLETED** | Upgraded SynthesizerForm with SSML helpers, prompts, advanced prosody, char limits, and Cmd+Enter support. Unit tests passed & next build clean. | Antigravity AI |
 | `2026-08-12T22:01:00+05:30` | `Milestone 1.4` | **COMPLETED** | Upgraded WaveSurferVisualizer with zoom/volume/speed controls and export menu. Built 60 FPS HTML5 SpectrogramCanvas with themes. Unit tests passed & next build clean. | Antigravity AI |
+| `2026-08-12T22:06:00+05:30` | `Milestone 1.5` | **COMPLETED** | Created Voice Library view with VoiceCard, tag/search filtering, grid/list toggles, and 256-d vector embedding inspector drawer. Passed unit tests & build. | Antigravity AI |
 
 ---
 
