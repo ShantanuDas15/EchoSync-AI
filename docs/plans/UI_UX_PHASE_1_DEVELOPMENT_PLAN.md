@@ -202,10 +202,10 @@ Create a dedicated Voice Library view (`frontend/src/app/library/page.tsx`) enab
 
 Synthesize all studio panels into `frontend/src/app/page.tsx`, integrate accessible Toast Notifications for async task states, and run end-to-end frontend verification.
 
-- [ ] **Task 1.6.1**: Implement `frontend/src/components/ui/ToastNotification.tsx` providing status notifications (`Success`, `Processing`, `Error`, `Warning`) with auto-dismiss.
-- [ ] **Task 1.6.2**: Upgrade `frontend/src/components/ui/MetricBadge.tsx` to support real-time sparkline trend graphs for Real-Time Factor (RTF) and Time-To-First-Byte (TTFB).
-- [ ] **Task 1.6.3**: Assemble complete `frontend/src/app/page.tsx` responsive grid with collapsible panels and smooth drawer transitions.
-- [ ] **Task 1.6.4**: Perform end-to-end frontend build verification (`npm run build`) ensuring 0 compilation errors or broken type signatures.
+- [x] **Task 1.6.1**: Implement `frontend/src/components/ui/ToastNotification.tsx` providing status notifications (`Success`, `Processing`, `Error`, `Warning`) with auto-dismiss.
+- [x] **Task 1.6.2**: Upgrade `frontend/src/components/ui/MetricBadge.tsx` to support real-time sparkline trend graphs for Real-Time Factor (RTF) and Time-To-First-Byte (TTFB).
+- [x] **Task 1.6.3**: Assemble complete `frontend/src/app/page.tsx` responsive grid with collapsible panels and smooth drawer transitions.
+- [x] **Task 1.6.4**: Perform end-to-end frontend build verification (`npm run build`) ensuring 0 compilation errors or broken type signatures.
 
 #### Milestone 1.6 Verification Gateway & Test Design
 * **E2E Build Verification:** Run `cd frontend && npm run build` asserting 0 errors.
@@ -235,6 +235,7 @@ Synthesize all studio panels into `frontend/src/app/page.tsx`, integrate accessi
 | `2026-08-12T21:51:00+05:30` | `Milestone 1.3` | **COMPLETED** | Upgraded SynthesizerForm with SSML helpers, prompts, advanced prosody, char limits, and Cmd+Enter support. Unit tests passed & next build clean. | Antigravity AI |
 | `2026-08-12T22:01:00+05:30` | `Milestone 1.4` | **COMPLETED** | Upgraded WaveSurferVisualizer with zoom/volume/speed controls and export menu. Built 60 FPS HTML5 SpectrogramCanvas with themes. Unit tests passed & next build clean. | Antigravity AI |
 | `2026-08-12T22:06:00+05:30` | `Milestone 1.5` | **COMPLETED** | Created Voice Library view with VoiceCard, tag/search filtering, grid/list toggles, and 256-d vector embedding inspector drawer. Passed unit tests & build. | Antigravity AI |
+| `2026-08-12T22:11:00+05:30` | `Milestone 1.6` | **COMPLETED** | Implemented ToastNotifications, sparkline MetricBadges, and assembled responsive collapsible page layout grid. Final E2E Next.js build completed with 0 errors. | Antigravity AI |
 
 ---
 

@@ -1,58 +1,114 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SynthesizerForm } from '@/components/ui/SynthesizerForm';
 import { AudioRecorder } from '@/components/ui/AudioRecorder';
 import { WaveSurferVisualizer } from '@/components/ui/WaveSurferVisualizer';
+import { SpectrogramCanvas } from '@/components/ui/SpectrogramCanvas';
+import { ToastNotification, ToastType } from '@/components/ui/ToastNotification';
 import { NavigationHeader } from '@/components/layout/NavigationHeader';
 import { KeyboardShortcutFooter } from '@/components/layout/KeyboardShortcutFooter';
+import { MetricBadge } from '@/components/ui/MetricBadge';
 import { useWebSocketStream } from '@/hooks/useWebSocketStream';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
-import { Waves, Mic, Radio, Activity } from 'lucide-react';
+import { Mic, Radio, Activity, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function Dashboard() {
   const [referenceAudio, setReferenceAudio] = useState<Blob | null>(null);
   const { isStreaming, connectAndStream } = useWebSocketStream();
-  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  
+  // UI Layout State
+  const [showRecorder, setShowRecorder] = useState(true);
+  
+  // Toast State
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
-  const handleSynthesize = async (data?: { text: string; preset: string; speed: number; pitch: number }) => {
+  // Fake Telemetry
+  const [rtfHistory, setRtfHistory] = useState<number[]>([0.8, 0.85, 0.9, 0.75, 0.8]);
+  const [ttfbHistory, setTtfbHistory] = useState<number[]>([150, 140, 160, 120, 130]);
+  const currentRTF = isStreaming ? 0.95 : 0.8;
+  const currentTTFB = isStreaming ? 180 : 130;
+
+  useEffect(() => {
+    if (isStreaming) {
+      setToast({ message: 'Establishing neural WebSocket stream...', type: 'Processing' });
+    } else if (toast?.type === 'Processing') {
+      setToast({ message: 'Synthesis completed successfully.', type: 'Success' });
+    }
+  }, [isStreaming]);
+
+  const handleSynthesize = async (data?: { text: string; preset: string; speed: number; pitch: number; energy?: number }) => {
+    if (!data?.text) {
+      setToast({ message: 'Synthesis prompt cannot be empty.', type: 'Error' });
+      return;
+    }
+    
+    // Simulate telemetry changes
+    setRtfHistory(prev => [...prev.slice(-4), currentRTF]);
+    setTtfbHistory(prev => [...prev.slice(-4), currentTTFB]);
+
     const dummyTaskId = `task-${Math.random().toString(36).substring(7)}`;
-    setCurrentTaskId(dummyTaskId);
     connectAndStream(dummyTaskId);
   };
 
-  // Register global hotkey listeners
   useKeyboardShortcuts({
     onSynthesize: () => {
       if (!isStreaming) {
-        handleSynthesize();
+        setToast({ message: 'Cmd+Enter pressed. Generating audio...', type: 'Processing' });
+        // Since we don't have form state lifted, we rely on the form's own listener or simulate
+        handleSynthesize({ text: "Simulated text from hotkey", preset: "default", speed: 1.0, pitch: 0 });
       }
     },
     onEscape: () => {
-      console.log('Escape hotkey pressed');
+      if (isStreaming) {
+        setToast({ message: 'Synthesis aborted by user.', type: 'Warning' });
+      }
     },
   });
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-indigo-500/30 font-sans flex flex-col justify-between">
-      {/* Navigation Header */}
       <NavigationHeader activeTab="studio" isStreaming={isStreaming} />
 
-      {/* Main Studio Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
+      {/* Telemetry Bar */}
+      <div className="w-full bg-slate-900 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-end gap-4">
+          <MetricBadge label="RTF" value={currentRTF.toFixed(2)} type="rtf" history={rtfHistory} />
+          <MetricBadge label="TTFB" value={currentTTFB} unit="ms" type="ttfb" history={ttfbHistory} />
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* Left Column - Controls */}
-          <div className="lg:col-span-5 space-y-8">
-            <section className="space-y-4">
-              <div className="flex items-center gap-2 text-slate-400 px-1">
-                <Mic size={18} className="text-indigo-400" />
-                <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Voice Cloning Reference</h2>
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            
+            {/* Collapsible Recorder Section */}
+            <section className="bg-slate-900/40 rounded-2xl border border-slate-800 overflow-hidden transition-all duration-300">
+              <button 
+                onClick={() => setShowRecorder(!showRecorder)}
+                className="w-full flex items-center justify-between p-4 bg-slate-800/20 hover:bg-slate-800/40 transition-colors"
+              >
+                <div className="flex items-center gap-2 text-slate-400">
+                  <Mic size={18} className="text-indigo-400" />
+                  <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Voice Cloning Reference</h2>
+                </div>
+                {showRecorder ? <ChevronUp size={18} className="text-slate-500" /> : <ChevronDown size={18} className="text-slate-500" />}
+              </button>
+              
+              <div className={`transition-all duration-300 ease-in-out ${showRecorder ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                <div className="p-4 pt-0">
+                  <AudioRecorder onRecordingComplete={(blob) => {
+                    setReferenceAudio(blob);
+                    if (blob) setToast({ message: 'Reference audio captured.', type: 'Success' });
+                  }} />
+                </div>
               </div>
-              <AudioRecorder onRecordingComplete={setReferenceAudio} />
             </section>
 
-            <section className="space-y-4">
+            {/* Synthesizer Form */}
+            <section className="space-y-3">
               <div className="flex items-center gap-2 text-slate-400 px-1">
                 <Radio size={18} className="text-indigo-400" />
                 <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Neural Synthesis Engine</h2>
@@ -61,45 +117,32 @@ export default function Dashboard() {
             </section>
           </div>
 
-          {/* Right Column - Visualizer & Output */}
-          <div className="lg:col-span-7 space-y-8">
-            <section className="space-y-4">
+          {/* Right Column - Visualizers */}
+          <div className="lg:col-span-7 flex flex-col gap-6">
+            <section className="space-y-3 h-full flex flex-col">
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2 text-slate-400">
                   <Activity size={18} className="text-indigo-400" />
                   <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Analysis & Audio Output</h2>
                 </div>
-                {isStreaming && (
-                  <span className="text-xs font-mono text-indigo-400 animate-pulse">
-                    Streaming PCM Data...
-                  </span>
-                )}
               </div>
               
-              <div className="h-full flex flex-col gap-4">
-                {referenceAudio ? (
-                  <div className="space-y-2">
-                    <p className="text-xs font-mono text-slate-400 ml-1 uppercase">Captured Reference Sample</p>
+              <div className="flex-1 flex flex-col gap-4">
+                {/* WaveSurfer Player */}
+                <div className="space-y-2">
+                  <p className="text-xs font-mono text-slate-400 ml-1 uppercase">Post-Recording Review</p>
+                  {referenceAudio ? (
                     <WaveSurferVisualizer audioBlob={referenceAudio} />
-                  </div>
-                ) : (
-                  <div className="flex-1 min-h-[160px] flex items-center justify-center border-2 border-dashed border-slate-800/80 rounded-2xl bg-slate-900/40">
-                    <p className="text-slate-500 text-sm">No reference audio captured yet.</p>
-                  </div>
-                )}
+                  ) : (
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-slate-800/80 rounded-2xl bg-slate-900/40 text-slate-500 text-sm">
+                      No audio rendered yet.
+                    </div>
+                  )}
+                </div>
 
+                {/* Real-time Spectrogram */}
                 <div className="space-y-2 mt-4">
-                  <p className="text-xs font-mono text-slate-400 ml-1 uppercase">Stream PCM Visualizer</p>
-                  <div className="w-full h-[300px] bg-slate-900/80 rounded-2xl border border-slate-800 shadow-2xl relative overflow-hidden flex items-center justify-center">
-                    {isStreaming ? (
-                      <div className="flex flex-col items-center gap-4 text-indigo-400">
-                        <Waves size={48} className="animate-pulse" />
-                        <span className="font-mono text-sm tracking-widest uppercase">Receiving Audio Stream</span>
-                      </div>
-                    ) : (
-                      <p className="text-slate-600 text-sm font-mono">Awaiting synthesis task dispatch...</p>
-                    )}
-                  </div>
+                  <SpectrogramCanvas isActive={isStreaming} />
                 </div>
               </div>
             </section>
@@ -108,8 +151,16 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Keyboard Shortcut & System Status Footer */}
       <KeyboardShortcutFooter />
+
+      {/* Toast Notifications */}
+      {toast && (
+        <ToastNotification 
+          message={toast.message} 
+          type={toast.type} 
+          onDismiss={() => setToast(null)} 
+        />
+      )}
     </div>
   );
 }

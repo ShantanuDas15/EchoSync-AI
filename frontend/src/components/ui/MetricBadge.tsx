@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Activity, Clock } from 'lucide-react';
 
 interface MetricBadgeProps {
@@ -6,6 +6,7 @@ interface MetricBadgeProps {
   value: string | number;
   unit?: string;
   type?: 'rtf' | 'ttfb' | 'default';
+  history?: number[]; // Array of past values for sparkline
 }
 
 export const MetricBadge: React.FC<MetricBadgeProps> = ({
@@ -13,20 +14,58 @@ export const MetricBadge: React.FC<MetricBadgeProps> = ({
   value,
   unit,
   type = 'default',
+  history = []
 }) => {
   const isRTF = type === 'rtf';
+  const Icon = isRTF ? Activity : Clock;
+  const colorClass = isRTF ? 'text-indigo-400' : 'text-violet-400';
+  const strokeColor = isRTF ? '#818cf8' : '#a78bfa';
+
+  // Generate simple SVG sparkline path
+  const sparklinePath = useMemo(() => {
+    if (history.length < 2) return null;
+    
+    const max = Math.max(...history, typeof value === 'number' ? value : 0);
+    const min = Math.min(...history, typeof value === 'number' ? value : 0);
+    const range = max - min || 1;
+    
+    const width = 40;
+    const height = 16;
+    
+    const points = history.map((val, i) => {
+      const x = (i / (history.length - 1)) * width;
+      const y = height - ((val - min) / range) * height;
+      return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
+    }).join(' ');
+
+    return points;
+  }, [history, value]);
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900/80 border border-slate-800 rounded-xl text-xs">
-      {isRTF ? (
-        <Activity className="w-3.5 h-3.5 text-indigo-400" />
-      ) : (
-        <Clock className="w-3.5 h-3.5 text-violet-400" />
+    <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-900/80 border border-slate-800 rounded-xl text-xs shadow-inner">
+      <div className="flex items-center gap-2">
+        <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
+        <span className="text-slate-400">{label}:</span>
+        <span className="font-mono font-medium text-slate-200">
+          {value}{unit ? ` ${unit}` : ''}
+        </span>
+      </div>
+
+      {sparklinePath && (
+        <div className="w-10 h-4 border-l border-slate-700/50 pl-2 ml-1 flex items-center">
+          <svg width="40" height="16" viewBox="0 0 40 16" className="overflow-visible">
+            <path 
+              d={sparklinePath} 
+              fill="none" 
+              stroke={strokeColor} 
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="opacity-70"
+            />
+          </svg>
+        </div>
       )}
-      <span className="text-slate-400">{label}:</span>
-      <span className="font-mono font-medium text-slate-200">
-        {value}{unit ? ` ${unit}` : ''}
-      </span>
     </div>
   );
 };
