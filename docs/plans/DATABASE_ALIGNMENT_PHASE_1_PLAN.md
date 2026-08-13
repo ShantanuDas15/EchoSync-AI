@@ -168,13 +168,13 @@ Refactor the database service layer for 256-d vector searches and profile persis
 ### Milestone 4: Celery Task Lifecycle & Persistence Orchestration
 Integrate database job state tracking throughout the async synthesis execution pipeline.
 
-- [ ] **Task 4.1**: Refactor `backend/app/services/task_dispatcher.py` to insert a record into `synthesis_jobs` with status `'queued'` upon task dispatch.
-- [ ] **Task 4.2**: Refactor `backend/app/celery_app/tasks.py` updating job status transitions:
+- [x] **Task 4.1**: Refactor `backend/app/services/task_dispatcher.py` to insert a record into `synthesis_jobs` with status `'queued'` upon task dispatch.
+- [x] **Task 4.2**: Refactor `backend/app/celery_app/tasks.py` updating job status transitions:
   - Mark status `'processing'` and `started_at = NOW()` when worker picks up job.
   - Mark status `'streaming'` and store `ttfb_ms` when first PCM chunk is emitted.
   - Insert generated WAV metadata into `audio_assets` and mark job status `'completed'`, `completed_at = NOW()`, `real_time_factor = rtf`, `output_audio_id = asset.id`.
   - On failure, mark status `'failed'` and store traceback in `error_detail` JSONB column.
-- [ ] **Task 4.3**: Add automatic billing log insertion into `usage_logs` capturing `characters_count`, `audio_duration_seconds`, and `compute_ms`.
+- [x] **Task 4.3**: Add automatic billing log insertion into `usage_logs` capturing `characters_count`, `audio_duration_seconds`, and `compute_ms`.
 
 #### Milestone 4 Verification Gateway
 * Run Celery worker integration test verifying job status transitions in `synthesis_jobs` table from `queued` -> `processing` -> `completed`.
@@ -244,6 +244,7 @@ Before marking Phase 1 Database Alignment as completed, all implementation chang
 | `2026-08-13T20:25:00+05:30` | `Milestone 1` | **COMPLETED** | Created `DATABASE_DESIGN.md`, populated DDL migrations 00001, 00002, 00003, updated ORM `base.py`, `session.py`, `supabase_client.py`. Passed 26/26 Pytests. | Senior Architect | `802174a` |
 | `2026-08-13T20:56:00+05:30` | `Plan Authoring` | **COMPLETED** | Authored comprehensive `DATABASE_ALIGNMENT_PHASE_1_PLAN.md` blueprint. | Senior Architect | Pending |
 | `2026-08-13T22:30:00+05:30` | `Milestone 2 & 3` | **COMPLETED** | Refactored Pydantic schemas in voice.py, audio.py, telemetry.py. Added Supabase CRUD methods. All tests passed and DB seed script verified. | Senior Architect | `88dcec5` |
+| `2026-08-13T23:07:00+05:30` | `Milestone 4` | **COMPLETED** | Integrated Celery task lifecycle states into DB (queued, processing, streaming, completed, failed) via Supabase RPC, created test_celery_integration.py verification. | Senior Architect | Pending |
 
 ---
 
