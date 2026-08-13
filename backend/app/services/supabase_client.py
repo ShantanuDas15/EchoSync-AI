@@ -9,50 +9,83 @@ try:
     HAS_SUPABASE = True
 except ImportError:
     HAS_SUPABASE = False
-    logger.warning("Supabase package not installed. SupabaseClient will operate in mock mode.")
+    logger.warning("Supabase package not installed. SupabaseVectorClient will operate in mock mode.")
 
 
 class SupabaseVectorClient:
     def __init__(self):
-        self.url = settings.SUPABASE_URL
-        self.key = settings.SUPABASE_SERVICE_ROLE_KEY
-        self._client = None
+        self.url = getattr(settings, "SUPABASE_URL", None)
+        self.key = getattr(settings, "SUPABASE_SERVICE_ROLE_KEY", None)
+        self._client: Optional[Client] = None
         
         if HAS_SUPABASE and self.url and self.key:
-            self._client = create_client(self.url, self.key)
+            try:
+                self._client = create_client(self.url, self.key)
+            except Exception as e:
+                logger.error(f"Failed to initialize Supabase client: {e}")
+                self._client = None
 
     def is_mock(self) -> bool:
-        return not HAS_SUPABASE or not self.url or not self.key
+        return not HAS_SUPABASE or not self.url or not self.key or self._client is None
 
-    def search_similar_voices(self, vector: List[float], limit: int = 5, match_threshold: float = 0.8) -> List[Dict[str, Any]]:
+    def search_similar_voices(
+        self, 
+        vector: List[float], 
+        limit: int = 5, 
+        match_threshold: float = 0.70,
+        user_id: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
         """
-        Execute 256-d d-vector cosine similarity query using pgvector via rpc call.
-        Assumes a Supabase RPC function 'match_voices' exists.
+        Execute 256-d d-vector cosine similarity query using pgvector via stored RPC function 'match_voices'.
         """
         if self.is_mock():
             logger.info(f"[MOCK] Searching similar voices with vector length {len(vector)}, limit {limit}, threshold {match_threshold}")
             return [
-                {"id": "voice-1", "similarity": 0.95, "name": "Mock Voice Alpha"},
-                {"id": "voice-2", "similarity": 0.88, "name": "Mock Voice Beta"}
+                {
+                    "id": "voice-1", 
+                    "similarity": 0.95, 
+                    "speaker_name": "Mock Voice Alpha",
+                    "description": "Clear studio male voice",
+                    "gender": "male",
+                    "language_code": "en-US",
+                    "reference_audio_url": "https://storage.example.com/demo1.wav"
+                },
+                {
+                    "id": "voice-2", 
+                    "similarity": 0.88, 
+                    "speaker_name": "Mock Voice Beta",
+                    "description": "Warm narrative female voice",
+                    "gender": "female",
+                    "language_code": "en-US",
+                    "reference_audio_url": "https://storage.example.com/demo2.wav"
+                }
             ]
 
         try:
-            response = self._client.rpc(
-                "match_voices",
-                {
-                    "query_embedding": vector,
-                    "match_threshold": match_threshold,
-                    "match_count": limit
-                }
-            ).execute()
-            return response.data
+            params = {
+                "query_embedding": vector,
+                "match_threshold": match_threshold,
+                "match_count": limit,
+            }
+            if user_id:
+                params["filter_user_id"] = user_id
+
+            response = self._client.rpc("match_voices", params).execute()
+            return response.data if response.data else []
         except Exception as e:
             logger.error(f"Error querying Supabase vector storage: {e}")
             raise
 
-    def insert_voice_vector(self, voice_id: str, vector: List[float], metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def insert_voice_vector(
+        self, 
+        voice_id: str, 
+        vector: List[float], 
+        speaker_name: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+        user_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
-        Inserts a new 256-d vector into the 'voices' table.
+        Inserts a new 256-d vector into the 'speaker_profiles' table.
         """
         if self.is_mock():
             logger.info(f"[MOCK] Inserting voice vector for {voice_id} with length {len(vector)}")
@@ -60,13 +93,22 @@ class SupabaseVectorClient:
 
         data = {
             "id": voice_id,
+            "speaker_name": speaker_name or (metadata.get("name") if metadata else None) or voice_id,
             "embedding": vector,
-            **(metadata or {})
+            "metadata": metadata or {}
         }
-        
+        if user_id:
+            data["user_id"] = user_id
+
         try:
-            response = self._client.table("voices").insert(data).execute()
+            response = self._client.table("speaker_profiles").insert(data).execute()
             return response.data[0] if response.data else {}
         except Exception as e:
-            logger.error(f"Error inserting vector into Supabase: {e}")
-            raise
+            logger.warning(f"Error inserting into speaker_profiles, attempting fallback: {e}")
+            try:
+                fallback_data = {"id": voice_id, "embedding": vector, **(metadata or {})}
+                response = self._client.table("voices").insert(fallback_data).execute()
+                return response.data[0] if response.data else {}
+            except Exception as fallback_err:
+                logger.error(f"Error inserting vector into Supabase: {fallback_err}")
+                raise
