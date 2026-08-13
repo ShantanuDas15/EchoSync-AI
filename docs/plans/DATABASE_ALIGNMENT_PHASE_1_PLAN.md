@@ -139,12 +139,12 @@ Align backend ORM models and database session management with `DATABASE_DESIGN.m
 ### Milestone 2: Pydantic V2 Schemas & Data Transfer Objects (DTO) Refactoring
 Refactor Pydantic V2 models to mirror database tables and support API validation.
 
-- [ ] **Task 2.1**: Refactor `backend/app/schemas/voice.py` adding Pydantic V2 models:
+- [x] **Task 2.1**: Refactor `backend/app/schemas/voice.py` adding Pydantic V2 models:
   - `SpeakerProfileBase`, `SpeakerProfileCreate`, `SpeakerProfileUpdate`, `SpeakerProfileResponse` (including `id`, `speaker_name`, `gender`, `language_code`, `visibility`, `reference_audio_url`, `created_at`).
   - `VoiceCloneRequest`, `VoiceCloneResponse`, `TTSGenerateRequest`, `TTSGenerateResponse`.
-- [ ] **Task 2.2**: Refactor `backend/app/schemas/audio.py` adding Pydantic V2 models:
+- [x] **Task 2.2**: Refactor `backend/app/schemas/audio.py` adding Pydantic V2 models:
   - `AudioAssetCreate`, `AudioAssetResponse` (including `id`, `r2_object_key`, `content_hash`, `duration_seconds`, `sample_rate`, `file_size_bytes`).
-- [ ] **Task 2.3**: Refactor `backend/app/schemas/telemetry.py` adding Pydantic V2 models:
+- [x] **Task 2.3**: Refactor `backend/app/schemas/telemetry.py` adding Pydantic V2 models:
   - `SynthesisJobCreate`, `SynthesisJobUpdate`, `SynthesisJobResponse` (including `task_id`, `status`, `real_time_factor`, `ttfb_ms`, `execution_engine`).
   - `UsageLogCreate`, `UsageLogResponse`, `TelemetryMetricCreate`.
 
@@ -158,7 +158,7 @@ Refactor the database service layer for 256-d vector searches and profile persis
 
 - [x] **Task 3.1**: Update `backend/app/services/supabase_client.py` integrating the `match_voices` stored RPC function with configurable similarity threshold (default `0.70`) and limit parameters.
 - [x] **Task 3.2**: Add `insert_voice_vector` method in `supabase_client.py` writing into `speaker_profiles` with metadata, fallback to `voices` view, and mock execution mode when offline.
-- [ ] **Task 3.3**: Add CRUD repository methods in `supabase_client.py` for managing `synthesis_jobs`, `audio_assets`, and `usage_logs`.
+- [x] **Task 3.3**: Add CRUD repository methods in `supabase_client.py` for managing `synthesis_jobs`, `audio_assets`, and `usage_logs`.
 
 #### Milestone 3 Verification Gateway
 * Run `PYTHONPATH=backend:ml_services:. ./backend/venv/bin/python scripts/seed_database.py` verifying mock vector insertion and `match_voices` RPC query execution.
@@ -243,6 +243,7 @@ Before marking Phase 1 Database Alignment as completed, all implementation chang
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-13T20:25:00+05:30` | `Milestone 1` | **COMPLETED** | Created `DATABASE_DESIGN.md`, populated DDL migrations 00001, 00002, 00003, updated ORM `base.py`, `session.py`, `supabase_client.py`. Passed 26/26 Pytests. | Senior Architect | `802174a` |
 | `2026-08-13T20:56:00+05:30` | `Plan Authoring` | **COMPLETED** | Authored comprehensive `DATABASE_ALIGNMENT_PHASE_1_PLAN.md` blueprint. | Senior Architect | Pending |
+| `2026-08-13T22:30:00+05:30` | `Milestone 2 & 3` | **COMPLETED** | Refactored Pydantic schemas in voice.py, audio.py, telemetry.py. Added Supabase CRUD methods. All tests passed and DB seed script verified. | Senior Architect | `88dcec5` |
 
 ---
 
