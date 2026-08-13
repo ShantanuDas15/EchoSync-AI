@@ -82,7 +82,8 @@ class SupabaseVectorClient:
         vector: List[float], 
         speaker_name: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
-        user_id: Optional[str] = None
+        user_id: Optional[str] = None,
+        reference_audio_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Inserts a new 256-d vector into the 'speaker_profiles' table.
@@ -99,6 +100,8 @@ class SupabaseVectorClient:
         }
         if user_id:
             data["user_id"] = user_id
+        if reference_audio_id:
+            data["reference_audio_id"] = reference_audio_id
 
         try:
             response = self._client.table("speaker_profiles").insert(data).execute()
@@ -113,6 +116,18 @@ class SupabaseVectorClient:
                 logger.error(f"Error inserting vector into Supabase: {fallback_err}")
                 raise
 
+    def get_speaker_profile(self, voice_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves a speaker profile by ID."""
+        if self.is_mock():
+            logger.info(f"[MOCK] Retrieving speaker profile {voice_id}")
+            return {"id": voice_id, "speaker_name": "Mock Profile"}
+        try:
+            response = self._client.table("speaker_profiles").select("*").eq("id", voice_id).execute()
+            return response.data[0] if response.data else None
+        except Exception as e:
+            logger.error(f"Error retrieving speaker profile {voice_id}: {e}")
+            raise
+
     def insert_synthesis_job(self, job_data: Dict[str, Any]) -> Dict[str, Any]:
         """Creates a new synthesis job record."""
         if self.is_mock():
@@ -125,28 +140,28 @@ class SupabaseVectorClient:
             logger.error(f"Error inserting synthesis job: {e}")
             raise
 
-    def update_synthesis_job(self, job_id: str, update_data: Dict[str, Any]) -> Dict[str, Any]:
+    def update_synthesis_job(self, task_id: str, update_data: Dict[str, Any]) -> Dict[str, Any]:
         """Updates an existing synthesis job record."""
         if self.is_mock():
-            logger.info(f"[MOCK] Updating synthesis job {job_id} with {update_data}")
-            return {"id": job_id, **update_data}
+            logger.info(f"[MOCK] Updating synthesis job {task_id} with {update_data}")
+            return {"task_id": task_id, **update_data}
         try:
-            response = self._client.table("synthesis_jobs").update(update_data).eq("id", job_id).execute()
+            response = self._client.table("synthesis_jobs").update(update_data).eq("task_id", task_id).execute()
             return response.data[0] if response.data else {}
         except Exception as e:
-            logger.error(f"Error updating synthesis job {job_id}: {e}")
+            logger.error(f"Error updating synthesis job {task_id}: {e}")
             raise
 
-    def get_synthesis_job(self, job_id: str) -> Optional[Dict[str, Any]]:
-        """Retrieves a synthesis job record by ID."""
+    def get_synthesis_job(self, task_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves a synthesis job record by task_id."""
         if self.is_mock():
-            logger.info(f"[MOCK] Retrieving synthesis job {job_id}")
-            return {"id": job_id, "status": "completed"}
+            logger.info(f"[MOCK] Retrieving synthesis job {task_id}")
+            return {"task_id": task_id, "status": "completed"}
         try:
-            response = self._client.table("synthesis_jobs").select("*").eq("id", job_id).execute()
+            response = self._client.table("synthesis_jobs").select("*").eq("task_id", task_id).execute()
             return response.data[0] if response.data else None
         except Exception as e:
-            logger.error(f"Error retrieving synthesis job {job_id}: {e}")
+            logger.error(f"Error retrieving synthesis job {task_id}: {e}")
             raise
 
     def insert_audio_asset(self, asset_data: Dict[str, Any]) -> Dict[str, Any]:

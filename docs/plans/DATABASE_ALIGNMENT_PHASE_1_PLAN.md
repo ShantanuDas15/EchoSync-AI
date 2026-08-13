@@ -184,15 +184,15 @@ Integrate database job state tracking throughout the async synthesis execution p
 ### Milestone 5: API Gateway Endpoint Database Integration
 Connect API REST and WebSocket handlers to persistent database models.
 
-- [ ] **Task 5.1**: Refactor `POST /api/v1/voice/clone` in `backend/app/api/v1/endpoints/clone.py`:
+- [x] **Task 5.1**: Refactor `POST /api/v1/voice/clone` in `backend/app/api/v1/endpoints/clone.py`:
   - Create `audio_assets` record for uploaded reference WAV file (computing SHA256 hash, duration, sample rate).
   - Extract 256-d speaker embedding $d$-vector.
   - Create `speaker_profiles` record linked to user ID and reference audio asset.
-- [ ] **Task 5.2**: Refactor `POST /api/v1/tts/generate` in `backend/app/api/v1/endpoints/tts.py`:
+- [x] **Task 5.2**: Refactor `POST /api/v1/tts/generate` in `backend/app/api/v1/endpoints/tts.py`:
   - Validate speaker profile existence in `speaker_profiles`.
   - Insert job record in `synthesis_jobs`.
   - Enqueue Celery task and return task response DTO.
-- [ ] **Task 5.3**: Refactor WebSocket endpoint `/ws/v1/stream/{task_id}` in `backend/app/api/v1/endpoints/stream.py`:
+- [x] **Task 5.3**: Refactor WebSocket endpoint `/ws/v1/stream/{task_id}` in `backend/app/api/v1/endpoints/stream.py`:
   - Validate task status against `synthesis_jobs` table.
   - Stream PCM binary frames over WebSocket connection.
 
@@ -245,6 +245,7 @@ Before marking Phase 1 Database Alignment as completed, all implementation chang
 | `2026-08-13T20:56:00+05:30` | `Plan Authoring` | **COMPLETED** | Authored comprehensive `DATABASE_ALIGNMENT_PHASE_1_PLAN.md` blueprint. | Senior Architect | Pending |
 | `2026-08-13T22:30:00+05:30` | `Milestone 2 & 3` | **COMPLETED** | Refactored Pydantic schemas in voice.py, audio.py, telemetry.py. Added Supabase CRUD methods. All tests passed and DB seed script verified. | Senior Architect | `88dcec5` |
 | `2026-08-13T23:07:00+05:30` | `Milestone 4` | **COMPLETED** | Integrated Celery task lifecycle states into DB (queued, processing, streaming, completed, failed) via Supabase RPC, created test_celery_integration.py verification. | Senior Architect | `71bb1ea` |
+| `2026-08-13T23:28:00+05:30` | `Milestone 5` | **COMPLETED** | Connected REST and WS API handlers (clone.py, tts.py, stream.py) to persistent DB models via Supabase client, mapped schemas | Senior Architect | Pending |
 
 ---
 

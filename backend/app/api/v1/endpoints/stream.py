@@ -13,6 +13,23 @@ EOF_PACKET = b"\x00\xFF"
 @router.websocket("/ws/v1/stream/{task_id}")
 async def websocket_stream_audio(websocket: WebSocket, task_id: str):
     await websocket.accept()
+    
+    from app.services.supabase_client import SupabaseVectorClient
+    supabase = SupabaseVectorClient()
+    
+    try:
+        job = supabase.get_synthesis_job(task_id)
+        if not job:
+            await websocket.close(code=1008, reason="Task not found")
+            return
+        if job.get("status") == "failed":
+            await websocket.close(code=1008, reason="Task failed")
+            return
+    except Exception as e:
+        logger.error(f"Error validating task {task_id}: {e}")
+        await websocket.close(code=1011, reason="Internal server error")
+        return
+
     logger.info(f"WebSocket client connected for task: {task_id}")
     
     redis_client = redis.from_url(settings.REDIS_URL, decode_responses=False)

@@ -53,17 +53,56 @@ async def clone_voice(
             detail=f"Uploaded file exceeds maximum limit of {settings.MAX_UPLOAD_SIZE_MB} MB.",
         )
 
+    import uuid
+    import hashlib
+    from app.services.supabase_client import SupabaseVectorClient
+
+    supabase = SupabaseVectorClient()
+    
+    # 1. Create audio_assets record
+    audio_asset_id = str(uuid.uuid4())
+    content_hash = hashlib.sha256(file_bytes).hexdigest()
+    # Mock duration and sample rate for now
+    duration_seconds = len(file_bytes) / (22050 * 2) 
+    
+    asset_data = {
+        "id": audio_asset_id,
+        "r2_object_key": f"reference/{audio_asset_id}{ext}",
+        "file_name": filename,
+        "content_hash": content_hash,
+        "file_size_bytes": len(file_bytes),
+        "duration_seconds": max(0.1, duration_seconds),
+        "sample_rate": 22050,
+        "is_reference_sample": True
+    }
+    try:
+        supabase.insert_audio_asset(asset_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to save reference audio metadata.")
+
+    # 2. Extract 256-d embedding (mocked)
+    dummy_embedding = [0.01] * 256
+    
+    # 3. Create speaker_profiles record
+    voice_id = voice_name or f"voice-{uuid.uuid4().hex[:8]}"
+    try:
+        supabase.insert_voice_vector(
+            voice_id=voice_id,
+            vector=dummy_embedding,
+            speaker_name=voice_id,
+            reference_audio_id=audio_asset_id
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Failed to save voice profile.")
+
     # Dispatch task asynchronously
     task_id = task_dispatcher.dispatch_voice_cloning_task(
         file_bytes=file_bytes,
         filename=filename,
         text=cleaned_text,
-        voice_name=voice_name,
+        voice_name=voice_id,
     )
     
-    task_info = task_dispatcher.get_task_status(task_id)
-    voice_id = task_info.get("voice_id", "voice-default") if task_info else "voice-default"
-
     return VoiceCloneResponse(
         task_id=task_id,
         status="queued",

@@ -21,6 +21,18 @@ async def generate_tts(request: TTSGenerateRequest):
             detail="Text payload must not be empty or whitespace.",
         )
 
+    from app.services.supabase_client import SupabaseVectorClient
+    supabase = SupabaseVectorClient()
+    
+    try:
+        profile = supabase.get_speaker_profile(request.voice_id)
+        if not profile:
+            raise HTTPException(status_code=404, detail="Voice profile not found.")
+    except Exception as e:
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail="Error validating voice profile.")
+
     task_id = task_dispatcher.dispatch_tts_task(
         text=cleaned_text,
         voice_id=request.voice_id,
