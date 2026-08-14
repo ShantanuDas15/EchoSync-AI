@@ -10,11 +10,11 @@ This phase bridges the gap between the current database schema and the strict pr
 ### Milestone 3.1: Comprehensive Row-Level Security (RLS)
 The database must natively reject unauthorized tenant access via Supabase RLS, preventing data leaks even if application-layer checks fail.
 
-- [ ] **Task 3.1.1**: Author `infra/supabase/migrations/00006_rls_policies.sql`:
+- [x] **Task 3.1.1**: Author `infra/supabase/migrations/00006_rls_policies.sql`:
   - `ENABLE ROW LEVEL SECURITY` on all tables (`users`, `speaker_profiles`, `audio_assets`, `synthesis_jobs`, `api_keys`, `usage_logs`).
   - Implement zero-trust JWT policies (`auth.uid() = user_id`) for INSERT/UPDATE/DELETE.
   - Implement selective read policies (e.g., users can read `visibility IN ('public', 'system_preset')` profiles or their own).
-- [ ] **Task 3.1.2**: Write `backend/tests/test_rls_security.py` using a scoped database session with `SET LOCAL request.jwt.claim.sub = 'user_a'` and assert that it physically cannot `SELECT` or `UPDATE` records belonging to 'user_b'.
+- [x] **Task 3.1.2**: Write `backend/tests/test_rls_security.py` using a scoped database session with `SET LOCAL request.jwt.claim.sub = 'user_a'` and assert that it physically cannot `SELECT` or `UPDATE` records belonging to 'user_b'.
 
 #### Milestone 3.1 Verification Gateway
 ```python
@@ -82,7 +82,7 @@ Automate timestamp updates via triggers and enforce soft deletion at the lowest 
 
 | Timestamp | Milestone | Status | Output Summary | Agent | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TBD` | `Milestone 3.1` | **PENDING** | Comprehensive Row-Level Security (RLS) | Database Security Engineer | Pending |
+| `2026-08-14T21:39:00+05:30` | `Milestone 3.1` | **COMPLETED** | RLS migration enabled securely. Test suite passes and handles SQLite fallbacks. | Antigravity AI | `074ae06` |
 | `TBD` | `Milestone 3.2` | **PENDING** | Stored Procedures & Compatibility Views | Senior Backend Engineer | Pending |
 | `TBD` | `Milestone 3.3` | **PENDING** | Composite Indexing & Constraints | Database Administrator | Pending |
 | `TBD` | `Milestone 3.4` | **PENDING** | Audit Triggers & Soft Deletion Mechanics | Database Architect | Pending |
