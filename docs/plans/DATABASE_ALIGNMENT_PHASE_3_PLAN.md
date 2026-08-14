@@ -63,11 +63,11 @@ Ensure the database physically rejects invalid data (e.g., negative duration, in
 ### Milestone 3.4: Audit Triggers & Soft Deletion Mechanics
 Automate timestamp updates via triggers and enforce soft deletion at the lowest possible layer.
 
-- [ ] **Task 3.4.1**: Author `infra/supabase/migrations/00009_audit_triggers.sql`:
+- [x] **Task 3.4.1**: Author `infra/supabase/migrations/00009_audit_triggers.sql`:
   - Create a Postgres trigger function `update_modified_column()`.
   - Attach `BEFORE UPDATE` triggers to all primary tables to automatically set `updated_at = NOW()`.
-- [ ] **Task 3.4.2**: Refactor `BaseRepository` in `backend/app/db/repositories/base.py` to natively inject `deleted_at IS NULL` into all `.get()` and `.list()` SELECT statements by default, preventing accidental leakage of soft-deleted records.
-- [ ] **Task 3.4.3**: Write `backend/tests/test_audit_and_deletion.py` verifying that raw DB updates bump `updated_at` without Python intervention, and soft-deleted rows are invisible to standard repository queries.
+- [x] **Task 3.4.2**: Refactor `BaseRepository` in `backend/app/db/repositories/base.py` to natively inject `deleted_at IS NULL` into all `.get()` and `.list()` SELECT statements by default, preventing accidental leakage of soft-deleted records.
+- [x] **Task 3.4.3**: Write `backend/tests/test_audit_and_deletion.py` verifying that raw DB updates bump `updated_at` without Python intervention, and soft-deleted rows are invisible to standard repository queries.
 
 #### Milestone 3.4 Verification Gateway
 ```python
@@ -85,4 +85,4 @@ Automate timestamp updates via triggers and enforce soft deletion at the lowest 
 | `2026-08-14T21:39:00+05:30` | `Milestone 3.1` | **COMPLETED** | RLS migration enabled securely. Test suite passes and handles SQLite fallbacks. | Antigravity AI | `074ae06` |
 | `2026-08-14T21:41:00+05:30` | `Milestone 3.2` | **COMPLETED** | Stored RPC procedure for match_voices and legacy views created. | Senior Backend Engineer | `e1830ea` |
 | `2026-08-14T21:58:00+05:30` | `Milestone 3.3` | **COMPLETED** | Added composite B-Tree indexes and CHECK constraints safely. | Database Administrator | `9e60ab2` |
-| `TBD` | `Milestone 3.4` | **PENDING** | Audit Triggers & Soft Deletion Mechanics | Database Architect | Pending |
+| `2026-08-14T22:08:00+05:30` | `Milestone 3.4` | **COMPLETED** | Automated trigger function for updated_at and BaseRepository soft-deletion implemented. | Database Architect | `92ab64c` |
