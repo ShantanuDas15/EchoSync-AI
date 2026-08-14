@@ -64,7 +64,7 @@ pytest backend/tests/test_migration_pipeline.py -v
 ## Status & Audit Log
 | Timestamp | Milestone | Status | Output Summary | Agent | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TBD` | `Milestone 5.1` | **PENDING** | Distributed Rate Limiting & Transient Caching | Backend Engineer | Pending |
+| `2026-08-15T00:06:50+05:30` | `Milestone 5.1` | **COMPLETED** | Implemented Upstash Redis caching layer. Refactored VerifyApiKey for distributed token-bucket API rate limits. Added `cache_vector_search` decorator for L1/L2 Vector caching on `match_voices` RPC. Verification tests passed gracefully with `fakeredis`. | Backend Engineer | `5d1e215` |
 | `TBD` | `Milestone 5.2` | **PENDING** | Cloudflare R2 Binary Object Storage Integration | Backend Engineer | Pending |
 | `TBD` | `Milestone 5.3` | **PENDING** | Time-Series Table Partitioning | DBA | Pending |
 | `TBD` | `Milestone 5.4` | **PENDING** | CI/CD Database Migration Pipeline | DevOps Architect | Pending |
