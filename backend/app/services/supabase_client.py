@@ -28,6 +28,9 @@ class SupabaseVectorClient:
     def is_mock(self) -> bool:
         return not HAS_SUPABASE or not self.url or not self.key or self._client is None
 
+    from app.services.redis_client import cache_vector_search
+
+    @cache_vector_search(ttl_seconds=3600)
     def search_similar_voices(
         self, 
         vector: List[float], 

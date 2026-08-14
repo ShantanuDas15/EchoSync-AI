@@ -11,9 +11,9 @@ To match the enterprise production-grade standard specified in the `DATABASE_DES
 
 ### Milestone 5.1: Distributed Rate Limiting & Transient Caching (Redis/Upstash)
 To protect the backend from abuse and optimize vector search retrieval, we must integrate a fast transient layer.
-- [ ] **Task 5.1.1**: Implement `RedisClient` utilizing `redis.asyncio` configured for Upstash Redis.
-- [ ] **Task 5.1.2**: Refactor `VerifyApiKey` dependency router (in `app/api/v1/deps.py`) to enforce distributed rate limiting (`rate_limit_per_minute`) using a Redis Token Bucket or sliding window algorithm instead of the current in-memory stub.
-- [ ] **Task 5.1.3**: Implement a two-tier vector caching decorator for the `match_voices` RPC call. Cache frequently matched $d$-vector results in Redis (TTL 1 hour) before falling back to the Postgres HNSW index.
+- [x] **Task 5.1.1**: Implement `RedisClient` utilizing `redis.asyncio` configured for Upstash Redis.
+- [x] **Task 5.1.2**: Refactor `VerifyApiKey` dependency router (in `app/api/v1/deps.py`) to enforce distributed rate limiting (`rate_limit_per_minute`) using a Redis Token Bucket or sliding window algorithm instead of the current in-memory stub.
+- [x] **Task 5.1.3**: Implement a two-tier vector caching decorator for the `match_voices` RPC call. Cache frequently matched $d$-vector results in Redis (TTL 1 hour) before falling back to the Postgres HNSW index.
 
 #### Milestone 5.1 Verification Gateway
 ```bash

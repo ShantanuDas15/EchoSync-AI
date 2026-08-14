@@ -21,7 +21,7 @@ class VerifyApiKey:
     def __init__(self, required_scopes: list[str] = None):
         self.required_scopes = required_scopes or []
 
-    def __call__(
+    async def __call__(
         self,
         x_api_key: str = Header(None, alias=settings.API_KEY_NAME),
         db: Session = Depends(get_db)
@@ -46,20 +46,28 @@ class VerifyApiKey:
             if scope not in validation.scopes:
                 raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="API key lacks required scope.")
 
-        # Rate limiting logic using token bucket/Redis should happen here or in a separate dep.
-        # Simple memory tracker for ponytail compliance (in production use Redis)
+        # Distributed Rate limiting logic using Redis
+        from app.services.redis_client import RedisClient
         from time import time
-        if not hasattr(VerifyApiKey, "_rate_limits"):
-            VerifyApiKey._rate_limits = {}
-            
-        current_minute = int(time() / 60)
-        limit_key = f"{validation.user_id}:{current_minute}"
         
-        current_count = VerifyApiKey._rate_limits.get(limit_key, 0)
-        if current_count >= validation.rate_limit_per_minute:
-            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded")
-            
-        VerifyApiKey._rate_limits[limit_key] = current_count + 1
+        current_minute = int(time() / 60)
+        limit_key = f"rate_limit:api_key:{validation.user_id}:{current_minute}"
+        
+        redis = RedisClient.get_client()
+        try:
+            current_count = await redis.incr(limit_key)
+            print(f"DEBUG: limit_key={limit_key}, current_count={current_count}")
+            if current_count == 1:
+                await redis.expire(limit_key, 60) # Expire after 1 minute
+                
+            if current_count > validation.rate_limit_per_minute:
+                raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded")
+        except HTTPException:
+            raise
+        except Exception as e:
+            # Fallback if Redis is down - allow request but log error
+            import logging
+            logging.getLogger(__name__).warning(f"Redis rate limiting failed: {e}")
         
         # Implement session-level Supabase RLS context injection
         # SQLite doesn't support SET LOCAL, so we conditionally execute it
