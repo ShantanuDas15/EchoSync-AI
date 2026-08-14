@@ -11,7 +11,20 @@ try:
 
     DATABASE_URL = getattr(settings, "DATABASE_URL", None)
     if DATABASE_URL:
-        engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=10, max_overflow=20)
+        connect_args = {}
+        if DATABASE_URL.startswith("postgresql") or DATABASE_URL.startswith("postgres"):
+            connect_args = {"connect_timeout": 10, "options": "-c statement_timeout=15000"}
+            engine = create_engine(
+                DATABASE_URL,
+                pool_pre_ping=True,
+                pool_size=20,
+                max_overflow=40,
+                pool_recycle=1800,
+                pool_timeout=30,
+                connect_args=connect_args
+            )
+        else:
+            engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     else:
         engine = None
