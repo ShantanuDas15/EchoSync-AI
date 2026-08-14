@@ -22,9 +22,9 @@ pytest backend/tests/test_redis_caching.py -v
 
 ### Milestone 5.2: Cloudflare R2 Binary Object Storage Integration
 The `audio_assets` table tracks file metadata, but the physical WAV/MP3 files must be safely synchronized to Cloudflare R2.
-- [ ] **Task 5.2.1**: Implement `R2StorageService` utilizing `aioboto3` to asynchronously stream generated audio and reference samples to the `echosync-audio-vault` bucket.
-- [ ] **Task 5.2.2**: Integrate `R2StorageService` into the `BaseRepository` lifecycle. Ensure that when an `AudioAsset` record is soft-deleted, an asynchronous Celery task is dispatched to prune the binary payload from R2 (cost optimization).
-- [ ] **Task 5.2.3**: Develop pre-signed URL generation endpoints for `reference_audio_url` streaming, ensuring secure playback directly from the edge.
+- [x] **Task 5.2.1**: Implement `R2StorageService` utilizing `aioboto3` to asynchronously stream generated audio and reference samples to the `echosync-audio-vault` bucket.
+- [x] **Task 5.2.2**: Integrate `R2StorageService` into the `BaseRepository` lifecycle. Ensure that when an `AudioAsset` record is soft-deleted, an asynchronous Celery task is dispatched to prune the binary payload from R2 (cost optimization).
+- [x] **Task 5.2.3**: Develop pre-signed URL generation endpoints for `reference_audio_url` streaming, ensuring secure playback directly from the edge.
 
 #### Milestone 5.2 Verification Gateway
 ```bash

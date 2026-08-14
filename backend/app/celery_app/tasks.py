@@ -184,3 +184,29 @@ def process_tts_task(self, task_id: str, text: str, voice_id: str, speed: float 
         "message": "TTS synthesis completed successfully."
     }
 
+@celery_app.task(
+    name="delete_r2_file_task",
+    bind=True,
+    base=DLQTask,
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_kwargs={'max_retries': 3}
+)
+def delete_r2_file_task(self, object_key: str):
+    """
+    Celery task to asynchronously prune an object from R2 storage.
+    Since R2StorageService is async, we use asyncio.run to execute it.
+    """
+    import asyncio
+    from app.services.r2_storage import r2_service
+    
+    logger.info(f"Starting R2 file deletion task for key: {object_key}")
+    try:
+        success = asyncio.run(r2_service.delete_file(object_key))
+        if not success:
+            raise Exception(f"Failed to delete {object_key} from R2.")
+        logger.info(f"Successfully deleted {object_key} from R2.")
+        return {"status": "success", "object_key": object_key}
+    except Exception as e:
+        logger.error(f"Error in delete_r2_file_task: {e}")
+        raise

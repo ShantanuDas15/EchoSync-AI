@@ -41,6 +41,22 @@ class BaseRepository(Generic[ModelType]):
         self.session.delete(instance)
         self.session.flush()
 
+    def soft_delete(self, instance: ModelType) -> None:
+        """
+        Soft deletes the instance by setting deleted_at timestamp.
+        Also dispatches an asynchronous R2 deletion task if it's an AudioAsset.
+        """
+        if hasattr(instance, "deleted_at"):
+            from datetime import datetime, timezone
+            instance.deleted_at = datetime.now(timezone.utc)
+            self.session.flush()
+            
+            # Integrate R2StorageService into the BaseRepository lifecycle
+            if instance.__class__.__name__ == "AudioAsset":
+                if hasattr(instance, "r2_object_key") and instance.r2_object_key:
+                    from app.celery_app.tasks import delete_r2_file_task
+                    delete_r2_file_task.delay(instance.r2_object_key)
+
     def bulk_create(self, instances: List[ModelType]) -> None:
         self.session.add_all(instances)
         self.session.flush()
