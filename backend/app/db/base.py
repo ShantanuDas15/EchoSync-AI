@@ -3,10 +3,12 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from sqlalchemy import (
     Column, String, Text, Boolean, Integer, BigInteger, Numeric, 
-    DateTime, ForeignKey, Enum as SQLEnum, CheckConstraint, Table
+    DateTime, ForeignKey, Enum as SQLEnum, CheckConstraint, Table, JSON
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import declarative_base, relationship
+
+VariantJSONB = JSON().with_variant(JSONB, "postgresql")
 
 Base = declarative_base()
 
@@ -21,7 +23,7 @@ class User(Base):
     tier = Column(String(32), nullable=False, default="free")
     api_quota_monthly = Column(Integer, nullable=False, default=50000)
     is_active = Column(Boolean, nullable=False, default=True)
-    metadata_ = Column("metadata", JSONB, nullable=False, default=dict)
+    metadata_ = Column("metadata", VariantJSONB, nullable=False, default=dict)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     deleted_at = Column(DateTime(timezone=True), nullable=True)
@@ -46,7 +48,7 @@ class SpeakerProfile(Base):
     reference_audio_url = Column(Text, nullable=True)
     visibility = Column(String(32), nullable=False, default="private")
     is_active = Column(Boolean, nullable=False, default=True)
-    metadata_ = Column("metadata", JSONB, nullable=False, default=dict)
+    metadata_ = Column("metadata", VariantJSONB, nullable=False, default=dict)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     deleted_at = Column(DateTime(timezone=True), nullable=True)
@@ -71,7 +73,7 @@ class AudioAsset(Base):
     channels = Column(Integer, nullable=False, default=1)
     bit_depth = Column(Integer, nullable=False, default=16)
     is_reference_sample = Column(Boolean, nullable=False, default=False)
-    metadata_ = Column("metadata", JSONB, nullable=False, default=dict)
+    metadata_ = Column("metadata", VariantJSONB, nullable=False, default=dict)
     created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
@@ -98,7 +100,7 @@ class SynthesisJob(Base):
     ttfb_ms = Column(Integer, nullable=True)
     worker_id = Column(String(128), nullable=True)
     execution_engine = Column(String(64), nullable=False, default="hf_cpu_onnx")
-    error_detail = Column(JSONB, nullable=True)
+    error_detail = Column(VariantJSONB, nullable=True)
     queued_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     started_at = Column(DateTime(timezone=True), nullable=True)
     completed_at = Column(DateTime(timezone=True), nullable=True)
@@ -118,7 +120,7 @@ class ApiKey(Base):
     key_name = Column(String(128), nullable=False)
     key_prefix = Column(String(16), nullable=False)
     key_hash = Column(String(128), unique=True, nullable=False)
-    scopes = Column(JSONB, nullable=False, default=list)
+    scopes = Column(VariantJSONB, nullable=False, default=list)
     rate_limit_per_minute = Column(Integer, nullable=False, default=60)
     status = Column(String(32), nullable=False, default="active")
     last_used_at = Column(DateTime(timezone=True), nullable=True)
