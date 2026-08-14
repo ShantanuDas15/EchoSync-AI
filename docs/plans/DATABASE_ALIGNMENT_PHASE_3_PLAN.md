@@ -45,11 +45,11 @@ Implement the highly-optimized similarity search natively in Postgres and provid
 ### Milestone 3.3: Composite Indexing & Data Integrity Constraints
 Ensure the database physically rejects invalid data (e.g., negative duration, invalid modifiers) and optimizes multi-column lookups.
 
-- [ ] **Task 3.3.1**: Author `infra/supabase/migrations/00008_composite_indexes_and_checks.sql`:
+- [x] **Task 3.3.1**: Author `infra/supabase/migrations/00008_composite_indexes_and_checks.sql`:
   - Create composite B-Tree indexes: `idx_speaker_profiles_user_visibility`, `idx_synthesis_jobs_task_id`, `idx_synthesis_jobs_user_status_created`, `idx_api_keys_key_hash`.
   - Add native database `CHECK` constraints (e.g., `speed_modifier BETWEEN 0.50 AND 2.00`, `file_size_bytes > 0`, `channels IN (1, 2)`).
-- [ ] **Task 3.3.2**: Update `backend/app/db/base.py` to reflect these `CheckConstraint` and `Index` objects in the SQLAlchemy ORM models.
-- [ ] **Task 3.3.3**: Write `backend/tests/test_db_constraints.py` asserting that attempting to insert out-of-bounds metrics throws `IntegrityError` from the database.
+- [x] **Task 3.3.2**: Update `backend/app/db/base.py` to reflect these `CheckConstraint` and `Index` objects in the SQLAlchemy ORM models.
+- [x] **Task 3.3.3**: Write `backend/tests/test_db_constraints.py` asserting that attempting to insert out-of-bounds metrics throws `IntegrityError` from the database.
 
 #### Milestone 3.3 Verification Gateway
 ```python
@@ -84,5 +84,5 @@ Automate timestamp updates via triggers and enforce soft deletion at the lowest 
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-14T21:39:00+05:30` | `Milestone 3.1` | **COMPLETED** | RLS migration enabled securely. Test suite passes and handles SQLite fallbacks. | Antigravity AI | `074ae06` |
 | `2026-08-14T21:41:00+05:30` | `Milestone 3.2` | **COMPLETED** | Stored RPC procedure for match_voices and legacy views created. | Senior Backend Engineer | `e1830ea` |
-| `TBD` | `Milestone 3.3` | **PENDING** | Composite Indexing & Constraints | Database Administrator | Pending |
+| `2026-08-14T21:58:00+05:30` | `Milestone 3.3` | **COMPLETED** | Added composite B-Tree indexes and CHECK constraints safely. | Database Administrator | `9e60ab2` |
 | `TBD` | `Milestone 3.4` | **PENDING** | Audit Triggers & Soft Deletion Mechanics | Database Architect | Pending |
