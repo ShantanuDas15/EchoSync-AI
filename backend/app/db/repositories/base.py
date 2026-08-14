@@ -12,10 +12,16 @@ class BaseRepository(Generic[ModelType]):
         self.session = session
 
     def get_by_id(self, id: Any) -> Optional[ModelType]:
-        return self.session.get(self.model, id)
+        stmt = select(self.model).filter_by(id=id)
+        if hasattr(self.model, "deleted_at"):
+            stmt = stmt.filter(self.model.deleted_at.is_(None))
+        return self.session.scalars(stmt).first()
 
     def list(self, limit: int = 100, offset: int = 0) -> Sequence[ModelType]:
-        stmt = select(self.model).offset(offset).limit(limit)
+        stmt = select(self.model)
+        if hasattr(self.model, "deleted_at"):
+            stmt = stmt.filter(self.model.deleted_at.is_(None))
+        stmt = stmt.offset(offset).limit(limit)
         return self.session.scalars(stmt).all()
 
     def create(self, **kwargs) -> ModelType:
