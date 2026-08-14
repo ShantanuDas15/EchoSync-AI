@@ -55,3 +55,61 @@ def test_match_voices_threshold_filtering():
     # In a real DB, threshold filtering would apply.
     # Here we just verify the mock executes successfully without error.
     assert len(results) >= 1
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+from app.db.base import Base, SpeakerProfile, User
+from app.db.repositories.speaker_repo import SpeakerProfileRepository, _L1_CACHE, _MOCK_REDIS_L2
+
+@pytest.fixture(scope="function")
+def db_session():
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool
+    )
+    Base.metadata.create_all(engine)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = SessionLocal()
+    yield db
+    db.close()
+    Base.metadata.drop_all(engine)
+
+def test_two_tier_caching_and_search(db_session):
+    # Clear caches
+    _L1_CACHE.cache.clear()
+    _MOCK_REDIS_L2.clear()
+
+    user = User(sub="auth0|search", email="search@example.com")
+    db_session.add(user)
+    db_session.flush()
+
+    # Add dummy profiles
+    p1 = SpeakerProfile(user_id=user.id, speaker_name="Speaker 1", embedding="[0.1, 0.1]", visibility="public")
+    p2 = SpeakerProfile(user_id=user.id, speaker_name="Speaker 2", embedding="[0.2, 0.2]", visibility="public")
+    db_session.add_all([p1, p2])
+    db_session.commit()
+
+    repo = SpeakerProfileRepository(db_session)
+    
+    query_emb = [0.1, 0.1]
+    
+    # Query 1: Cache Miss -> DB Query -> Populates L1 and L2
+    res1 = repo.search_similar_voices(query_emb, limit=2)
+    assert len(res1) == 2
+    assert len(_L1_CACHE.cache) == 1
+    assert len(_MOCK_REDIS_L2) == 1
+    
+    # Query 2: L1 Cache Hit
+    res2 = repo.search_similar_voices(query_emb, limit=2)
+    assert len(res2) == 2
+    
+    # Clear L1 to force L2 hit
+    _L1_CACHE.cache.clear()
+    assert len(_L1_CACHE.cache) == 0
+    
+    # Query 3: L2 Cache Hit (Repopulates L1)
+    res3 = repo.search_similar_voices(query_emb, limit=2)
+    assert len(res3) == 2
+    assert len(_L1_CACHE.cache) == 1
