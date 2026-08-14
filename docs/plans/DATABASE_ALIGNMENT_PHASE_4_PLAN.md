@@ -45,8 +45,8 @@ SQLite memory databases are brittle and ignore PostgreSQL-specific features like
 ### Milestone 4.3: Connection Pooling & Read-Replica Routing
 To prevent database bottlenecks under heavy vector search loads, we must architect the SQLAlchemy engine for high-concurrency scaling.
 
-- [ ] **Task 4.3.1**: Refactor `backend/app/db/session.py` to utilize `QueuePool` with aggressive `pool_size`, `max_overflow`, and `pool_pre_ping=True` configurations, optimizing it for external connection poolers like PgBouncer.
-- [ ] **Task 4.3.2**: Implement a `get_read_session` dependency router in FastAPI that targets a read-replica database URL if configured, offloading heavy `match_voices` vector searches from the primary writer node.
+- [x] **Task 4.3.1**: Refactor `backend/app/db/session.py` to utilize `QueuePool` with aggressive `pool_size`, `max_overflow`, and `pool_pre_ping=True` configurations, optimizing it for external connection poolers like PgBouncer.
+- [x] **Task 4.3.2**: Implement a `get_read_session` dependency router in FastAPI that targets a read-replica database URL if configured, offloading heavy `match_voices` vector searches from the primary writer node.
 
 #### Milestone 4.3 Verification Gateway
 ```python
@@ -63,4 +63,4 @@ To prevent database bottlenecks under heavy vector search loads, we must archite
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-14T22:15:00+05:30` | `Milestone 4.1` | **COMPLETED** | Authored Alembic ↔ Supabase script. Sync natively compiles Python DDL changes to PostgreSQL .sql. | DevOps Architect | `5eacafe` |
 | `2026-08-14T22:37:00+05:30` | `Milestone 4.2` | **COMPLETED** | Configured Testcontainers and SQLite fallback logic. All postgres skipif marks removed from test files. | SDET Engineer | `2205184` |
-| `TBD` | `Milestone 4.3` | **PENDING** | Connection Pooling & Read-Replica Routing | Backend Engineer | Pending |
+| `2026-08-14T22:44:00+05:30` | `Milestone 4.3` | **COMPLETED** | Refactored session router. QueuePool configured for Postgres and Read Replica session factory created. Tests verified pooling logic. | Backend Engineer | `f6c7785` |
