@@ -44,8 +44,8 @@ pytest backend/tests/test_db_partitioning.py -v
 
 ### Milestone 5.4: CI/CD Automated Database Migration Pipeline
 To finalize deployment readiness, migrations must automatically run in staging and production CI environments safely.
-- [ ] **Task 5.4.1**: Create a `backend/scripts/deploy_migrations.sh` pipeline script that strictly validates Alembic downgrade/upgrade paths and applies `000*.sql` Supabase artifacts to the target environment securely.
-- [ ] **Task 5.4.2**: Wrap the migration execution in a transactional advisory lock (`pg_advisory_lock`) to prevent race conditions during multi-instance rolling zero-downtime deployments.
+- [x] **Task 5.4.1**: Create a `backend/scripts/deploy_migrations.sh` pipeline script that strictly validates Alembic downgrade/upgrade paths and applies `000*.sql` Supabase artifacts to the target environment securely.
+- [x] **Task 5.4.2**: Wrap the migration execution in a transactional advisory lock (`pg_advisory_lock`) to prevent race conditions during multi-instance rolling zero-downtime deployments.
 
 #### Milestone 5.4 Verification Gateway
 ```bash
