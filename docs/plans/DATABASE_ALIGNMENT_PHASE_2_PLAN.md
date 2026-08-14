@@ -272,17 +272,17 @@ Protect synthesis execution against duplicate API submissions, double billing, a
 ### Milestone 2.7: Two-Tier Vector Caching, HNSW Optimization & Load Benchmarking
 Optimize pgvector search performance to consistently deliver sub-15ms vector retrieval across $1,000,000+$ speaker embeddings.
 
-- [ ] **Task 2.7.1**: Implement `VectorCacheService` in `backend/app/services/vector_cache.py`:
+- [x] **Task 2.7.1**: Implement `VectorCacheService` in `backend/app/services/vector_cache.py`:
   - L1/L2 Redis caching for 256-d speaker embeddings indexed by voice ID and reference audio content hash (`SHA256`).
   - Serializes float arrays to compact binary buffers (`struct.pack`) to minimize Redis memory footprint.
-- [ ] **Task 2.7.2**: Optimize `match_voices` RPC query execution:
+- [x] **Task 2.7.2**: Optimize `match_voices` RPC query execution:
   - Dynamically inject `SET LOCAL hnsw.ef_search = 100` before query execution for optimal search recall vs latency tradeoff.
   - Implement $L_2$ norm validation in Pydantic schemas asserting $||\vec{v}||_2 = 1.0 \pm 0.001$.
-- [ ] **Task 2.7.3**: Implement cursor-based pagination on `SpeakerProfileRepository.list_profiles` for scalable frontend voice browsing.
-- [ ] **Task 2.7.4**: Develop performance benchmarking script `scripts/benchmark_db_vector.py`:
+- [x] **Task 2.7.3**: Implement cursor-based pagination on `SpeakerProfileRepository.list_profiles` for scalable frontend voice browsing.
+- [x] **Task 2.7.4**: Develop performance benchmarking script `scripts/benchmark_db_vector.py`:
   - Seeds database with $N=10,000$ synthetic 256-d speaker vectors.
   - Measures 95th and 99th percentile query latency across 500 concurrent similarity queries.
-- [ ] **Task 2.7.5**: Execute full end-to-end test suite ensuring **100% pass rate** across all backend and ML service tests.
+- [x] **Task 2.7.5**: Execute full end-to-end test suite ensuring **100% pass rate** across all backend and ML service tests.
 
 #### Milestone 2.7 Verification Gateway & Test Design
 ```python
@@ -330,7 +330,7 @@ In strict adherence to project rules in [`GEMINI.md`](file:///home/shantanu/Docu
 | `2026-08-14T21:09:00+05:30` | `Milestone 2.4` | **COMPLETED** | Table partitioning migration, management script, and routing test created. | Antigravity AI | `a98f9e7` |
 | `2026-08-14T21:26:00+05:30` | `Milestone 2.5` | **COMPLETED** | API Key Service with HMAC-SHA256, scoping, RLS logic, and test coverage. | Antigravity AI | `74a7339` |
 | `2026-08-14T21:29:00+05:30` | `Milestone 2.6` | **COMPLETED** | Idempotency locking, state machine validation, and concurrent rejection tested. | Antigravity AI | `aaad695` |
-| `TBD` | `Milestone 2.7` | **PENDING** | Two-tier vector cache, HNSW tuning & benchmark | Senior ML/DB Engineer | Pending |
+| `2026-08-14T21:34:00+05:30` | `Milestone 2.7` | **COMPLETED** | Vector cache logic, HNSW Postgres index, and load benchmarking deployed successfully. | Antigravity AI | `37cf366` |
 
 ---
 
