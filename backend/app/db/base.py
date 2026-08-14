@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from sqlalchemy import (
     Column, String, Text, Boolean, Integer, BigInteger, Numeric, 
-    DateTime, ForeignKey, Enum as SQLEnum, CheckConstraint, Table, JSON
+    DateTime, ForeignKey, Enum as SQLEnum, CheckConstraint, Table, JSON, Index
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import declarative_base, relationship
@@ -15,6 +15,9 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = (
+        CheckConstraint("api_quota_monthly >= 0", name="chk_users_api_quota"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     sub = Column(String(255), unique=True, nullable=False)
@@ -36,6 +39,9 @@ class User(Base):
 
 class SpeakerProfile(Base):
     __tablename__ = "speaker_profiles"
+    __table_args__ = (
+        Index("idx_speaker_profiles_user_visibility", "user_id", "visibility", "is_active", postgresql_where="deleted_at IS NULL"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
@@ -59,6 +65,14 @@ class SpeakerProfile(Base):
 
 class AudioAsset(Base):
     __tablename__ = "audio_assets"
+    __table_args__ = (
+        Index("idx_audio_assets_content_hash", "content_hash"),
+        CheckConstraint("file_size_bytes > 0", name="chk_audio_file_size"),
+        CheckConstraint("duration_seconds > 0", name="chk_audio_duration"),
+        CheckConstraint("sample_rate > 0", name="chk_audio_sample_rate"),
+        CheckConstraint("channels IN (1, 2)", name="chk_audio_channels"),
+        CheckConstraint("bit_depth IN (8, 16, 24, 32)", name="chk_audio_bit_depth"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
@@ -82,6 +96,15 @@ class AudioAsset(Base):
 
 class SynthesisJob(Base):
     __tablename__ = "synthesis_jobs"
+    __table_args__ = (
+        Index("idx_synthesis_jobs_task_id", "task_id"),
+        Index("idx_synthesis_jobs_user_status_created", "user_id", "status", "created_at"),
+        CheckConstraint("speed_modifier BETWEEN 0.50 AND 2.00", name="chk_synthesis_speed"),
+        CheckConstraint("pitch_modifier BETWEEN 0.50 AND 2.00", name="chk_synthesis_pitch"),
+        CheckConstraint("energy_modifier BETWEEN 0.50 AND 2.00", name="chk_synthesis_energy"),
+        CheckConstraint("real_time_factor >= 0", name="chk_synthesis_rtf"),
+        CheckConstraint("ttfb_ms >= 0", name="chk_synthesis_ttfb"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     task_id = Column(String(128), unique=True, nullable=False)
@@ -114,6 +137,10 @@ class SynthesisJob(Base):
 
 class ApiKey(Base):
     __tablename__ = "api_keys"
+    __table_args__ = (
+        Index("idx_api_keys_key_hash", "key_hash", postgresql_where="status = 'active'"),
+        CheckConstraint("rate_limit_per_minute > 0", name="chk_api_keys_rate_limit"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
@@ -133,6 +160,11 @@ class ApiKey(Base):
 
 class UsageLog(Base):
     __tablename__ = "usage_logs"
+    __table_args__ = (
+        CheckConstraint("characters_count >= 0", name="chk_usage_characters"),
+        CheckConstraint("audio_duration_seconds >= 0", name="chk_usage_duration"),
+        CheckConstraint("compute_ms >= 0", name="chk_usage_compute"),
+    )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
