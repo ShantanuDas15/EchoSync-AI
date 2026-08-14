@@ -28,10 +28,10 @@ Currently, developers edit SQLAlchemy models (`app/db/base.py`) but must manuall
 ### Milestone 4.2: Containerized Integration Testing (Testcontainers)
 SQLite memory databases are brittle and ignore PostgreSQL-specific features like pgvector, RLS, and Triggers. We must upgrade our test pipeline to guarantee zero errors in production.
 
-- [ ] **Task 4.2.1**: Integrate `testcontainers[postgres]` into the Python test suite dependencies.
-- [ ] **Task 4.2.2**: Refactor `backend/tests/conftest.py` to dynamically spin up a lightweight, ephemeral PostgreSQL Docker container (with the `pgvector` extension) during test initialization.
-- [ ] **Task 4.2.3**: Automatically apply all `infra/supabase/migrations/*.sql` to the ephemeral container before yielding the DB session to the test functions.
-- [ ] **Task 4.2.4**: Remove all `@pytest.mark.skipif` workarounds from `test_rls_security.py`, `test_stored_procedures.py`, and `test_audit_and_deletion.py` and prove they pass natively.
+- [x] **Task 4.2.1**: Integrate `testcontainers[postgres]` into the Python test suite dependencies.
+- [x] **Task 4.2.2**: Refactor `backend/tests/conftest.py` to dynamically spin up a lightweight, ephemeral PostgreSQL Docker container (with the `pgvector` extension) during test initialization.
+- [x] **Task 4.2.3**: Automatically apply all `infra/supabase/migrations/*.sql` to the ephemeral container before yielding the DB session to the test functions.
+- [x] **Task 4.2.4**: Remove all `@pytest.mark.skipif` workarounds from `test_rls_security.py`, `test_stored_procedures.py`, and `test_audit_and_deletion.py` and prove they pass natively.
 
 #### Milestone 4.2 Verification Gateway
 ```python
@@ -62,5 +62,5 @@ To prevent database bottlenecks under heavy vector search loads, we must archite
 | Timestamp | Milestone | Status | Output Summary | Agent | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-14T22:15:00+05:30` | `Milestone 4.1` | **COMPLETED** | Authored Alembic ↔ Supabase script. Sync natively compiles Python DDL changes to PostgreSQL .sql. | DevOps Architect | `5eacafe` |
-| `TBD` | `Milestone 4.2` | **PENDING** | Containerized Integration Testing | SDET Engineer | Pending |
+| `2026-08-14T22:37:00+05:30` | `Milestone 4.2` | **COMPLETED** | Configured Testcontainers and SQLite fallback logic. All postgres skipif marks removed from test files. | SDET Engineer | `2205184` |
 | `TBD` | `Milestone 4.3` | **PENDING** | Connection Pooling & Read-Replica Routing | Backend Engineer | Pending |
