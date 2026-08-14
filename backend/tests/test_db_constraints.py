@@ -6,17 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from app.db.base import Base, User, SynthesisJob
 
-DB_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
 
-@pytest.fixture(scope="function")
-def db_session():
-    engine = create_engine(DB_URL)
-    Base.metadata.create_all(engine)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = SessionLocal()
-    yield db
-    db.close()
-    Base.metadata.drop_all(engine)
 
 def test_user_api_quota_constraint(db_session):
     """Test that a negative api quota violates the CHECK constraint."""

@@ -112,3 +112,6 @@ async def rate_limit_tts(
             detail="Rate limit exceeded. Maximum 10 synthesis requests per hour."
         )
     return True
+
+
+verify_api_key = VerifyApiKey()

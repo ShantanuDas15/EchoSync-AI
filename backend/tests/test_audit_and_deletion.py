@@ -8,31 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from app.db.base import Base, User
 from app.db.repositories.base import BaseRepository
 
-DB_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
-is_postgres = DB_URL.startswith("postgresql")
 
-@pytest.fixture(scope="function")
-def db_session():
-    engine = create_engine(DB_URL)
-    Base.metadata.create_all(engine)
-    
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = SessionLocal()
-    
-    # If postgres, try to load the trigger SQL to test it natively
-    if is_postgres:
-        sql_file_path = os.path.join(os.path.dirname(__file__), "../../infra/supabase/migrations/00009_audit_triggers.sql")
-        if os.path.exists(sql_file_path):
-            with open(sql_file_path, "r") as f:
-                commands = f.read().split(";")
-                for cmd in commands:
-                    if cmd.strip():
-                        db.execute(text(cmd))
-                db.commit()
-                
-    yield db
-    db.close()
-    Base.metadata.drop_all(engine)
 
 def test_soft_deletion_filtering(db_session):
     """Test that soft-deleted rows are invisible to standard repository queries."""
@@ -55,7 +31,6 @@ def test_soft_deletion_filtering(db_session):
     assert len(all_users) == 1
     assert all_users[0].id == user2.id
 
-@pytest.mark.skipif(not is_postgres, reason="SQLite does not support Postgres trigger functions natively")
 def test_postgres_updated_at_audit_trigger(db_session):
     """Verify raw DB updates bump updated_at without Python intervention."""
     repo = BaseRepository(User, db_session)

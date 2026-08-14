@@ -9,16 +9,6 @@ from app.db.base import Base, SpeakerProfile, User
 DB_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
 is_postgres = DB_URL.startswith("postgresql")
 
-@pytest.fixture(scope="function")
-def db_session():
-    engine = create_engine(DB_URL)
-    Base.metadata.create_all(engine)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = SessionLocal()
-    yield db
-    db.close()
-    Base.metadata.drop_all(engine)
-
 def test_sql_procedures_and_views_syntax():
     """Verify that the SQL migration file exists and defines match_voices and voices view."""
     sql_file_path = os.path.join(os.path.dirname(__file__), "../../infra/supabase/migrations/00007_rpc_and_views.sql")
@@ -32,7 +22,6 @@ def test_sql_procedures_and_views_syntax():
     assert "CREATE OR REPLACE VIEW voices AS" in sql
     assert "visibility = 'public'" in sql
 
-@pytest.mark.skipif(not is_postgres, reason="SQLite does not support pgvector functions or stored procedures natively")
 def test_match_voices_rpc_and_view(db_session):
     """
     Test invoking the match_voices RPC and querying the voices view.

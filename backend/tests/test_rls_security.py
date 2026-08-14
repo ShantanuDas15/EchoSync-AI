@@ -6,27 +6,19 @@ from sqlalchemy.exc import ProgrammingError
 from app.db.base import Base, SpeakerProfile, User
 import uuid
 
-# Only run actual RLS tests if testing against Postgres
-# SQLite does not support RLS or SET LOCAL.
 DB_URL = os.getenv("TEST_DATABASE_URL", "sqlite:///:memory:")
-is_postgres = DB_URL.startswith("postgresql")
 
 @pytest.fixture(scope="function")
 def db_session():
     engine = create_engine(DB_URL)
-    if is_postgres:
-        Base.metadata.create_all(engine)
-    else:
-        # For sqlite, just create tables for parsing checks
-        Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
         
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = SessionLocal()
     yield db
     db.close()
     
-    if is_postgres:
-        Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
 
 def test_rls_sql_file_exists_and_valid():
     """Verify that the RLS migration file exists and contains the correct policies."""
@@ -45,7 +37,6 @@ def test_rls_sql_file_exists_and_valid():
     assert "users_select_own" in sql
     assert "auth_uid()" in sql
 
-@pytest.mark.skipif(not is_postgres, reason="SQLite does not support Row-Level Security")
 def test_rls_isolation_blocks_cross_tenant_reads(db_session):
     """
     Simulates a scoped DB session with SET LOCAL.
