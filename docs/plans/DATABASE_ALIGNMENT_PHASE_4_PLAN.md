@@ -12,9 +12,9 @@ To ensure the database can be upgraded and altered based on necessity with ease 
 ### Milestone 4.1: Unified Migration Pipeline (Alembic ↔ Supabase Sync)
 Currently, developers edit SQLAlchemy models (`app/db/base.py`) but must manually write SQL in `infra/supabase/migrations/`. We will unify this so altering the database is frictionless.
 
-- [ ] **Task 4.1.1**: Author a custom migration utility `backend/scripts/generate_migration.py` that utilizes Alembic's `autogenerate` feature to detect changes in SQLAlchemy models.
-- [ ] **Task 4.1.2**: Instead of dumping to Python files in `alembic/versions`, intercept the Alembic AST stream and compile it directly into raw, deterministic PostgreSQL `.sql` scripts inside `infra/supabase/migrations/`.
-- [ ] **Task 4.1.3**: Validate the script by making a temporary change to a model, generating the SQL, and ensuring the SQL correctly reflects the DDL alter statement.
+- [x] **Task 4.1.1**: Author a custom migration utility `backend/scripts/generate_migration.py` that utilizes Alembic's `autogenerate` feature to detect changes in SQLAlchemy models.
+- [x] **Task 4.1.2**: Instead of dumping to Python files in `alembic/versions`, intercept the Alembic AST stream and compile it directly into raw, deterministic PostgreSQL `.sql` scripts inside `infra/supabase/migrations/`.
+- [x] **Task 4.1.3**: Validate the script by making a temporary change to a model, generating the SQL, and ensuring the SQL correctly reflects the DDL alter statement.
 
 #### Milestone 4.1 Verification Gateway
 ```python
@@ -61,6 +61,6 @@ To prevent database bottlenecks under heavy vector search loads, we must archite
 
 | Timestamp | Milestone | Status | Output Summary | Agent | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TBD` | `Milestone 4.1` | **PENDING** | Unified Migration Pipeline (Alembic ↔ Supabase Sync) | DevOps Architect | Pending |
+| `2026-08-14T22:15:00+05:30` | `Milestone 4.1` | **COMPLETED** | Authored Alembic ↔ Supabase script. Sync natively compiles Python DDL changes to PostgreSQL .sql. | DevOps Architect | `5eacafe` |
 | `TBD` | `Milestone 4.2` | **PENDING** | Containerized Integration Testing | SDET Engineer | Pending |
 | `TBD` | `Milestone 4.3` | **PENDING** | Connection Pooling & Read-Replica Routing | Backend Engineer | Pending |
