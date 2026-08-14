@@ -28,10 +28,10 @@ The database must natively reject unauthorized tenant access via Supabase RLS, p
 ### Milestone 3.2: Stored Procedures & Backward Compatibility Views
 Implement the highly-optimized similarity search natively in Postgres and provide seamless backward compatibility for legacy SDKs.
 
-- [ ] **Task 3.2.1**: Author `infra/supabase/migrations/00007_rpc_and_views.sql`:
+- [x] **Task 3.2.1**: Author `infra/supabase/migrations/00007_rpc_and_views.sql`:
   - Implement `match_voices` PL/pgSQL RPC function for unified, database-level similarity search and filtering.
   - Implement `voices` SQL View to expose `speaker_profiles` in a legacy-compatible format (as detailed in Design Section 6).
-- [ ] **Task 3.2.2**: Write `backend/tests/test_stored_procedures.py` to directly invoke the `match_voices` RPC and query the `voices` view, verifying correct column mapping and performance.
+- [x] **Task 3.2.2**: Write `backend/tests/test_stored_procedures.py` to directly invoke the `match_voices` RPC and query the `voices` view, verifying correct column mapping and performance.
 
 #### Milestone 3.2 Verification Gateway
 ```python
@@ -83,6 +83,6 @@ Automate timestamp updates via triggers and enforce soft deletion at the lowest 
 | Timestamp | Milestone | Status | Output Summary | Agent | Commit Hash |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-14T21:39:00+05:30` | `Milestone 3.1` | **COMPLETED** | RLS migration enabled securely. Test suite passes and handles SQLite fallbacks. | Antigravity AI | `074ae06` |
-| `TBD` | `Milestone 3.2` | **PENDING** | Stored Procedures & Compatibility Views | Senior Backend Engineer | Pending |
+| `2026-08-14T21:41:00+05:30` | `Milestone 3.2` | **COMPLETED** | Stored RPC procedure for match_voices and legacy views created. | Senior Backend Engineer | `e1830ea` |
 | `TBD` | `Milestone 3.3` | **PENDING** | Composite Indexing & Constraints | Database Administrator | Pending |
 | `TBD` | `Milestone 3.4` | **PENDING** | Audit Triggers & Soft Deletion Mechanics | Database Architect | Pending |
