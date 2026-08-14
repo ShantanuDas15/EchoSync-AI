@@ -33,9 +33,9 @@ pytest backend/tests/test_r2_storage.py -v
 
 ### Milestone 5.3: Time-Series Table Partitioning for Telemetry & Billing
 To prevent write amplification and massive B-Tree index degradation on the core nodes, high-velocity analytical logs must be partitioned.
-- [ ] **Task 5.3.1**: Modify the SQLAlchemy models for `usage_logs` and `telemetry_metrics` to utilize PostgreSQL native declarative partitioning by `RANGE (created_at)`.
-- [ ] **Task 5.3.2**: Generate Alembic migrations to physically convert the existing tables into partitioned tables (creating monthly or weekly sub-partitions dynamically).
-- [ ] **Task 5.3.3**: Configure a scheduled background worker (Celery Beat or `pg_cron`) to automatically provision next month's partitions in advance.
+- [x] **Task 5.3.1**: Modify the SQLAlchemy models for `usage_logs` and `telemetry_metrics` to utilize PostgreSQL native declarative partitioning by `RANGE (created_at)`.
+- [x] **Task 5.3.2**: Generate Alembic migrations to physically convert the existing tables into partitioned tables (creating monthly or weekly sub-partitions dynamically).
+- [x] **Task 5.3.3**: Configure a scheduled background worker (Celery Beat or `pg_cron`) to automatically provision next month's partitions in advance.
 
 #### Milestone 5.3 Verification Gateway
 ```bash

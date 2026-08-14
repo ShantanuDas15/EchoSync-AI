@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from sqlalchemy import (
     Column, String, Text, Boolean, Integer, BigInteger, Numeric, 
-    DateTime, ForeignKey, Enum as SQLEnum, CheckConstraint, Table, JSON, Index
+    DateTime, ForeignKey, Enum as SQLEnum, CheckConstraint, Table, JSON, Index, PrimaryKeyConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import declarative_base, relationship
@@ -162,12 +162,14 @@ class ApiKey(Base):
 class UsageLog(Base):
     __tablename__ = "usage_logs"
     __table_args__ = (
+        PrimaryKeyConstraint("id", "created_at"),
         CheckConstraint("characters_count >= 0", name="chk_usage_characters"),
         CheckConstraint("audio_duration_seconds >= 0", name="chk_usage_duration"),
         CheckConstraint("compute_ms >= 0", name="chk_usage_compute"),
+        {"postgresql_partition_by": "RANGE (created_at)"}
     )
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     api_key_id = Column(UUID(as_uuid=True), ForeignKey("api_keys.id", ondelete="SET NULL"), nullable=True)
     synthesis_job_id = Column(UUID(as_uuid=True), ForeignKey("synthesis_jobs.id", ondelete="SET NULL"), nullable=True)
@@ -178,8 +180,12 @@ class UsageLog(Base):
 
 class TelemetryMetric(Base):
     __tablename__ = "telemetry_metrics"
+    __table_args__ = (
+        PrimaryKeyConstraint("id", "created_at"),
+        {"postgresql_partition_by": "RANGE (created_at)"}
+    )
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4)
     job_id = Column(String(128), nullable=True)
     metric_name = Column(String(128), nullable=False)
     metric_value = Column(Numeric, nullable=False)

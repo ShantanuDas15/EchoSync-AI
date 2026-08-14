@@ -210,3 +210,69 @@ def delete_r2_file_task(self, object_key: str):
     except Exception as e:
         logger.error(f"Error in delete_r2_file_task: {e}")
         raise
+
+@celery_app.task(
+    name="create_next_month_partitions_task",
+    bind=True,
+    base=DLQTask,
+    autoretry_for=(Exception,),
+    retry_backoff=True,
+    retry_kwargs={'max_retries': 3}
+)
+def create_next_month_partitions_task(self):
+    """
+    Background worker (Celery Beat) to automatically provision next month's partitions 
+    for usage_logs and telemetry_metrics.
+    """
+    from datetime import datetime, timedelta
+    from app.db.session import SessionLocal
+    from sqlalchemy import text
+    import calendar
+    
+    logger.info("Starting task to provision next month's database partitions.")
+    
+    now = datetime.utcnow()
+    # Calculate next month
+    if now.month == 12:
+        next_month = 1
+        next_year = now.year + 1
+    else:
+        next_month = now.month + 1
+        next_year = now.year
+        
+    # Calculate the month after next for the partition boundary
+    if next_month == 12:
+        end_month = 1
+        end_year = next_year + 1
+    else:
+        end_month = next_month + 1
+        end_year = next_year
+        
+    start_date = f"{next_year}-{next_month:02d}-01 00:00:00+00"
+    end_date = f"{end_year}-{end_month:02d}-01 00:00:00+00"
+    
+    suffix = f"{next_year}_{next_month:02d}"
+    
+    queries = [
+        f"CREATE TABLE IF NOT EXISTS usage_logs_{suffix} PARTITION OF usage_logs FOR VALUES FROM ('{start_date}') TO ('{end_date}');",
+        f"CREATE TABLE IF NOT EXISTS telemetry_metrics_{suffix} PARTITION OF telemetry_metrics FOR VALUES FROM ('{start_date}') TO ('{end_date}');"
+    ]
+    
+    db = SessionLocal()
+    try:
+        # Check if Postgres
+        if db.bind.dialect.name == "postgresql":
+            for q in queries:
+                db.execute(text(q))
+            db.commit()
+            logger.info(f"Successfully provisioned partitions for {suffix}.")
+        else:
+            logger.info("Database is not Postgres. Skipping partition provisioning.")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to provision partitions: {e}")
+        raise
+    finally:
+        db.close()
+    
+    return {"status": "success", "partition_suffix": suffix}
