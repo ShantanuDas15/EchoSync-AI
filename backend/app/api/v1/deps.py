@@ -12,26 +12,61 @@ def get_settings() -> Settings:
     """Dependency provider for global application settings."""
     return settings
 
-async def verify_api_key(x_api_key: str | None = Header(None, alias=settings.API_KEY_NAME)) -> str | None:
-    """
-    Dependency provider for verifying client API keys.
-    """
-    if not settings.REQUIRE_API_KEY:
-        return x_api_key
+from app.db.session import get_db, engine
+from app.services.api_key_service import ApiKeyAuthService
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 
-    if not x_api_key:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="API Key header missing. Provide 'X-API-Key' in HTTP request headers.",
-        )
+class VerifyApiKey:
+    def __init__(self, required_scopes: list[str] = None):
+        self.required_scopes = required_scopes or []
 
-    if x_api_key != settings.SECRET_KEY:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid or unauthorized API key.",
-        )
+    def __call__(
+        self,
+        x_api_key: str = Header(None, alias=settings.API_KEY_NAME),
+        db: Session = Depends(get_db)
+    ):
+        if not settings.REQUIRE_API_KEY:
+            return None
 
-    return x_api_key
+        if not x_api_key:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="API Key header missing. Provide 'X-API-Key' in HTTP request headers.",
+            )
+
+        auth_service = ApiKeyAuthService(db)
+        validation = auth_service.validate_key(x_api_key)
+        
+        if not validation.is_valid:
+            # We use 401 for invalid keys
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=validation.error_detail)
+            
+        for scope in self.required_scopes:
+            if scope not in validation.scopes:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="API key lacks required scope.")
+
+        # Rate limiting logic using token bucket/Redis should happen here or in a separate dep.
+        # Simple memory tracker for ponytail compliance (in production use Redis)
+        from time import time
+        if not hasattr(VerifyApiKey, "_rate_limits"):
+            VerifyApiKey._rate_limits = {}
+            
+        current_minute = int(time() / 60)
+        limit_key = f"{validation.user_id}:{current_minute}"
+        
+        current_count = VerifyApiKey._rate_limits.get(limit_key, 0)
+        if current_count >= validation.rate_limit_per_minute:
+            raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded")
+            
+        VerifyApiKey._rate_limits[limit_key] = current_count + 1
+        
+        # Implement session-level Supabase RLS context injection
+        # SQLite doesn't support SET LOCAL, so we conditionally execute it
+        if engine and engine.dialect.name == "postgresql":
+            db.execute(text("SET LOCAL request.jwt.claim.sub = :user_id"), {"user_id": str(validation.user_id)})
+            
+        return validation
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
     """Decode JWT bearer token and return user ID (mock for Clerk/NextAuth)."""
