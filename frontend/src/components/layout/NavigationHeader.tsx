@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Waves, Mic, Library, Activity, Menu, X, Radio, FolderKanban, Code2 } from 'lucide-react';
+import { Waves, Mic, Library, Activity, Menu, X, Radio, FolderKanban, Code2, Settings } from 'lucide-react';
 import { MetricBadge } from '@/components/ui/MetricBadge';
+import { useTheme } from '@/lib/themeContext';
 
 interface NavigationHeaderProps {
   activeTab?: string;
@@ -19,6 +20,7 @@ export function NavigationHeader({
 }: NavigationHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { openSettings } = useTheme();
 
   const navLinks = [
     { href: '/', label: 'Studio Workspace', icon: Mic, id: 'studio' },
@@ -76,8 +78,8 @@ export function NavigationHeader({
           </nav>
         </div>
 
-        {/* Desktop System Status & Telemetry */}
-        <div className="hidden lg:flex items-center gap-4 text-xs font-medium">
+        {/* Desktop System Status & Telemetry & Settings */}
+        <div className="hidden lg:flex items-center gap-3 text-xs font-medium">
           <MetricBadge label="Target RTF" value="< 0.35" type="rtf" />
           <MetricBadge label="Target TTFB" value="< 450" unit="ms" type="ttfb" />
 
@@ -104,10 +106,27 @@ export function NavigationHeader({
             </span>
             <span className="text-slate-600 font-mono text-[10px]">({pingMs}ms)</span>
           </div>
+
+          {/* Accessibility Settings Trigger */}
+          <button
+            onClick={openSettings}
+            aria-label="Open System and Accessibility Settings"
+            className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-800 transition-colors focus-ring"
+            title="System & Accessibility Settings"
+          >
+            <Settings size={17} />
+          </button>
         </div>
 
-        {/* Mobile Hamburger Toggle */}
+        {/* Mobile Hamburger Toggle & Settings */}
         <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={openSettings}
+            aria-label="Open System and Accessibility Settings"
+            className="p-2 rounded-xl text-slate-400 hover:text-white bg-slate-900/80 border border-slate-800 focus-ring"
+          >
+            <Settings size={18} />
+          </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"

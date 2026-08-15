@@ -5,6 +5,8 @@ import { Search, Command, Home, Library, Activity, Settings, Mic, Download, User
 import { fuzzyMatch } from '@/lib/fuzzy';
 import { useRouter } from 'next/navigation';
 
+import { useTheme } from '@/lib/themeContext';
+
 type Action = {
   id: string;
   title: string;
@@ -13,23 +15,24 @@ type Action = {
   onExecute?: () => void;
 };
 
-const ACTIONS: Action[] = [
-  { id: 'route-studio', title: 'Go to Studio', icon: <Home className="w-4 h-4" />, route: '/' },
-  { id: 'route-dashboard', title: 'Go to Projects & Workspace', icon: <FolderKanban className="w-4 h-4" />, route: '/dashboard' },
-  { id: 'route-library', title: 'Go to Library', icon: <Library className="w-4 h-4" />, route: '/library' },
-  { id: 'route-api', title: 'Go to API Dashboard', icon: <Activity className="w-4 h-4" />, route: '/developer' },
-  { id: 'route-settings', title: 'Go to Settings', icon: <Settings className="w-4 h-4" />, route: '/settings' },
-  { id: 'action-synth', title: '> Synthesize Clipboard', icon: <Mic className="w-4 h-4" />, onExecute: () => console.log('Synthesize Clipboard') },
-  { id: 'action-voice', title: '> Switch to Voice: Sarah', icon: <User className="w-4 h-4" />, onExecute: () => console.log('Switch Voice') },
-  { id: 'action-export', title: '> Export Last Audio', icon: <Download className="w-4 h-4" />, onExecute: () => console.log('Export Audio') },
-];
-
 export function CommandPalette() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { openSettings } = useTheme();
+
+  const actions: Action[] = [
+    { id: 'route-studio', title: 'Go to Studio Workspace', icon: <Home className="w-4 h-4" />, route: '/' },
+    { id: 'route-dashboard', title: 'Go to Projects & Workspace', icon: <FolderKanban className="w-4 h-4" />, route: '/dashboard' },
+    { id: 'route-library', title: 'Go to Voice Library', icon: <Library className="w-4 h-4" />, route: '/library' },
+    { id: 'route-api', title: 'Go to Developer API Portal', icon: <Activity className="w-4 h-4" />, route: '/developer' },
+    { id: 'action-settings', title: '> Open Accessibility & Theme Settings', icon: <Settings className="w-4 h-4" />, onExecute: openSettings },
+    { id: 'action-synth', title: '> Synthesize Clipboard', icon: <Mic className="w-4 h-4" />, onExecute: () => console.log('Synthesize Clipboard') },
+    { id: 'action-voice', title: '> Switch to Voice: Sarah', icon: <User className="w-4 h-4" />, onExecute: () => console.log('Switch Voice') },
+    { id: 'action-export', title: '> Export Last Audio', icon: <Download className="w-4 h-4" />, onExecute: () => console.log('Export Audio') },
+  ];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,7 +59,7 @@ export function CommandPalette() {
 
   if (!isOpen) return null;
 
-  const results = ACTIONS
+  const results = actions
     .map(action => ({ action, match: fuzzyMatch(query, action.title) }))
     .filter(item => item.match.match)
     .sort((a, b) => b.match.score - a.match.score);
