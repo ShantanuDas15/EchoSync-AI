@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Waves, Mic, Library, Activity, Menu, X, Radio, FolderKanban } from 'lucide-react';
+import { Waves, Mic, Library, Activity, Menu, X, Radio, FolderKanban, Code2 } from 'lucide-react';
 import { MetricBadge } from '@/components/ui/MetricBadge';
 
 interface NavigationHeaderProps {
@@ -24,6 +24,7 @@ export function NavigationHeader({
     { href: '/', label: 'Studio Workspace', icon: Mic, id: 'studio' },
     { href: '/dashboard', label: 'Projects & Folders', icon: FolderKanban, id: 'dashboard' },
     { href: '/library', label: 'Voice Library', icon: Library, id: 'library' },
+    { href: '/developer', label: 'Developer API', icon: Code2, id: 'developer' },
   ];
 
   return (
