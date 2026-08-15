@@ -104,7 +104,7 @@ Provide immediate acoustic feedback to the user before they commit to rendering 
 | Timestamp (ISO-8601) | Milestone / Subtask ID | Execution Status | Test Result / Metric Summary | Logged By |
 | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-16T00:03:00+05:30` | `Milestone 3.0` | **COMPLETED** | Phase 3 Execution Plan authored | Antigravity AI |
-| `2026-08-16T00:08:12+05:30` | `Milestone 3.1` | **COMPLETED** (Commit: `17fa29c`) | Passed `Onboarding.test.ts` (15/15 pass, 64/64 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
+| `2026-08-16T00:08:12+05:30` | `Milestone 3.1` | **COMPLETED** (Commit: `4fb06dd`) | Passed `Onboarding.test.ts` (15/15 pass, 64/64 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 3.2` | **TODO** | | |
 | `[PENDING]` | `Milestone 3.3` | **TODO** | | |
 | `[PENDING]` | `Milestone 3.4` | **TODO** | | |
