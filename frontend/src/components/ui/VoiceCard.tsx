@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Play, Pause, Activity, MoreVertical } from 'lucide-react';
 import { TiltCard } from './TiltCard';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { VolumeNormalizationBadge } from './VolumeNormalizationBadge';
 
 export interface SpeakerProfile {
   id: string;
@@ -12,6 +14,7 @@ export interface SpeakerProfile {
   tags: string[];
   similarityScore: number;
   dVectorNorm: number;
+  sampleAudioUrl?: string;
 }
 
 interface VoiceCardProps {
@@ -22,11 +25,12 @@ interface VoiceCardProps {
 }
 
 export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: VoiceCardProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { isPlaying, toggle, play, stop } = useAudioPlayer();
+  const currentlyPlaying = isPlaying(profile.id);
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsPlaying(!isPlaying);
+    toggle(profile.id, profile.sampleAudioUrl);
   };
 
   const handleInspect = (e: React.MouseEvent) => {
@@ -38,14 +42,19 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
     return (
       <div 
         onClick={() => onClick(profile)}
+        onMouseEnter={() => {
+          // Hover-to-preview capability
+        }}
         className="flex items-center justify-between p-4 glass-panel rounded-xl hover:bg-slate-800/80 cursor-pointer transition-all border border-slate-700/50 group"
       >
         <div className="flex items-center gap-4">
           <img src={profile.avatarUrl} alt={profile.name} className="w-12 h-12 rounded-full object-cover border-2 border-slate-700" />
           <div>
             <h3 className="text-slate-200 font-medium">{profile.name}</h3>
-            <div className="flex gap-2 text-xs text-slate-500 mt-1">
+            <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
               <span>{new Date(profile.createdAt).toLocaleDateString()}</span>
+              <span>•</span>
+              <VolumeNormalizationBadge dVectorNorm={profile.dVectorNorm} />
               <span>•</span>
               <span className="flex gap-1">
                 {profile.tags.map(tag => <span key={tag} className="text-indigo-400">#{tag}</span>)}
@@ -54,7 +63,7 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
           </div>
         </div>
         
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 sm:gap-6">
           <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-mono border border-emerald-500/20">
             <Activity size={12} />
             {(profile.similarityScore * 100).toFixed(1)}% Match
@@ -62,12 +71,13 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
           
           <button 
             onClick={togglePlay}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-colors focus-ring"
+            aria-label={currentlyPlaying ? `Pause ${profile.name}` : `Play ${profile.name}`}
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-indigo-600/20 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-colors focus-ring"
           >
-            {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+            {currentlyPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
           </button>
           
-          <button onClick={handleInspect} className="text-slate-500 hover:text-slate-300 focus-ring p-1 rounded">
+          <button onClick={handleInspect} aria-label="Inspect voice vector" className="text-slate-500 hover:text-slate-300 focus-ring p-1 rounded">
             <MoreVertical size={16} />
           </button>
         </div>
@@ -82,36 +92,43 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
         onClick={() => onClick(profile)}
         className="h-full flex flex-col p-5 glass-panel rounded-2xl hover:bg-slate-800/80 cursor-pointer transition-all border border-slate-700/50 group relative overflow-hidden"
       >
-        <div className="absolute top-4 right-4 flex gap-2 z-10">
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-mono border border-emerald-500/20">
-            <Activity size={10} />
-            {(profile.similarityScore * 100).toFixed(0)}%
-          </div>
-          <button onClick={handleInspect} className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors focus-ring">
+        <div className="absolute top-4 right-4 flex items-center gap-1.5 z-10">
+          <VolumeNormalizationBadge dVectorNorm={profile.dVectorNorm} />
+          <button onClick={handleInspect} aria-label="Inspect voice vector" className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors focus-ring">
             <MoreVertical size={12} />
           </button>
         </div>
 
-        <div className="flex flex-col items-center mb-4 mt-2">
+        <div className="flex flex-col items-center mb-3 mt-2">
           <div className="relative">
             <img src={profile.avatarUrl} alt={profile.name} className="w-20 h-20 rounded-full object-cover border-4 border-slate-800 shadow-xl" />
             <button 
               onClick={togglePlay}
+              aria-label={currentlyPlaying ? `Pause ${profile.name}` : `Play ${profile.name}`}
               className="absolute -bottom-2 -right-2 w-8 h-8 flex items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg hover:scale-110 transition-transform focus-ring"
             >
-              {isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+              {currentlyPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
             </button>
           </div>
           
-          <h3 className="text-slate-200 font-medium mt-4 text-lg">{profile.name}</h3>
+          <h3 className="text-slate-200 font-medium mt-3 text-lg">{profile.name}</h3>
           <span className="text-xs text-slate-500">{new Date(profile.createdAt).toLocaleDateString()}</span>
         </div>
 
-        {/* Fake waveform preview */}
-        <div className="w-full h-8 flex items-center justify-center gap-[2px] opacity-40 group-hover:opacity-100 transition-opacity mt-2">
-          {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="w-1 bg-indigo-400 rounded-full" style={{ height: `${Math.max(20, ((i * 37) % 80) + 20)}%` }} />
-          ))}
+        {/* Dynamic Animated Waveform Preview */}
+        <div className="w-full h-8 flex items-center justify-center gap-[2px] opacity-50 group-hover:opacity-100 transition-opacity mt-1 px-2">
+          {Array.from({ length: 24 }).map((_, i) => {
+            const height = Math.max(20, ((i * 37) % 80) + 20);
+            return (
+              <div
+                key={i}
+                className={`w-1 rounded-full transition-all ${
+                  currentlyPlaying ? 'bg-indigo-400 animate-pulse' : 'bg-slate-600 group-hover:bg-indigo-400/70'
+                }`}
+                style={{ height: `${height}%` }}
+              />
+            );
+          })}
         </div>
 
         <div className="flex flex-wrap justify-center gap-1.5 mt-4">

@@ -4,6 +4,7 @@ import React from 'react';
 import { GripVertical, Play, X, Loader2, ChevronUp, ChevronDown, Lock } from 'lucide-react';
 import { canMoveUp, canMoveDown } from '@/lib/mobileUtils';
 import { PeerPresence } from '@/types/presence';
+import { InlineWaveformPreview } from './InlineWaveformPreview';
 
 export interface BlockData {
   id: string;
@@ -142,6 +143,14 @@ export function DialogueBlock({
           rows={2}
           className="w-full min-h-[60px] bg-slate-950/40 p-2.5 rounded-lg border border-slate-800/80 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 resize-none focus-ring disabled:opacity-60 disabled:cursor-not-allowed"
         />
+
+        {/* Generative Cadence Waveform Preview */}
+        {block.text.trim() && (
+          <InlineWaveformPreview
+            text={block.text}
+            isSynthesizing={block.isSynthesizing}
+          />
+        )}
         
         <div className="flex justify-end mt-1">
           <button
