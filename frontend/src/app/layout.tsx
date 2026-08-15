@@ -1,5 +1,6 @@
 import React from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
+import { CommandPalette } from '@/components/ui/CommandPalette';
 import './globals.css';
 
 export const metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
       <html lang="en">
         <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
           {children}
+          <CommandPalette />
         </body>
       </html>
     </ClerkProvider>
