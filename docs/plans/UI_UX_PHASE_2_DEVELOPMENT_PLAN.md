@@ -26,10 +26,10 @@
 ### Milestone 2.1: Global Command Palette & Omnibar Navigation
 Implement a `Cmd+K` / `Ctrl+K` spotlight search interface allowing users to quickly navigate, trigger synthesis, change active voices, and access developer documentation without touching the mouse.
 
-- [ ] **Task 2.1.1**: Build `frontend/src/components/ui/CommandPalette.tsx` using a blurred, centered overlay modal.
-- [ ] **Task 2.1.2**: Implement fuzzy-search indexing for active routes (Studio, Library, API Dashboard, Settings).
-- [ ] **Task 2.1.3**: Add quick-actions to the palette (e.g., `> Synthesize Clipboard`, `> Switch to Voice: Sarah`, `> Export Last Audio`).
-- [ ] **Task 2.1.4**: Bind global keyboard listener integrating cleanly with existing hotkeys from Phase 1.
+- [x] **Task 2.1.1**: Build `frontend/src/components/ui/CommandPalette.tsx` using a blurred, centered overlay modal.
+- [x] **Task 2.1.2**: Implement fuzzy-search indexing for active routes (Studio, Library, API Dashboard, Settings).
+- [x] **Task 2.1.3**: Add quick-actions to the palette (e.g., `> Synthesize Clipboard`, `> Switch to Voice: Sarah`, `> Export Last Audio`).
+- [x] **Task 2.1.4**: Bind global keyboard listener integrating cleanly with existing hotkeys from Phase 1.
 
 #### Verification Gateway & Test Design
 * **Unit Test (`CommandPalette.test.ts`):** Verify fuzzy search scoring algorithm accurately matches string inputs to route/action objects.
@@ -103,7 +103,9 @@ Ensure EchoSync AI meets high enterprise standards for accessibility and environ
 
 | Timestamp (ISO-8601) | Milestone / Subtask ID | Execution Status | Test Result / Metric Summary | Logged By |
 | :--- | :--- | :--- | :--- | :--- |
-| `TBD` | `Milestone 2.0` | **PENDING** | Phase 2 Execution Plan authored | Antigravity AI |
+| `2026-08-15T11:41:36+05:30` | `Milestone 2.0` | **COMPLETED** | Phase 2 Execution Plan authored | Antigravity AI |
+| `2026-08-15T11:45:00+05:30` | `Milestone 2.1` | **COMPLETED** (Commit: `c84a884965c987c70b83b00e279a19e363af3733`) | Passed `CommandPalette.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
+
 
 ---
 
