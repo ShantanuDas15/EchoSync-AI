@@ -9,6 +9,9 @@ import { ContextualHint } from '@/components/ui/ContextualHint';
 import { QuickStartModal } from './QuickStartModal';
 import { convertTemplateToBlocks } from '@/lib/onboardingContext';
 import { StoryboardTemplate } from '@/types/onboarding';
+import { usePresence } from '@/lib/presenceContext';
+import { isBlockLocked } from '@/lib/presenceUtils';
+import { AvatarGroup } from '@/components/collaboration/AvatarGroup';
 
 interface StoryboardEditorProps {
   onMasterRender: (blocks: BlockData[], totalTokens: number) => void;
@@ -23,6 +26,7 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isQuickStartOpen, setIsQuickStartOpen] = useState(false);
+  const { peers, currentUserId } = usePresence();
 
   const addBlock = () => {
     const newBlock: BlockData = {
@@ -112,6 +116,9 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
         </div>
         
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Active Collaborators Avatar Group */}
+          <AvatarGroup />
+
           {/* Quick Start Templates Button */}
           <button
             onClick={() => setIsQuickStartOpen(true)}
@@ -131,27 +138,32 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
       </div>
 
       <div className="flex flex-col gap-3 max-h-[500px] overflow-y-auto pr-1 sm:pr-2 pb-4 storyboard-scroll">
-        {blocks.map((block, index) => (
-          <div
-            key={block.id}
-            className={`${draggedIndex === index ? 'opacity-50' : 'opacity-100'}`}
-          >
-            <DialogueBlock
-              block={block}
-              index={index}
-              totalBlocks={blocks.length}
-              onUpdate={updateBlock}
-              onDelete={deleteBlock}
-              onRender={renderBlock}
-              onDragStart={onDragStart}
-              onDragOver={onDragOver}
-              onDragEnd={onDragEnd}
-              onDrop={onDrop}
-              onMoveUp={handleMoveUp}
-              onMoveDown={handleMoveDown}
-            />
-          </div>
-        ))}
+        {blocks.map((block, index) => {
+          const lockStatus = isBlockLocked(peers, block.id, currentUserId);
+
+          return (
+            <div
+              key={block.id}
+              className={`${draggedIndex === index ? 'opacity-50' : 'opacity-100'}`}
+            >
+              <DialogueBlock
+                block={block}
+                index={index}
+                totalBlocks={blocks.length}
+                lockedBy={lockStatus.lockedBy}
+                onUpdate={updateBlock}
+                onDelete={deleteBlock}
+                onRender={renderBlock}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+                onDragEnd={onDragEnd}
+                onDrop={onDrop}
+                onMoveUp={handleMoveUp}
+                onMoveDown={handleMoveDown}
+              />
+            </div>
+          );
+        })}
 
         <button
           onClick={addBlock}
