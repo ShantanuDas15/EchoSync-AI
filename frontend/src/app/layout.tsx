@@ -3,6 +3,8 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 import { ThemeProvider } from '@/lib/themeContext';
 import { SettingsDrawer } from '@/components/ui/SettingsDrawer';
+import { OnboardingProvider } from '@/lib/onboardingContext';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import './globals.css';
 
 export const metadata = {
@@ -18,13 +20,16 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <ThemeProvider>
-        <html lang="en">
-          <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
-            {children}
-            <CommandPalette />
-            <SettingsDrawer />
-          </body>
-        </html>
+        <OnboardingProvider>
+          <html lang="en">
+            <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+              {children}
+              <CommandPalette />
+              <SettingsDrawer />
+              <OnboardingTour />
+            </body>
+          </html>
+        </OnboardingProvider>
       </ThemeProvider>
     </ClerkProvider>
   );

@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Waves, Mic, Library, Activity, Menu, X, Radio, FolderKanban, Code2, Settings } from 'lucide-react';
+import { Waves, Mic, Library, Activity, Menu, X, Radio, FolderKanban, Code2, Settings, Compass } from 'lucide-react';
 import { MetricBadge } from '@/components/ui/MetricBadge';
 import { useTheme } from '@/lib/themeContext';
+import { useOnboarding } from '@/lib/onboardingContext';
 
 interface NavigationHeaderProps {
   activeTab?: string;
@@ -21,6 +22,7 @@ export function NavigationHeader({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { openSettings } = useTheme();
+  const { startTour } = useOnboarding();
 
   const navLinks = [
     { href: '/', label: 'Studio Workspace', icon: Mic, id: 'studio' },
@@ -36,6 +38,7 @@ export function NavigationHeader({
         <div className="flex items-center gap-6">
           <Link
             href="/"
+            data-tour="brand-logo"
             className="flex items-center gap-3 group focus-ring rounded-lg p-1"
           >
             <div className="p-2 bg-indigo-500/10 rounded-xl border border-indigo-500/20 group-hover:border-indigo-500/40 transition-colors shadow-lg shadow-indigo-500/10">
@@ -107,6 +110,17 @@ export function NavigationHeader({
             <span className="text-slate-600 font-mono text-[10px]">({pingMs}ms)</span>
           </div>
 
+          {/* Guided Tour Trigger */}
+          <button
+            onClick={startTour}
+            aria-label="Start Guided Studio Tour"
+            className="p-2 rounded-xl text-indigo-400 hover:text-indigo-200 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 transition-all focus-ring flex items-center gap-1.5 text-xs font-medium"
+            title="Start Interactive Guided Tour"
+          >
+            <Compass size={16} />
+            <span className="hidden xl:inline">Guided Tour</span>
+          </button>
+
           {/* Accessibility Settings Trigger */}
           <button
             onClick={openSettings}
@@ -120,6 +134,14 @@ export function NavigationHeader({
 
         {/* Mobile Hamburger Toggle & Settings */}
         <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={startTour}
+            aria-label="Start Guided Studio Tour"
+            className="p-2 rounded-xl text-indigo-400 hover:text-indigo-200 bg-indigo-500/10 border border-indigo-500/30 focus-ring"
+            title="Start Guided Tour"
+          >
+            <Compass size={18} />
+          </button>
           <button
             onClick={openSettings}
             aria-label="Open System and Accessibility Settings"

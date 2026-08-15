@@ -12,6 +12,7 @@ import { MetricBadge } from '@/components/ui/MetricBadge';
 import { useWebSocketStream } from '@/hooks/useWebSocketStream';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Mic, Radio, Activity, ChevronDown, ChevronUp } from 'lucide-react';
+import { ContextualHint } from '@/components/ui/ContextualHint';
 
 export default function Dashboard() {
   const [referenceAudio, setReferenceAudio] = useState<Blob | null>(null);
@@ -71,7 +72,7 @@ export default function Dashboard() {
       <NavigationHeader activeTab="studio" isStreaming={isStreaming} />
 
       {/* Telemetry Bar */}
-      <div className="w-full bg-slate-900 border-b border-slate-800">
+      <div data-tour="telemetry-bar" className="w-full bg-slate-900 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-end gap-4">
           <MetricBadge label="RTF" value={currentRTF.toFixed(2)} type="rtf" history={rtfHistory} />
           <MetricBadge label="TTFB" value={currentTTFB} unit="ms" type="ttfb" history={ttfbHistory} />
@@ -85,7 +86,7 @@ export default function Dashboard() {
           <div className="lg:col-span-5 flex flex-col gap-6">
             
             {/* Collapsible Recorder Section */}
-            <section className="bg-slate-900/40 rounded-2xl border border-slate-800 overflow-hidden transition-all duration-300">
+            <section data-tour="voice-recorder" className="bg-slate-900/40 rounded-2xl border border-slate-800 overflow-hidden transition-all duration-300">
               <button 
                 onClick={() => setShowRecorder(!showRecorder)}
                 className="w-full flex items-center justify-between p-4 bg-slate-800/20 hover:bg-slate-800/40 transition-colors"
@@ -93,6 +94,12 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2 text-slate-400">
                   <Mic size={18} className="text-indigo-400" />
                   <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Voice Cloning Reference</h2>
+                  <ContextualHint
+                    title="Zero-Shot Reference Sample"
+                    description="Provide 3-5 seconds of clean, noise-free voice audio to extract a 256-d speaker identity embedding vector."
+                    proTip="Use a condenser microphone with minimal reverb for best speaker fidelity."
+                    placement="right"
+                  />
                 </div>
                 {showRecorder ? <ChevronUp size={18} className="text-slate-500" /> : <ChevronDown size={18} className="text-slate-500" />}
               </button>
@@ -118,12 +125,17 @@ export default function Dashboard() {
           </div>
 
           {/* Right Column - Visualizers */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
+          <div data-tour="spectrogram-canvas" className="lg:col-span-7 flex flex-col gap-6">
             <section className="space-y-3 h-full flex flex-col">
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2 text-slate-400">
                   <Activity size={18} className="text-indigo-400" />
                   <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Analysis & Audio Output</h2>
+                  <ContextualHint
+                    title="Real-Time Acoustic Analytics"
+                    description="Real-time 60 FPS HTML5 Canvas Fourier Transform (FFT) spectrogram visualizer and WaveSurfer interactive timeline."
+                    placement="bottom"
+                  />
                 </div>
               </div>
               

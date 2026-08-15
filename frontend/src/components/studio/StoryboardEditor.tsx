@@ -1,9 +1,13 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { Plus, LayoutTemplate, Layers } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, LayoutTemplate, Layers, Sparkles } from 'lucide-react';
 import { DialogueBlock, BlockData } from './DialogueBlock';
 import { moveBlock } from '@/lib/dndUtils';
+import { ContextualHint } from '@/components/ui/ContextualHint';
+import { QuickStartModal } from './QuickStartModal';
+import { convertTemplateToBlocks } from '@/lib/onboardingContext';
+import { StoryboardTemplate } from '@/types/onboarding';
 
 interface StoryboardEditorProps {
   onMasterRender: (blocks: BlockData[], totalTokens: number) => void;
@@ -17,6 +21,7 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
   ]);
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [isQuickStartOpen, setIsQuickStartOpen] = useState(false);
 
   const addBlock = () => {
     const newBlock: BlockData = {
@@ -36,7 +41,6 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
   };
 
   const renderBlock = (id: string) => {
-    // This would individually render a block.
     updateBlock(id, { isSynthesizing: true });
     setTimeout(() => {
       updateBlock(id, { isSynthesizing: false });
@@ -44,15 +48,18 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
   };
 
   const handleMasterRender = () => {
-    // Calculate token cost as sum of lengths
     const totalTokens = blocks.reduce((acc, block) => acc + block.text.length, 0);
     onMasterRender(blocks, totalTokens);
+  };
+
+  const handleSelectTemplate = (template: StoryboardTemplate) => {
+    const newBlocks = convertTemplateToBlocks(template);
+    setBlocks(newBlocks);
   };
 
   const onDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
-    // Firefox requires dataTransfer data to be set
     e.dataTransfer.setData('text/html', e.currentTarget.parentNode?.toString() || '');
   };
 
@@ -66,7 +73,6 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
     if (draggedIndex === null || draggedIndex === index) return;
     
     const newBlocks = moveBlock(blocks, draggedIndex, index);
-    
     setBlocks(newBlocks);
     setDraggedIndex(null);
   };
@@ -76,14 +82,37 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
   };
 
   return (
-    <div className="flex flex-col gap-4 p-6 glass-panel rounded-2xl relative min-h-[400px]">
+    <div
+      data-tour="storyboard-editor"
+      className="flex flex-col gap-4 p-6 glass-panel rounded-2xl relative min-h-[400px]"
+    >
       <div className="flex justify-between items-center pb-2 border-b border-slate-800">
         <div className="flex items-center gap-2 text-slate-300">
           <LayoutTemplate size={18} className="text-indigo-400" />
           <h3 className="font-medium">Multi-Track Storyboard</h3>
+          <ContextualHint
+            title="Multi-Track Dialogue Timeline"
+            description="Chain dialogue blocks with distinct voice presets. Drag handles on the left to re-order lines sequentially."
+            proTip="Press Cmd+Enter to master render the entire script at once."
+            placement="right"
+          />
         </div>
-        <div className="text-xs text-slate-500 font-mono">
-          {blocks.length} Blocks
+        
+        <div className="flex items-center gap-3">
+          {/* Quick Start Templates Button */}
+          <button
+            onClick={() => setIsQuickStartOpen(true)}
+            data-tour="quick-templates-btn"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 rounded-xl transition-all shadow-sm focus-ring"
+            title="Choose Pre-configured Scenario Template"
+          >
+            <Sparkles size={13} className="text-indigo-400" />
+            <span>Quick Templates</span>
+          </button>
+
+          <div className="text-xs text-slate-500 font-mono">
+            {blocks.length} Blocks
+          </div>
         </div>
       </div>
 
@@ -126,6 +155,13 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
           {isSynthesizing ? 'Master Rendering...' : 'Master Render Sequence'}
         </button>
       </div>
+
+      {/* Quick Start Templates Modal */}
+      <QuickStartModal
+        isOpen={isQuickStartOpen}
+        onClose={() => setIsQuickStartOpen(false)}
+        onSelectTemplate={handleSelectTemplate}
+      />
     </div>
   );
 }
