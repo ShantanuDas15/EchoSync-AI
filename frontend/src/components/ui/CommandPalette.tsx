@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Command, Home, Library, Activity, Settings, Mic, Download, User } from 'lucide-react';
+import { Search, Command, Home, Library, Activity, Settings, Mic, Download, User, FolderKanban } from 'lucide-react';
 import { fuzzyMatch } from '@/lib/fuzzy';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +15,7 @@ type Action = {
 
 const ACTIONS: Action[] = [
   { id: 'route-studio', title: 'Go to Studio', icon: <Home className="w-4 h-4" />, route: '/' },
+  { id: 'route-dashboard', title: 'Go to Projects & Workspace', icon: <FolderKanban className="w-4 h-4" />, route: '/dashboard' },
   { id: 'route-library', title: 'Go to Library', icon: <Library className="w-4 h-4" />, route: '/library' },
   { id: 'route-api', title: 'Go to API Dashboard', icon: <Activity className="w-4 h-4" />, route: '/developer' },
   { id: 'route-settings', title: 'Go to Settings', icon: <Settings className="w-4 h-4" />, route: '/settings' },
