@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { SynthesizerForm } from '@/components/ui/SynthesizerForm';
+import { StoryboardEditor } from '@/components/studio/StoryboardEditor';
 import { AudioRecorder } from '@/components/ui/AudioRecorder';
 import { WaveSurferVisualizer } from '@/components/ui/WaveSurferVisualizer';
 import { SpectrogramCanvas } from '@/components/ui/SpectrogramCanvas';
@@ -37,8 +37,8 @@ export default function Dashboard() {
     }
   }, [isStreaming]);
 
-  const handleSynthesize = async (data?: { text: string; preset: string; speed: number; pitch: number; energy?: number }) => {
-    if (!data?.text) {
+  const handleMasterRender = async (blocks: any[], totalTokens: number) => {
+    if (blocks.length === 0 || totalTokens === 0) {
       setToast({ message: 'Synthesis prompt cannot be empty.', type: 'Error' });
       return;
     }
@@ -56,7 +56,7 @@ export default function Dashboard() {
       if (!isStreaming) {
         setToast({ message: 'Cmd+Enter pressed. Generating audio...', type: 'Processing' });
         // Since we don't have form state lifted, we rely on the form's own listener or simulate
-        handleSynthesize({ text: "Simulated text from hotkey", preset: "default", speed: 1.0, pitch: 0 });
+        handleMasterRender([{ text: "Simulated text from hotkey", preset: "default" }], 26);
       }
     },
     onEscape: () => {
@@ -113,7 +113,7 @@ export default function Dashboard() {
                 <Radio size={18} className="text-indigo-400" />
                 <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Neural Synthesis Engine</h2>
               </div>
-              <SynthesizerForm onSubmit={handleSynthesize} isSynthesizing={isStreaming} />
+              <StoryboardEditor onMasterRender={handleMasterRender} isSynthesizing={isStreaming} />
             </section>
           </div>
 
