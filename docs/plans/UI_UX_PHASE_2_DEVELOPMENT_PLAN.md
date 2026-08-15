@@ -65,10 +65,10 @@ Create a central hub for users to save, organize, and load historical synthesis 
 ### Milestone 2.4: Developer API Portal & Telemetry Graphs
 A dedicated portal for developers utilizing the EchoSync REST/WebSocket APIs headless.
 
-- [ ] **Task 2.4.1**: Construct `frontend/src/app/developer/page.tsx` for managing API access.
-- [ ] **Task 2.4.2**: Implement `ApiKeyManager.tsx` allowing generation, revocation, and secure masked viewing (e.g., `sk_live_***8x9`) of API keys.
-- [ ] **Task 2.4.3**: Integrate Chart.js or Recharts to build an interactive `UsageChart.tsx` displaying Token Consumption, Real-Time Factor (RTF), and Error Rates over 7d/30d intervals.
-- [ ] **Task 2.4.4**: Build a webhook configuration form supporting endpoint validation and payload signing secret display.
+- [x] **Task 2.4.1**: Construct `frontend/src/app/developer/page.tsx` for managing API access.
+- [x] **Task 2.4.2**: Implement `ApiKeyManager.tsx` allowing generation, revocation, and secure masked viewing (e.g., `sk_live_***8x9`) of API keys.
+- [x] **Task 2.4.3**: Integrate Chart.js or Recharts to build an interactive `UsageChart.tsx` displaying Token Consumption, Real-Time Factor (RTF), and Error Rates over 7d/30d intervals.
+- [x] **Task 2.4.4**: Build a webhook configuration form supporting endpoint validation and payload signing secret display.
 
 #### Verification Gateway & Test Design
 * **Unit Test (`DeveloperPortal.test.ts`):** Assert API key masking logic and webhook URL regex validation.
@@ -107,6 +107,7 @@ Ensure EchoSync AI meets high enterprise standards for accessibility and environ
 | `2026-08-15T11:45:00+05:30` | `Milestone 2.1` | **COMPLETED** (Commit: `c84a884965c987c70b83b00e279a19e363af3733`) | Passed `CommandPalette.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
 | `2026-08-15T11:53:00+05:30` | `Milestone 2.2` | **COMPLETED** (Commit: `70d4cd4f3618e187204a041dbaca68df4cc4c6a3`) | Passed `StoryboardEditor.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
 | `2026-08-15T17:35:00+05:30` | `Milestone 2.3` | **COMPLETED** (Commit: `ebaec139f46becdbe0097b65ae51792750a27e6f`) | Passed `WorkspaceDashboard.test.ts` (6/6 pass), Next.js Build Clean | Antigravity AI |
+| `2026-08-15T17:43:00+05:30` | `Milestone 2.4` | **COMPLETED** (Commit: `4703b6c0791355e7d2486988efb95156461e4008`) | Passed `DeveloperPortal.test.ts` (12/12 pass), Next.js Build Clean | Antigravity AI |
 
 
 ---
