@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Grid, List, Plus, X, Activity, Database, DownloadCloud } from 'lucide-react';
 import { VoiceCard, SpeakerProfile } from '@/components/ui/VoiceCard';
+import { VoiceCardSkeleton } from '@/components/ui/VoiceCardSkeleton';
 import { NavigationHeader } from '@/components/layout/NavigationHeader';
 import { KeyboardShortcutFooter } from '@/components/layout/KeyboardShortcutFooter';
 
@@ -17,6 +18,7 @@ const MOCK_PROFILES: SpeakerProfile[] = [
 const AVAILABLE_TAGS = ['Cloned', 'Preset', 'Female', 'Male', 'Broadcast', 'Gaming'];
 
 export default function VoiceLibraryPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -110,7 +112,13 @@ export default function VoiceLibraryPage() {
         </div>
 
         {/* Content Area */}
-        {filteredProfiles.length === 0 ? (
+        {isLoading ? (
+          <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <VoiceCardSkeleton key={i} viewMode={viewMode} />
+            ))}
+          </div>
+        ) : filteredProfiles.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-slate-500">
             <Database size={48} className="mb-4 opacity-20" />
             <p>No speaker profiles match your filters.</p>
