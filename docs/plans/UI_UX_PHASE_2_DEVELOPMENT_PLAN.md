@@ -52,10 +52,10 @@ Transform the static studio into a non-linear editor (NLE) timeline. Users can a
 ### Milestone 2.3: Workspace Dashboard & Project Management
 Create a central hub for users to save, organize, and load historical synthesis projects.
 
-- [ ] **Task 2.3.1**: Construct `frontend/src/app/dashboard/page.tsx` as the landing dashboard displaying recent projects, quick-start templates, and usage stats.
-- [ ] **Task 2.3.2**: Implement a `ProjectCard.tsx` component showing project title, duration, last modified date, and involved voice avatars.
-- [ ] **Task 2.3.3**: Build a sidebar folder tree structure (`FolderTree.tsx`) allowing users to organize projects hierarchically.
-- [ ] **Task 2.3.4**: Add a "History / Revisions" drawer allowing users to rollback to previous versions of a generated script.
+- [x] **Task 2.3.1**: Construct `frontend/src/app/dashboard/page.tsx` as the landing dashboard displaying recent projects, quick-start templates, and usage stats.
+- [x] **Task 2.3.2**: Implement a `ProjectCard.tsx` component showing project title, duration, last modified date, and involved voice avatars.
+- [x] **Task 2.3.3**: Build a sidebar folder tree structure (`FolderTree.tsx`) allowing users to organize projects hierarchically.
+- [x] **Task 2.3.4**: Add a "History / Revisions" drawer allowing users to rollback to previous versions of a generated script.
 
 #### Verification Gateway & Test Design
 * **State Management Gateway:** Validate tree traversal logic and ensure project deletion cascades correctly without memory leaks.
@@ -106,6 +106,7 @@ Ensure EchoSync AI meets high enterprise standards for accessibility and environ
 | `2026-08-15T11:41:36+05:30` | `Milestone 2.0` | **COMPLETED** | Phase 2 Execution Plan authored | Antigravity AI |
 | `2026-08-15T11:45:00+05:30` | `Milestone 2.1` | **COMPLETED** (Commit: `c84a884965c987c70b83b00e279a19e363af3733`) | Passed `CommandPalette.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
 | `2026-08-15T11:53:00+05:30` | `Milestone 2.2` | **COMPLETED** (Commit: `70d4cd4f3618e187204a041dbaca68df4cc4c6a3`) | Passed `StoryboardEditor.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
+| `2026-08-15T17:35:00+05:30` | `Milestone 2.3` | **COMPLETED** (Commit: `ebaec139f46becdbe0097b65ae51792750a27e6f`) | Passed `WorkspaceDashboard.test.ts` (6/6 pass), Next.js Build Clean | Antigravity AI |
 
 
 ---
