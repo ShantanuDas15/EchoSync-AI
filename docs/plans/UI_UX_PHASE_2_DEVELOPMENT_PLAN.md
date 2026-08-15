@@ -39,10 +39,10 @@ Implement a `Cmd+K` / `Ctrl+K` spotlight search interface allowing users to quic
 ### Milestone 2.2: Multi-Track Storyboard & Conversational Editor
 Transform the static studio into a non-linear editor (NLE) timeline. Users can add "blocks" of text, assign different voices to each block, and render them sequentially into a single podcast or conversation.
 
-- [ ] **Task 2.2.1**: Implement `frontend/src/components/studio/StoryboardEditor.tsx` replacing the single `SynthesizerForm` textarea with an array of draggable `DialogueBlock` components.
-- [ ] **Task 2.2.2**: Build `DialogueBlock.tsx` supporting individual text input, local voice selection dropdown, and localized play/render buttons.
-- [ ] **Task 2.2.3**: Integrate `dnd-kit` or native HTML5 Drag-and-Drop to allow users to reorder dialogue blocks visually.
-- [ ] **Task 2.2.4**: Implement a "Master Render" function that calculates total token cost and concatenates individual audio blobs into a single global `WaveSurfer` output.
+- [x] **Task 2.2.1**: Implement `frontend/src/components/studio/StoryboardEditor.tsx` replacing the single `SynthesizerForm` textarea with an array of draggable `DialogueBlock` components.
+- [x] **Task 2.2.2**: Build `DialogueBlock.tsx` supporting individual text input, local voice selection dropdown, and localized play/render buttons.
+- [x] **Task 2.2.3**: Integrate `dnd-kit` or native HTML5 Drag-and-Drop to allow users to reorder dialogue blocks visually.
+- [x] **Task 2.2.4**: Implement a "Master Render" function that calculates total token cost and concatenates individual audio blobs into a single global `WaveSurfer` output.
 
 #### Verification Gateway & Test Design
 * **Unit Test (`StoryboardEditor.test.ts`):** Assert that moving a block from index 0 to index 2 correctly updates the sequence state array payload.
@@ -105,6 +105,7 @@ Ensure EchoSync AI meets high enterprise standards for accessibility and environ
 | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-15T11:41:36+05:30` | `Milestone 2.0` | **COMPLETED** | Phase 2 Execution Plan authored | Antigravity AI |
 | `2026-08-15T11:45:00+05:30` | `Milestone 2.1` | **COMPLETED** (Commit: `c84a884965c987c70b83b00e279a19e363af3733`) | Passed `CommandPalette.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
+| `2026-08-15T11:53:00+05:30` | `Milestone 2.2` | **COMPLETED** (Commit: `70d4cd4f3618e187204a041dbaca68df4cc4c6a3`) | Passed `StoryboardEditor.test.ts` (0 errors), Next.js Build Clean | Antigravity AI |
 
 
 ---
