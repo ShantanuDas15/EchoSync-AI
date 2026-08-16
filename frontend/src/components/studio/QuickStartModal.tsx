@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { StoryboardTemplate, TemplateCategory } from '@/types/onboarding';
 import { STORYBOARD_TEMPLATES } from '@/lib/templatesData';
 import { filterTemplatesByCategory } from '@/lib/onboardingContext';
-import { X, Search, Clock, Users, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { X, Search, Clock, Users, Sparkles, ArrowRight, CheckCircle2, Mic, Volume2 } from 'lucide-react';
 
 interface QuickStartModalProps {
   isOpen: boolean;
@@ -53,20 +53,20 @@ export function QuickStartModal({
       />
 
       {/* Modal Container */}
-      <div className="relative max-w-4xl w-full max-h-[90vh] bg-surface-panel border border-border-elevated rounded-2xl shadow-2xl backdrop-blur-xl flex flex-col overflow-hidden text-text-primary z-10">
+      <div className="relative max-w-4xl w-full max-h-[90vh] bg-surface-panel border border-border-elevated rounded-2xl shadow-2xl backdrop-blur-2xl flex flex-col overflow-hidden text-text-primary z-10">
         
         {/* Header */}
-        <div className="p-6 pb-4 border-b border-border-subtle flex items-center justify-between">
+        <div className="p-5 sm:p-6 pb-4 border-b border-border-subtle flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-xl text-sky-400">
-              <Sparkles size={22} />
+              <Sparkles size={20} />
             </div>
             <div>
-              <h2 id="quick-templates-title" className="text-xl font-bold text-text-primary tracking-tight">
+              <h2 id="quick-templates-title" className="text-lg sm:text-xl font-bold text-text-primary tracking-tight">
                 Quick Start Dialogue Scenarios
               </h2>
-              <p className="text-xs text-text-secondary">
-                Choose a pre-configured template to immediately populate the Storyboard timeline.
+              <p className="text-xs text-text-secondary mt-0.5">
+                Load curated multi-speaker dialogue scripts and neural voice assignments in one click.
               </p>
             </div>
           </div>
@@ -74,24 +74,24 @@ export function QuickStartModal({
           <button
             onClick={onClose}
             aria-label="Close templates modal"
-            className="p-2 text-text-muted hover:text-text-primary hover:bg-surface-elevated rounded-xl transition-colors focus-ring"
+            className="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-elevated rounded-xl transition-colors focus-ring cursor-pointer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Search & Category Filter Pills */}
-        <div className="px-6 py-3 bg-surface-root/50 border-b border-border-subtle flex flex-col sm:flex-row items-center gap-3 justify-between">
+        <div className="px-5 sm:px-6 py-3 bg-surface-root/60 border-b border-border-subtle flex flex-col sm:flex-row items-center gap-3 justify-between">
           {/* Categories */}
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0 scrollbar-none">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all focus-ring ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all focus-ring ${
                   selectedCategory === cat
-                    ? 'bg-sky-600 text-white shadow-sm'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm font-semibold'
+                    : 'bg-surface-elevated text-text-secondary hover:text-text-primary hover:bg-surface-elevated/80 border border-border-subtle'
                 }`}
               >
                 {cat}
@@ -107,20 +107,29 @@ export function QuickStartModal({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates or tags..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-surface-root border border-border-subtle rounded-lg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-sky-400 focus-ring"
+              className="w-full pl-9 pr-7 py-1.5 text-xs bg-surface-elevated border border-border-subtle rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:border-sky-500/60 transition-colors"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary p-0.5"
+              >
+                <X size={12} />
+              </button>
+            )}
           </div>
         </div>
 
         {/* Template Cards Grid */}
-        <div className="p-6 overflow-y-auto max-h-[550px] grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-5 sm:p-6 overflow-y-auto max-h-[550px] grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredTemplates.length === 0 ? (
             <div className="col-span-2 py-12 flex flex-col items-center justify-center text-center text-text-muted">
-              <Search size={32} className="mb-2 opacity-50" />
-              <p className="text-sm font-medium">No templates match your search criteria.</p>
+              <Search size={32} className="mb-2 opacity-30 text-sky-400" />
+              <p className="text-sm font-medium text-text-primary">No templates match your search criteria.</p>
+              <p className="text-xs text-text-secondary mt-1">Try clearing your search query or selecting another category.</p>
               <button
                 onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }}
-                className="mt-2 text-xs text-sky-400 hover:underline"
+                className="mt-3 px-3 py-1.5 bg-surface-elevated text-xs text-sky-400 hover:text-sky-300 rounded-xl border border-border-subtle transition-colors cursor-pointer"
               >
                 Clear all filters
               </button>
@@ -132,29 +141,29 @@ export function QuickStartModal({
               return (
                 <div
                   key={tpl.id}
-                  className="p-5 rounded-2xl bg-surface-root/60 border border-border-subtle hover:border-border-elevated transition-all flex flex-col justify-between group hover:shadow-lg"
+                  className="p-5 rounded-2xl bg-surface-panel border border-border-subtle hover:border-border-elevated transition-all flex flex-col justify-between group hover:shadow-lg backdrop-blur-xl"
                 >
                   <div className="space-y-3">
                     {/* Top Metadata */}
                     <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-surface-elevated text-sky-300 border border-border-subtle">
                         {tpl.category}
                       </span>
-                      <div className="flex items-center gap-3 text-xs text-text-muted font-mono">
-                        <span className="flex items-center gap-1">
-                          <Clock size={12} className="text-text-muted" />
+                      <div className="flex items-center gap-2.5 text-xs text-text-muted font-mono">
+                        <span className="flex items-center gap-1 bg-surface-elevated px-2 py-0.5 rounded border border-border-subtle text-[11px]">
+                          <Clock size={11} className="text-text-muted" />
                           {tpl.durationEstimate}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <Users size={12} className="text-text-muted" />
-                          {tpl.speakerCount} {tpl.speakerCount > 1 ? 'Voices' : 'Voice'}
+                        <span className="flex items-center gap-1 bg-surface-elevated px-2 py-0.5 rounded border border-border-subtle text-[11px]">
+                          <Users size={11} className="text-text-muted" />
+                          {tpl.speakerCount} {tpl.speakerCount > 1 ? 'Speakers' : 'Speaker'}
                         </span>
                       </div>
                     </div>
 
                     {/* Title & Description */}
                     <div>
-                      <h3 className="text-base font-semibold text-text-primary group-hover:text-sky-300 transition-colors">
+                      <h3 className="text-base font-bold text-text-primary group-hover:text-sky-300 transition-colors tracking-tight">
                         {tpl.title}
                       </h3>
                       <p className="text-xs text-text-secondary mt-1 line-clamp-2 leading-relaxed">
@@ -162,9 +171,25 @@ export function QuickStartModal({
                       </p>
                     </div>
 
+                    {/* Pseudo Audio Waveform Preview Accent */}
+                    <div className="h-4 bg-surface-elevated rounded-lg p-1 flex items-center justify-between gap-0.5 overflow-hidden opacity-60 group-hover:opacity-100 transition-opacity">
+                      {Array.from({ length: 36 }).map((_, i) => {
+                        const heights = [30, 60, 90, 45, 75, 100, 40, 80, 65, 50, 85, 35];
+                        const h = heights[i % heights.length];
+                        return (
+                          <div
+                            key={i}
+                            style={{ height: `${h}%` }}
+                            className="flex-1 bg-sky-400/60 rounded-xs min-w-[2px]"
+                          />
+                        );
+                      })}
+                    </div>
+
                     {/* Snippet Preview */}
-                    <div className="p-3 rounded-xl bg-surface-elevated/80 border border-border-subtle text-[11px] text-text-secondary space-y-1.5 font-mono">
-                      <div className="text-[10px] uppercase tracking-wider text-text-muted font-bold">
+                    <div className="p-3 rounded-xl bg-surface-elevated border border-border-subtle text-[11px] text-text-secondary space-y-1 font-mono">
+                      <div className="text-[10px] uppercase tracking-wider text-text-muted font-semibold flex items-center gap-1.5">
+                        <Volume2 size={11} className="text-sky-400" />
                         Sample Dialogue ({tpl.blocks.length} blocks):
                       </div>
                       <div className="line-clamp-2 italic text-text-primary">
@@ -187,16 +212,17 @@ export function QuickStartModal({
 
                   {/* Action CTA */}
                   <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between">
-                    <span className="text-[11px] text-text-muted">
-                      {tpl.recommendedVoice}
-                    </span>
+                    <div className="flex items-center gap-1.5 text-[11px] text-text-muted truncate max-w-[200px]">
+                      <Mic size={12} className="text-sky-400 shrink-0" />
+                      <span className="truncate">{tpl.recommendedVoice}</span>
+                    </div>
 
                     <button
                       onClick={() => handleApply(tpl)}
-                      className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all focus-ring ${
+                      className={`px-3.5 py-1.5 text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all focus-ring cursor-pointer ${
                         isSelected
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-sky-600 hover:bg-sky-500 text-white shadow-sm active:scale-95'
+                          ? 'bg-emerald-500 text-slate-950'
+                          : 'bg-sky-500 hover:bg-sky-400 text-slate-950 shadow-md shadow-sky-500/20 active:scale-95'
                       }`}
                     >
                       {isSelected ? (
@@ -219,16 +245,17 @@ export function QuickStartModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-surface-root/50 border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
-          <span>{STORYBOARD_TEMPLATES.length} total templates available</span>
+        <div className="p-4 bg-surface-root/60 border-t border-border-subtle flex items-center justify-between text-xs text-text-muted">
+          <span>{STORYBOARD_TEMPLATES.length} pre-configured studio scenarios available</span>
           <button
             onClick={onClose}
-            className="text-text-muted hover:text-text-primary text-xs hover:underline"
+            className="text-text-secondary hover:text-text-primary text-xs hover:underline cursor-pointer"
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>
     </div>
   );
 }
+

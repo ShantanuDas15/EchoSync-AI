@@ -132,6 +132,27 @@ describe('Milestone 3.1: Frictionless Onboarding & Contextual Help Gateway', () 
         }
       }
     });
+
+    test('Tour placement property is valid for all studio steps', () => {
+      const validPlacements = new Set(['top', 'bottom', 'left', 'right', 'center']);
+      for (const step of DEFAULT_STUDIO_STEPS) {
+        if (step.placement) {
+          assert.ok(validPlacements.has(step.placement), `Invalid placement: ${step.placement}`);
+        }
+      }
+    });
+
+    test('getTourProgressPercent yields monotonic progressive values from step 0 to step N-1', () => {
+      let prev = -1;
+      for (let i = 0; i < DEFAULT_STUDIO_STEPS.length; i++) {
+        const pct = getTourProgressPercent(i, DEFAULT_STUDIO_STEPS.length);
+        assert.ok(pct > prev, `Step ${i} progress ${pct} should be greater than previous ${prev}`);
+        assert.ok(pct <= 100, `Step ${i} progress ${pct} must be <= 100`);
+        prev = pct;
+      }
+      assert.equal(prev, 100);
+    });
   });
 
 });
+
