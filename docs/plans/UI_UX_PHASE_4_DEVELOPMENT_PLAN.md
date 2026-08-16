@@ -90,7 +90,7 @@ Polish every edge case, error message, and interactive state to a premium standa
 | Timestamp (ISO-8601) | Milestone / Subtask ID | Execution Status | Test Result / Metric Summary | Logged By |
 | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-16T11:08:10+05:30` | `Milestone 4.0` | **COMPLETED** (Commit: `c73331b`) | Phase 4 Execution Plan authored | Antigravity AI |
-| `2026-08-16T11:16:30+05:30` | `Milestone 4.1` | **COMPLETED** (Commit: `[PENDING]`) | Passed `TypographyColor.test.ts` (15/15 pass, 130/130 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
+| `2026-08-16T11:16:30+05:30` | `Milestone 4.1` | **COMPLETED** (Commit: `5fa2a1f`) | Passed `TypographyColor.test.ts` (15/15 pass, 130/130 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 4.2` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 4.3` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 4.4` | **NOT STARTED** | N/A | N/A |
