@@ -15,9 +15,9 @@ This phase bridges the gap between the beautifully designed frontend interface a
 ### Milestone 5.1: Core API Client & Authentication Layer
 Establish a strongly-typed foundation for network operations to communicate securely with the FastAPI backend.
 
-- [ ] **Task 5.1.1**: Implement `frontend/src/lib/apiClient.ts` wrapper (e.g., using native `fetch` or `axios`) pointing to the `/api/v1` base URL with default timeouts.
-- [ ] **Task 5.1.2**: Add request interceptors or middleware to securely append the `X-API-Key` authentication header to every outgoing request.
-- [ ] **Task 5.1.3**: Create `frontend/src/types/api.ts` defining TypeScript interfaces that exactly match the backend Pydantic models (`TaskStatusResponse`, `VoiceCloneResponse`, `TTSGenerateRequest`).
+- [x] **Task 5.1.1**: Implement `frontend/src/lib/apiClient.ts` wrapper (e.g., using native `fetch` or `axios`) pointing to the `/api/v1` base URL with default timeouts.
+- [x] **Task 5.1.2**: Add request interceptors or middleware to securely append the `X-API-Key` authentication header to every outgoing request.
+- [x] **Task 5.1.3**: Create `frontend/src/types/api.ts` defining TypeScript interfaces that exactly match the backend Pydantic models (`TaskStatusResponse`, `VoiceCloneResponse`, `TTSGenerateRequest`).
 
 #### Verification Gateway & Test Design
 * **Unit Test (`ApiClient.test.ts`):** Assert that the API client correctly injects headers, handles 401 Unauthorized responses gracefully, and formats JSON body payloads.
@@ -73,8 +73,8 @@ Replace mock local blob URLs with authenticated, pre-signed URLs from the backen
 
 | Timestamp (ISO-8601) | Milestone / Subtask ID | Execution Status | Test Result / Metric Summary | Logged By |
 | :--- | :--- | :--- | :--- | :--- |
-| `[PENDING]` | `Milestone 5.0` | **NOT STARTED** | N/A | N/A |
-| `[PENDING]` | `Milestone 5.1` | **NOT STARTED** | N/A | N/A |
+| `2026-08-16T11:45:00+05:30` | `Milestone 5.0` | **COMPLETED** (Commit: `af39f7f`) | Phase 5 Integration Development Plan authored | Antigravity AI |
+| `2026-08-16T11:51:00+05:30` | `Milestone 5.1` | **COMPLETED** (Commit: `[PENDING]`) | Passed `ApiClient.test.ts` (9/9 pass, 160/160 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 5.2` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 5.3` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 5.4` | **NOT STARTED** | N/A | N/A |
