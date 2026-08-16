@@ -38,9 +38,9 @@ Redefine the core design tokens to eliminate cliché purple/indigo accents and e
 ### Milestone 4.2: Texture, Depth & Surface Refinement
 Replace flat, textureless glassmorphism and glowing colored outlines with nuanced, physical depth.
 
-- [ ] **Task 4.2.1**: Implement a subtle SVG noise overlay component (`TextureOverlay.tsx`) to add organic depth to root backgrounds and elevated surfaces, eliminating "textureless surfaces".
-- [ ] **Task 4.2.2**: Refactor panel components (`glass-panel`, `glass-panel-elevated`) to use sophisticated inner shadows and subtle monochromatic borders instead of colored border accents.
-- [ ] **Task 4.2.3**: Update focus rings (`focus-ring` utility) to use high-contrast monochromatic outlines (e.g., stark white or deep black) rather than glowing brand colors.
+- [x] **Task 4.2.1**: Implement a subtle SVG noise overlay component (`TextureOverlay.tsx`) to add organic depth to root backgrounds and elevated surfaces, eliminating "textureless surfaces".
+- [x] **Task 4.2.2**: Refactor panel components (`glass-panel`, `glass-panel-elevated`) to use sophisticated inner shadows and subtle monochromatic borders instead of colored border accents.
+- [x] **Task 4.2.3**: Update focus rings (`focus-ring` utility) to use high-contrast monochromatic outlines (e.g., stark white or deep black) rather than glowing brand colors.
 
 #### Verification Gateway & Test Design
 * **Visual Regression / Unit Test (`SurfaceDepth.test.ts`):** Verify that `TextureOverlay` renders without blocking pointer events (`pointer-events: none`) and that focus states strictly apply neutral ring colors.
@@ -91,7 +91,7 @@ Polish every edge case, error message, and interactive state to a premium standa
 | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-16T11:08:10+05:30` | `Milestone 4.0` | **COMPLETED** (Commit: `c73331b`) | Phase 4 Execution Plan authored | Antigravity AI |
 | `2026-08-16T11:16:30+05:30` | `Milestone 4.1` | **COMPLETED** (Commit: `5fa2a1f`) | Passed `TypographyColor.test.ts` (15/15 pass, 130/130 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
-| `[PENDING]` | `Milestone 4.2` | **NOT STARTED** | N/A | N/A |
+| `2026-08-16T11:19:00+05:30` | `Milestone 4.2` | **COMPLETED** (Commit: `[PENDING]`) | Passed `SurfaceDepth.test.ts` (10/10 pass, 140/140 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 4.3` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 4.4` | **NOT STARTED** | N/A | N/A |
 

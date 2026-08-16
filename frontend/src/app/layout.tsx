@@ -9,6 +9,7 @@ import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { ToastProvider } from '@/lib/toastContext';
 import { PresenceProvider } from '@/lib/presenceContext';
 import { LiveCursors } from '@/components/collaboration/LiveCursors';
+import { TextureOverlay } from '@/components/ui/TextureOverlay';
 import './globals.css';
 
 const inter = Inter({
@@ -40,7 +41,8 @@ export default function RootLayout({
           <ToastProvider>
             <PresenceProvider>
               <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-                <body className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased">
+                <body className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased relative">
+                  <TextureOverlay opacity={0.028} />
                   {children}
                   <LiveCursors />
                   <CommandPalette />
