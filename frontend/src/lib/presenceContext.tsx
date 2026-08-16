@@ -25,7 +25,7 @@ const INITIAL_DEMO_PEERS: PeerPresence[] = [
     avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Elena',
     cursor: { x: 420, y: 280 },
     activeBlockId: null,
-    lastActive: Date.now()
+    lastActive: 1700000000000
   },
   {
     id: 'peer-david',
@@ -34,7 +34,7 @@ const INITIAL_DEMO_PEERS: PeerPresence[] = [
     avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
     cursor: { x: 740, y: 350 },
     activeBlockId: '2', // Editing block 2
-    lastActive: Date.now()
+    lastActive: 1700000000000
   }
 ];
 
@@ -45,9 +45,13 @@ export function PresenceProvider({
   children: ReactNode;
   defaultChannel?: string;
 }) {
-  const [currentUserId] = useState<string>(() => `user-${Math.random().toString(36).substring(7)}`);
+  const [currentUserId, setCurrentUserId] = useState<string>('user-local');
   const [activeChannel, setActiveChannel] = useState<string>(defaultChannel);
   const [peers, setPeers] = useState<PeerPresence[]>(INITIAL_DEMO_PEERS);
+
+  useEffect(() => {
+    setCurrentUserId(`user-${Math.random().toString(36).substring(7)}`);
+  }, []);
 
   // Subtle natural movement simulation for demo peers so cursors feel alive
   useEffect(() => {

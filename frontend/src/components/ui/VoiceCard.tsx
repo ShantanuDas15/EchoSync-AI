@@ -54,7 +54,7 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
           <div>
             <h3 className="text-text-primary font-semibold text-sm">{profile.name}</h3>
             <div className="flex items-center gap-2 text-xs text-text-muted mt-0.5">
-              <span>{new Date(profile.createdAt).toLocaleDateString()}</span>
+              <span suppressHydrationWarning>{new Date(profile.createdAt).toLocaleDateString()}</span>
               <span>•</span>
               <VolumeNormalizationBadge dVectorNorm={profile.dVectorNorm} />
               <span>•</span>
@@ -129,7 +129,7 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
           </div>
           
           <h3 className="text-text-primary font-semibold mt-3 text-base tracking-tight">{profile.name}</h3>
-          <span className="text-xs text-text-muted">{new Date(profile.createdAt).toLocaleDateString()}</span>
+          <span suppressHydrationWarning className="text-xs text-text-muted">{new Date(profile.createdAt).toLocaleDateString()}</span>
         </div>
 
         {/* Dynamic Waveform Preview */}

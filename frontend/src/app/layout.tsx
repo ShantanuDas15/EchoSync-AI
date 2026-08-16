@@ -37,24 +37,24 @@ export default function RootLayout({
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   const content = (
-    <ThemeProvider>
-      <OnboardingProvider>
-        <ToastProvider>
-          <PresenceProvider>
-            <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-              <body className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased relative">
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <body suppressHydrationWarning className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased relative">
+        <ThemeProvider>
+          <OnboardingProvider>
+            <ToastProvider>
+              <PresenceProvider>
                 <TextureOverlay opacity={0.028} />
                 {children}
                 <LiveCursors />
                 <CommandPalette />
                 <SettingsDrawer />
                 <OnboardingTour />
-              </body>
-            </html>
-          </PresenceProvider>
-        </ToastProvider>
-      </OnboardingProvider>
-    </ThemeProvider>
+              </PresenceProvider>
+            </ToastProvider>
+          </OnboardingProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 
   if (publishableKey) {
