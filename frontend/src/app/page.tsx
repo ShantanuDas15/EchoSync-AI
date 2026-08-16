@@ -152,9 +152,9 @@ export default function Dashboard() {
             
             {/* Collapsible Recorder Section */}
             <section data-tour="voice-recorder" className="bg-surface-panel rounded-2xl border border-border-subtle overflow-hidden transition-all duration-300">
-              <button 
+              <div 
                 onClick={() => setShowRecorder(!showRecorder)}
-                className="w-full flex items-center justify-between p-4 bg-surface-elevated/40 hover:bg-surface-elevated/80 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-surface-elevated/40 hover:bg-surface-elevated/80 transition-colors cursor-pointer select-none"
               >
                 <div className="flex items-center gap-2 text-text-secondary">
                   <Mic size={18} className="text-sky-400" />
@@ -166,8 +166,18 @@ export default function Dashboard() {
                     placement="right"
                   />
                 </div>
-                {showRecorder ? <ChevronUp size={18} className="text-text-muted" /> : <ChevronDown size={18} className="text-text-muted" />}
-              </button>
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowRecorder(!showRecorder);
+                  }}
+                  className="text-text-muted hover:text-text-primary p-1 rounded-lg transition-colors focus-ring cursor-pointer"
+                  aria-label={showRecorder ? "Collapse Voice Reference" : "Expand Voice Reference"}
+                >
+                  {showRecorder ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+              </div>
               
               <div className={`transition-all duration-300 ease-in-out ${showRecorder ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
                 <div className="p-4 pt-0">

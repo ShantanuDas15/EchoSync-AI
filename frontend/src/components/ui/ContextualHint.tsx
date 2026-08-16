@@ -59,10 +59,13 @@ export function ContextualHint({
       {/* Pulsing Beacon Trigger Button */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
         aria-expanded={isOpen}
         aria-label={`Show tip: ${title}`}
-        className="relative group p-1 rounded-full text-slate-400 hover:text-indigo-300 transition-colors focus-ring"
+        className="relative group p-1 rounded-full text-slate-400 hover:text-indigo-300 transition-colors focus-ring cursor-pointer"
       >
         <span className="relative flex h-3 w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
@@ -74,6 +77,7 @@ export function ContextualHint({
       {isOpen && (
         <div
           role="tooltip"
+          onClick={(e) => e.stopPropagation()}
           className={`absolute z-50 w-72 sm:w-80 p-4 bg-slate-900/95 border border-indigo-500/30 rounded-xl shadow-xl shadow-indigo-950/40 backdrop-blur-xl text-slate-200 transition-all duration-200 animate-in fade-in zoom-in-95 ${placementClasses}`}
         >
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
@@ -84,9 +88,13 @@ export function ContextualHint({
               </span>
             </div>
             <button
-              onClick={() => setIsOpen(false)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(false);
+              }}
               aria-label="Close tip"
-              className="text-slate-500 hover:text-slate-300 p-0.5 rounded transition-colors"
+              className="text-slate-500 hover:text-slate-300 p-0.5 rounded transition-colors cursor-pointer"
             >
               <X size={14} />
             </button>
