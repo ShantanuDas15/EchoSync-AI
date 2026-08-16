@@ -6,23 +6,28 @@ import { AudioRecorder } from '@/components/ui/AudioRecorder';
 import { WaveSurferVisualizer } from '@/components/ui/WaveSurferVisualizer';
 import { SpectrogramCanvas } from '@/components/ui/SpectrogramCanvas';
 import { ToastNotification, ToastType } from '@/components/ui/ToastNotification';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { NavigationHeader } from '@/components/layout/NavigationHeader';
 import { KeyboardShortcutFooter } from '@/components/layout/KeyboardShortcutFooter';
 import { TelemetryBar } from '@/components/layout/TelemetryBar';
 import { useWebSocketStream } from '@/hooks/useWebSocketStream';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { apiClient, ApiError } from '@/lib/apiClient';
 import { Mic, Radio, Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import { ContextualHint } from '@/components/ui/ContextualHint';
 
 export default function Dashboard() {
   const [referenceAudio, setReferenceAudio] = useState<Blob | null>(null);
-  const { isStreaming, connectAndStream } = useWebSocketStream();
+  const { isStreaming, connectAndStream, stopStreaming, error: wsError } = useWebSocketStream();
   
   // UI Layout State
   const [showRecorder, setShowRecorder] = useState(true);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
   
-  // Toast State
+  // Toast & Error State
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const [apiError, setApiError] = useState<{ message: string; code?: number | string } | null>(null);
 
   // Telemetry state
   const [rtfHistory, setRtfHistory] = useState<number[]>([0.8, 0.85, 0.9, 0.75, 0.8]);
@@ -33,42 +38,90 @@ export default function Dashboard() {
   useEffect(() => {
     if (isStreaming) {
       setToast({ message: 'Establishing neural WebSocket stream...', type: 'Processing' });
-    } else if (toast?.type === 'Processing') {
+    } else if (isSynthesizing && !isStreaming && !apiError) {
+      setIsSynthesizing(false);
       setToast({ message: 'Synthesis completed successfully.', type: 'Success' });
     }
-  }, [isStreaming]);
+  }, [isStreaming, isSynthesizing, apiError]);
+
+  useEffect(() => {
+    if (wsError) {
+      setApiError({ message: wsError, code: 'STREAM_DISCONNECT' });
+      setIsSynthesizing(false);
+    }
+  }, [wsError]);
 
   const handleMasterRender = async (blocks: any[], totalTokens: number) => {
     if (blocks.length === 0 || totalTokens === 0) {
       setToast({ message: 'Synthesis prompt cannot be empty.', type: 'Error' });
       return;
     }
-    
+
+    setApiError(null);
+    setIsSynthesizing(true);
+    setToast({ message: 'Dispatching neural synthesis task...', type: 'Processing' });
+
     // Simulate telemetry changes
     setRtfHistory(prev => [...prev.slice(-4), currentRTF]);
     setTtfbHistory(prev => [...prev.slice(-4), currentTTFB]);
 
-    const dummyTaskId = `task-${Math.random().toString(36).substring(7)}`;
-    connectAndStream(dummyTaskId);
+    const combinedText = blocks.map(b => b.text.trim()).filter(Boolean).join(' ');
+
+    try {
+      let taskId: string;
+
+      if (referenceAudio) {
+        // Zero-Shot Voice Cloning Path (POST /api/v1/voice/clone)
+        const formData = new FormData();
+        const fileExt = referenceAudio.type.includes('ogg') ? 'ogg' : referenceAudio.type.includes('mp3') ? 'mp3' : 'wav';
+        formData.append('file', referenceAudio, `reference.${fileExt}`);
+        formData.append('text', combinedText);
+        formData.append('voice_name', blocks[0]?.preset || 'cloned-voice');
+
+        const cloneResponse = await apiClient.cloneVoice(formData);
+        taskId = cloneResponse.task_id;
+      } else {
+        // Direct TTS Generation Path (POST /api/v1/tts/generate)
+        const ttsResponse = await apiClient.generateTTS({
+          voice_id: blocks[0]?.preset || 'default',
+          text: combinedText,
+          speed: 1.0,
+          pitch: 1.0,
+        });
+        taskId = ttsResponse.task_id;
+      }
+
+      setActiveTaskId(taskId);
+      connectAndStream(taskId);
+    } catch (err: any) {
+      setIsSynthesizing(false);
+      const errorMessage = err instanceof ApiError ? err.message : err?.message || 'Failed to dispatch synthesis';
+      const statusCode = err instanceof ApiError ? err.status : 'DISPATCH_ERROR';
+      
+      setApiError({ message: errorMessage, code: statusCode });
+      setToast({ message: errorMessage, type: 'Error' });
+    }
   };
 
   useKeyboardShortcuts({
     onSynthesize: () => {
-      if (!isStreaming) {
-        setToast({ message: 'Cmd+Enter pressed. Generating audio...', type: 'Processing' });
-        handleMasterRender([{ text: "Simulated text from hotkey", preset: "default" }], 26);
+      if (!isStreaming && !isSynthesizing) {
+        setToast({ message: 'Cmd+Enter shortcut triggered. Generating sequence...', type: 'Processing' });
+        handleMasterRender([{ text: "Neural synthesis sequence executed via shortcut.", preset: "default" }], 48);
       }
     },
     onEscape: () => {
-      if (isStreaming) {
-        setToast({ message: 'Synthesis aborted by user.', type: 'Warning' });
+      if (isStreaming || isSynthesizing) {
+        stopStreaming();
+        setIsSynthesizing(false);
+        setToast({ message: 'Synthesis stream aborted by user.', type: 'Warning' });
       }
     },
   });
 
   return (
     <div className="min-h-screen bg-surface-root text-text-primary selection:bg-sky-500/20 selection:text-sky-200 font-sans flex flex-col justify-between">
-      <NavigationHeader activeTab="studio" isStreaming={isStreaming} />
+      <NavigationHeader activeTab="studio" isStreaming={isStreaming || isSynthesizing} />
 
       {/* Progressive Disclosure Telemetry Bar */}
       <TelemetryBar
@@ -76,10 +129,22 @@ export default function Dashboard() {
         currentTTFB={currentTTFB}
         rtfHistory={rtfHistory}
         ttfbHistory={ttfbHistory}
-        isStreaming={isStreaming}
+        isStreaming={isStreaming || isSynthesizing}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full space-y-6">
+        
+        {/* Error Alert Display */}
+        {apiError && (
+          <ErrorState
+            title="Synthesis Task Failed"
+            message={apiError.message}
+            code={apiError.code}
+            onDismiss={() => setApiError(null)}
+            onRetry={() => handleMasterRender([{ text: "Retry attempt payload", preset: "default" }], 20)}
+          />
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           
           {/* Left Column - Voice Cloning & Storyboard */}
@@ -108,7 +173,10 @@ export default function Dashboard() {
                 <div className="p-4 pt-0">
                   <AudioRecorder onRecordingComplete={(blob) => {
                     setReferenceAudio(blob);
-                    if (blob) setToast({ message: 'Reference audio captured.', type: 'Success' });
+                    if (blob) {
+                      setApiError(null);
+                      setToast({ message: 'Reference audio captured ready for zero-shot cloning.', type: 'Success' });
+                    }
                   }} />
                 </div>
               </div>
@@ -120,7 +188,10 @@ export default function Dashboard() {
                 <Radio size={18} className="text-sky-400" />
                 <h2 className="font-semibold text-xs uppercase tracking-wider font-mono">Neural Synthesis Engine</h2>
               </div>
-              <StoryboardEditor onMasterRender={handleMasterRender} isSynthesizing={isStreaming} />
+              <StoryboardEditor
+                onMasterRender={handleMasterRender}
+                isSynthesizing={isStreaming || isSynthesizing}
+              />
             </section>
           </div>
 
@@ -154,7 +225,7 @@ export default function Dashboard() {
 
                 {/* Real-time Spectrogram */}
                 <div className="space-y-2 mt-2">
-                  <SpectrogramCanvas isActive={isStreaming} />
+                  <SpectrogramCanvas isActive={isStreaming || isSynthesizing} />
                 </div>
               </div>
             </section>
