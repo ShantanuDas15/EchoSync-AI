@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { apiClient } from '@/lib/apiClient';
 
 const MAX_RETRIES = 3;
 
@@ -10,6 +11,24 @@ export function useWebSocketStream() {
   const nextStartTimeRef = useRef<number>(0);
   const retryCountRef = useRef<number>(0);
   const isIntentionalCloseRef = useRef<boolean>(false);
+
+  const getWebSocketUrl = useCallback((taskId: string): string => {
+    const baseUrl = apiClient.getBaseUrl();
+    let wsUrl: string;
+
+    if (baseUrl.startsWith('http://') || baseUrl.startsWith('https://')) {
+      const wsProtocol = baseUrl.startsWith('https://') ? 'wss://' : 'ws://';
+      const host = baseUrl.replace(/^https?:\/\//, '');
+      wsUrl = `${wsProtocol}${host}/ws/v1/stream/${taskId}`;
+    } else if (typeof window !== 'undefined') {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}/ws/v1/stream/${taskId}`;
+    } else {
+      wsUrl = `ws://localhost:8000/ws/v1/stream/${taskId}`;
+    }
+
+    return wsUrl;
+  }, []);
 
   const connectAndStream = useCallback((taskId: string) => {
     setIsStreaming(true);
@@ -26,14 +45,13 @@ export function useWebSocketStream() {
     const audioCtx = audioContextRef.current;
 
     const establishConnection = () => {
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${protocol}//${window.location.host}/ws/v1/stream/${taskId}`;
+      const wsUrl = getWebSocketUrl(taskId);
       const ws = new WebSocket(wsUrl);
       ws.binaryType = 'arraybuffer';
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log('WebSocket connected for streaming');
+        console.log(`WebSocket connected for streaming task: ${taskId}`);
         retryCountRef.current = 0; // Reset on successful connect
       };
 
@@ -95,7 +113,7 @@ export function useWebSocketStream() {
 
     establishConnection();
 
-  }, []);
+  }, [getWebSocketUrl]);
 
   const stopStreaming = useCallback(() => {
     isIntentionalCloseRef.current = true;
@@ -108,5 +126,5 @@ export function useWebSocketStream() {
     setIsStreaming(false);
   }, []);
 
-  return { isStreaming, error, connectAndStream, stopStreaming };
+  return { isStreaming, error, connectAndStream, stopStreaming, getWebSocketUrl };
 }

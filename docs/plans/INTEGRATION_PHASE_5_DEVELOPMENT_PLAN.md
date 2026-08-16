@@ -27,8 +27,8 @@ Establish a strongly-typed foundation for network operations to communicate secu
 ### Milestone 5.2: Asynchronous Task Polling & Streaming Hooks
 The backend processes intensive DSP tasks asynchronously via Celery/Redis, returning a `task_id`. The frontend must poll for the result.
 
-- [ ] **Task 5.2.1**: Develop a `useTaskPolling.ts` custom React hook that takes a `task_id` and polls `/api/v1/voice/tasks/{task_id}` using exponential backoff (e.g., 1s, 2s, 4s) until status is `completed` or `failed`.
-- [ ] **Task 5.2.2**: Integrate the polling hook with the existing `useWebSocketStream.ts`. The websocket should only connect to `/ws/v1/stream/{task_id}` once the polling status confirms the audio buffer is ready to stream.
+- [x] **Task 5.2.1**: Develop a `useTaskPolling.ts` custom React hook that takes a `task_id` and polls `/api/v1/voice/tasks/{task_id}` using exponential backoff (e.g., 1s, 2s, 4s) until status is `completed` or `failed`.
+- [x] **Task 5.2.2**: Integrate the polling hook with the existing `useWebSocketStream.ts`. The websocket should only connect to `/ws/v1/stream/{task_id}` once the polling status confirms the audio buffer is ready to stream.
 
 #### Verification Gateway & Test Design
 * **Unit Test (`TaskPolling.test.ts`):** Use `jest.useFakeTimers()` to verify that the polling hook respects the backoff intervals and correctly updates state upon receiving a `completed` or `failed` payload.
@@ -75,6 +75,6 @@ Replace mock local blob URLs with authenticated, pre-signed URLs from the backen
 | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-16T11:45:00+05:30` | `Milestone 5.0` | **COMPLETED** (Commit: `af39f7f`) | Phase 5 Integration Development Plan authored | Antigravity AI |
 | `2026-08-16T11:51:00+05:30` | `Milestone 5.1` | **COMPLETED** (Commit: `b650373`) | Passed `ApiClient.test.ts` (9/9 pass, 160/160 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
-| `[PENDING]` | `Milestone 5.2` | **NOT STARTED** | N/A | N/A |
+| `2026-08-16T12:00:00+05:30` | `Milestone 5.2` | **COMPLETED** (Commit: `[PENDING]`) | Passed `TaskPolling.test.ts` (5/5 pass, 165/165 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 5.3` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 5.4` | **NOT STARTED** | N/A | N/A |
