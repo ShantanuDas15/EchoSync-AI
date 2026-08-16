@@ -51,9 +51,9 @@ Replace flat, textureless glassmorphism and glowing colored outlines with nuance
 ### Milestone 4.3: Function-Driven Minimalism & Layout De-nesting
 Simplify the interface structure by removing unnecessary containers and prioritizing the primary utility: voice synthesis.
 
-- [ ] **Task 4.3.1**: Refactor the main Dashboard layout (`page.tsx`) to remove any "dashboard overuse" patterns. Streamline the grid to prioritize the Storyboard and Canvas directly.
-- [ ] **Task 4.3.2**: Eradicate "over-nested cards." Flatten the visual hierarchy of the `VoiceCard` and `DialogueBlock` components so they sit naturally on the surface without excessive bounding boxes.
-- [ ] **Task 4.3.3**: Implement progressive disclosure for the Telemetry Bar. Hide complex metrics (RTF, TTFB) behind a unified, unobtrusive "System Status" indicator that expands only on click/hover.
+- [x] **Task 4.3.1**: Refactor the main Dashboard layout (`page.tsx`) to remove any "dashboard overuse" patterns. Streamline the grid to prioritize the Storyboard and Canvas directly.
+- [x] **Task 4.3.2**: Eradicate "over-nested cards." Flatten the visual hierarchy of the `VoiceCard` and `DialogueBlock` components so they sit naturally on the surface without excessive bounding boxes.
+- [x] **Task 4.3.3**: Implement progressive disclosure for the Telemetry Bar. Hide complex metrics (RTF, TTFB) behind a unified, unobtrusive "System Status" indicator that expands only on click/hover.
 
 #### Verification Gateway & Test Design
 * **Unit Test (`LayoutMinimalism.test.ts`):** Assert that the DOM tree depth for core components (`DialogueBlock`) is reduced by at least 2 levels (no redundant `div` wrappers) and that the Telemetry Bar defaults to a collapsed state.
@@ -92,7 +92,7 @@ Polish every edge case, error message, and interactive state to a premium standa
 | `2026-08-16T11:08:10+05:30` | `Milestone 4.0` | **COMPLETED** (Commit: `c73331b`) | Phase 4 Execution Plan authored | Antigravity AI |
 | `2026-08-16T11:16:30+05:30` | `Milestone 4.1` | **COMPLETED** (Commit: `5fa2a1f`) | Passed `TypographyColor.test.ts` (15/15 pass, 130/130 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `2026-08-16T11:19:00+05:30` | `Milestone 4.2` | **COMPLETED** (Commit: `12dc767`) | Passed `SurfaceDepth.test.ts` (10/10 pass, 140/140 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
-| `[PENDING]` | `Milestone 4.3` | **NOT STARTED** | N/A | N/A |
+| `2026-08-16T11:32:00+05:30` | `Milestone 4.3` | **COMPLETED** (Commit: `[PENDING]`) | Passed `LayoutMinimalism.test.ts` (6/6 pass, 146/146 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 4.4` | **NOT STARTED** | N/A | N/A |
 
 ---

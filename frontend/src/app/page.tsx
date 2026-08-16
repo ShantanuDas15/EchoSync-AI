@@ -8,7 +8,7 @@ import { SpectrogramCanvas } from '@/components/ui/SpectrogramCanvas';
 import { ToastNotification, ToastType } from '@/components/ui/ToastNotification';
 import { NavigationHeader } from '@/components/layout/NavigationHeader';
 import { KeyboardShortcutFooter } from '@/components/layout/KeyboardShortcutFooter';
-import { MetricBadge } from '@/components/ui/MetricBadge';
+import { TelemetryBar } from '@/components/layout/TelemetryBar';
 import { useWebSocketStream } from '@/hooks/useWebSocketStream';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { Mic, Radio, Activity, ChevronDown, ChevronUp } from 'lucide-react';
@@ -24,7 +24,7 @@ export default function Dashboard() {
   // Toast State
   const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
-  // Fake Telemetry
+  // Telemetry state
   const [rtfHistory, setRtfHistory] = useState<number[]>([0.8, 0.85, 0.9, 0.75, 0.8]);
   const [ttfbHistory, setTtfbHistory] = useState<number[]>([150, 140, 160, 120, 130]);
   const currentRTF = isStreaming ? 0.95 : 0.8;
@@ -70,18 +70,19 @@ export default function Dashboard() {
     <div className="min-h-screen bg-surface-root text-text-primary selection:bg-sky-500/20 selection:text-sky-200 font-sans flex flex-col justify-between">
       <NavigationHeader activeTab="studio" isStreaming={isStreaming} />
 
-      {/* Telemetry Bar */}
-      <div data-tour="telemetry-bar" className="w-full bg-surface-panel border-b border-border-subtle">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-end gap-4">
-          <MetricBadge label="RTF" value={currentRTF.toFixed(2)} type="rtf" history={rtfHistory} />
-          <MetricBadge label="TTFB" value={currentTTFB} unit="ms" type="ttfb" history={ttfbHistory} />
-        </div>
-      </div>
+      {/* Progressive Disclosure Telemetry Bar */}
+      <TelemetryBar
+        currentRTF={currentRTF}
+        currentTTFB={currentTTFB}
+        rtfHistory={rtfHistory}
+        ttfbHistory={ttfbHistory}
+        isStreaming={isStreaming}
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           
-          {/* Left Column - Controls */}
+          {/* Left Column - Voice Cloning & Storyboard */}
           <div className="lg:col-span-5 flex flex-col gap-6">
             
             {/* Collapsible Recorder Section */}
@@ -92,7 +93,7 @@ export default function Dashboard() {
               >
                 <div className="flex items-center gap-2 text-text-secondary">
                   <Mic size={18} className="text-sky-400" />
-                  <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Voice Cloning Reference</h2>
+                  <h2 className="font-semibold text-xs uppercase tracking-wider font-mono">Voice Reference</h2>
                   <ContextualHint
                     title="Zero-Shot Reference Sample"
                     description="Provide 3-5 seconds of clean, noise-free voice audio to extract a 256-d speaker identity embedding vector."
@@ -113,23 +114,23 @@ export default function Dashboard() {
               </div>
             </section>
 
-            {/* Synthesizer Form */}
+            {/* Synthesizer Storyboard */}
             <section className="space-y-3">
               <div className="flex items-center gap-2 text-text-secondary px-1">
                 <Radio size={18} className="text-sky-400" />
-                <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Neural Synthesis Engine</h2>
+                <h2 className="font-semibold text-xs uppercase tracking-wider font-mono">Neural Synthesis Engine</h2>
               </div>
               <StoryboardEditor onMasterRender={handleMasterRender} isSynthesizing={isStreaming} />
             </section>
           </div>
 
-          {/* Right Column - Visualizers */}
+          {/* Right Column - Spectrogram & WaveSurfer Visualizers */}
           <div data-tour="spectrogram-canvas" className="lg:col-span-7 flex flex-col gap-6">
             <section className="space-y-3 h-full flex flex-col">
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-2 text-text-secondary">
                   <Activity size={18} className="text-sky-400" />
-                  <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Analysis & Audio Output</h2>
+                  <h2 className="font-semibold text-xs uppercase tracking-wider font-mono">Acoustic Analysis & Output</h2>
                   <ContextualHint
                     title="Real-Time Acoustic Analytics"
                     description="Real-time 60 FPS HTML5 Canvas Fourier Transform (FFT) spectrogram visualizer and WaveSurfer interactive timeline."
@@ -141,18 +142,18 @@ export default function Dashboard() {
               <div className="flex-1 flex flex-col gap-4">
                 {/* WaveSurfer Player */}
                 <div className="space-y-2">
-                  <p className="text-xs font-mono text-text-secondary ml-1 uppercase">Post-Recording Review</p>
+                  <p className="text-xs font-mono text-text-muted ml-1 uppercase tracking-wider">Audio Playhead Review</p>
                   {referenceAudio ? (
                     <WaveSurferVisualizer audioBlob={referenceAudio} />
                   ) : (
-                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface-panel text-text-muted text-sm">
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface-panel text-text-muted text-sm font-medium">
                       No audio rendered yet.
                     </div>
                   )}
                 </div>
 
                 {/* Real-time Spectrogram */}
-                <div className="space-y-2 mt-4">
+                <div className="space-y-2 mt-2">
                   <SpectrogramCanvas isActive={isStreaming} />
                 </div>
               </div>
