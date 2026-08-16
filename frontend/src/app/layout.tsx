@@ -34,26 +34,32 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <ClerkProvider>
-      <ThemeProvider>
-        <OnboardingProvider>
-          <ToastProvider>
-            <PresenceProvider>
-              <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-                <body className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased relative">
-                  <TextureOverlay opacity={0.028} />
-                  {children}
-                  <LiveCursors />
-                  <CommandPalette />
-                  <SettingsDrawer />
-                  <OnboardingTour />
-                </body>
-              </html>
-            </PresenceProvider>
-          </ToastProvider>
-        </OnboardingProvider>
-      </ThemeProvider>
-    </ClerkProvider>
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  const content = (
+    <ThemeProvider>
+      <OnboardingProvider>
+        <ToastProvider>
+          <PresenceProvider>
+            <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+              <body className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased relative">
+                <TextureOverlay opacity={0.028} />
+                {children}
+                <LiveCursors />
+                <CommandPalette />
+                <SettingsDrawer />
+                <OnboardingTour />
+              </body>
+            </html>
+          </PresenceProvider>
+        </ToastProvider>
+      </OnboardingProvider>
+    </ThemeProvider>
   );
+
+  if (publishableKey) {
+    return <ClerkProvider publishableKey={publishableKey}>{content}</ClerkProvider>;
+  }
+
+  return content;
 }
