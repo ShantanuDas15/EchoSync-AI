@@ -74,7 +74,7 @@ Replace mock local blob URLs with authenticated, pre-signed URLs from the backen
 | Timestamp (ISO-8601) | Milestone / Subtask ID | Execution Status | Test Result / Metric Summary | Logged By |
 | :--- | :--- | :--- | :--- | :--- |
 | `2026-08-16T11:45:00+05:30` | `Milestone 5.0` | **COMPLETED** (Commit: `af39f7f`) | Phase 5 Integration Development Plan authored | Antigravity AI |
-| `2026-08-16T11:51:00+05:30` | `Milestone 5.1` | **COMPLETED** (Commit: `[PENDING]`) | Passed `ApiClient.test.ts` (9/9 pass, 160/160 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
+| `2026-08-16T11:51:00+05:30` | `Milestone 5.1` | **COMPLETED** (Commit: `b650373`) | Passed `ApiClient.test.ts` (9/9 pass, 160/160 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `[PENDING]` | `Milestone 5.2` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 5.3` | **NOT STARTED** | N/A | N/A |
 | `[PENDING]` | `Milestone 5.4` | **NOT STARTED** | N/A | N/A |
