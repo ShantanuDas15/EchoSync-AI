@@ -56,7 +56,6 @@ export default function Dashboard() {
     onSynthesize: () => {
       if (!isStreaming) {
         setToast({ message: 'Cmd+Enter pressed. Generating audio...', type: 'Processing' });
-        // Since we don't have form state lifted, we rely on the form's own listener or simulate
         handleMasterRender([{ text: "Simulated text from hotkey", preset: "default" }], 26);
       }
     },
@@ -68,11 +67,11 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200 selection:bg-indigo-500/30 font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-surface-root text-text-primary selection:bg-sky-500/20 selection:text-sky-200 font-sans flex flex-col justify-between">
       <NavigationHeader activeTab="studio" isStreaming={isStreaming} />
 
       {/* Telemetry Bar */}
-      <div data-tour="telemetry-bar" className="w-full bg-slate-900 border-b border-slate-800">
+      <div data-tour="telemetry-bar" className="w-full bg-surface-panel border-b border-border-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-end gap-4">
           <MetricBadge label="RTF" value={currentRTF.toFixed(2)} type="rtf" history={rtfHistory} />
           <MetricBadge label="TTFB" value={currentTTFB} unit="ms" type="ttfb" history={ttfbHistory} />
@@ -86,13 +85,13 @@ export default function Dashboard() {
           <div className="lg:col-span-5 flex flex-col gap-6">
             
             {/* Collapsible Recorder Section */}
-            <section data-tour="voice-recorder" className="bg-slate-900/40 rounded-2xl border border-slate-800 overflow-hidden transition-all duration-300">
+            <section data-tour="voice-recorder" className="bg-surface-panel rounded-2xl border border-border-subtle overflow-hidden transition-all duration-300">
               <button 
                 onClick={() => setShowRecorder(!showRecorder)}
-                className="w-full flex items-center justify-between p-4 bg-slate-800/20 hover:bg-slate-800/40 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-surface-elevated/40 hover:bg-surface-elevated/80 transition-colors"
               >
-                <div className="flex items-center gap-2 text-slate-400">
-                  <Mic size={18} className="text-indigo-400" />
+                <div className="flex items-center gap-2 text-text-secondary">
+                  <Mic size={18} className="text-sky-400" />
                   <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Voice Cloning Reference</h2>
                   <ContextualHint
                     title="Zero-Shot Reference Sample"
@@ -101,7 +100,7 @@ export default function Dashboard() {
                     placement="right"
                   />
                 </div>
-                {showRecorder ? <ChevronUp size={18} className="text-slate-500" /> : <ChevronDown size={18} className="text-slate-500" />}
+                {showRecorder ? <ChevronUp size={18} className="text-text-muted" /> : <ChevronDown size={18} className="text-text-muted" />}
               </button>
               
               <div className={`transition-all duration-300 ease-in-out ${showRecorder ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
@@ -116,8 +115,8 @@ export default function Dashboard() {
 
             {/* Synthesizer Form */}
             <section className="space-y-3">
-              <div className="flex items-center gap-2 text-slate-400 px-1">
-                <Radio size={18} className="text-indigo-400" />
+              <div className="flex items-center gap-2 text-text-secondary px-1">
+                <Radio size={18} className="text-sky-400" />
                 <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Neural Synthesis Engine</h2>
               </div>
               <StoryboardEditor onMasterRender={handleMasterRender} isSynthesizing={isStreaming} />
@@ -128,8 +127,8 @@ export default function Dashboard() {
           <div data-tour="spectrogram-canvas" className="lg:col-span-7 flex flex-col gap-6">
             <section className="space-y-3 h-full flex flex-col">
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-2 text-slate-400">
-                  <Activity size={18} className="text-indigo-400" />
+                <div className="flex items-center gap-2 text-text-secondary">
+                  <Activity size={18} className="text-sky-400" />
                   <h2 className="font-medium text-xs uppercase tracking-wider font-mono">Analysis & Audio Output</h2>
                   <ContextualHint
                     title="Real-Time Acoustic Analytics"
@@ -142,11 +141,11 @@ export default function Dashboard() {
               <div className="flex-1 flex flex-col gap-4">
                 {/* WaveSurfer Player */}
                 <div className="space-y-2">
-                  <p className="text-xs font-mono text-slate-400 ml-1 uppercase">Post-Recording Review</p>
+                  <p className="text-xs font-mono text-text-secondary ml-1 uppercase">Post-Recording Review</p>
                   {referenceAudio ? (
                     <WaveSurferVisualizer audioBlob={referenceAudio} />
                   ) : (
-                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-slate-800/80 rounded-2xl bg-slate-900/40 text-slate-500 text-sm">
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-border-subtle rounded-2xl bg-surface-panel text-text-muted text-sm">
                       No audio rendered yet.
                     </div>
                   )}

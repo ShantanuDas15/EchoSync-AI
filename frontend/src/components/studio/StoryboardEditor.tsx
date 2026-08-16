@@ -103,10 +103,10 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
       data-tour="storyboard-editor"
       className="flex flex-col gap-4 p-4 sm:p-6 glass-panel rounded-2xl relative min-h-[400px]"
     >
-      <div className="flex justify-between items-center pb-2 border-b border-slate-800 gap-2">
-        <div className="flex items-center gap-2 text-slate-300">
-          <LayoutTemplate size={18} className="text-indigo-400 shrink-0" />
-          <h3 className="font-medium text-sm sm:text-base">Multi-Track Storyboard</h3>
+      <div className="flex justify-between items-center pb-2 border-b border-border-subtle gap-2">
+        <div className="flex items-center gap-2 text-text-primary">
+          <LayoutTemplate size={18} className="text-sky-400 shrink-0" />
+          <h3 className="font-semibold text-sm sm:text-base tracking-tight">Multi-Track Storyboard</h3>
           <ContextualHint
             title="Multi-Track Dialogue Timeline"
             description="Chain dialogue blocks with distinct voice presets. Drag handles or use Up/Down arrows to re-order lines sequentially."
@@ -123,15 +123,15 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
           <button
             onClick={() => setIsQuickStartOpen(true)}
             data-tour="quick-templates-btn"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-300 bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 rounded-xl transition-all shadow-sm focus-ring min-h-[36px]"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-sky-300 bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 rounded-xl transition-all shadow-sm focus-ring min-h-[36px]"
             title="Choose Pre-configured Scenario Template"
           >
-            <Sparkles size={13} className="text-indigo-400" />
+            <Sparkles size={13} className="text-sky-400" />
             <span className="hidden xs:inline">Quick Templates</span>
             <span className="xs:hidden">Templates</span>
           </button>
 
-          <div className="text-xs text-slate-500 font-mono">
+          <div className="text-xs text-text-muted font-mono">
             {blocks.length}
           </div>
         </div>
@@ -167,18 +167,18 @@ export function StoryboardEditor({ onMasterRender, isSynthesizing }: StoryboardE
 
         <button
           onClick={addBlock}
-          className="flex items-center justify-center gap-2 p-4 w-full min-h-[48px] border-2 border-dashed border-slate-700/50 text-slate-400 rounded-xl hover:bg-slate-800/30 hover:text-slate-300 hover:border-slate-600 transition-all font-medium text-sm focus-ring"
+          className="flex items-center justify-center gap-2 p-4 w-full min-h-[48px] border-2 border-dashed border-border-subtle text-text-secondary rounded-xl hover:bg-surface-elevated hover:text-text-primary hover:border-text-muted transition-all font-medium text-sm focus-ring"
         >
           <Plus size={18} />
           <span>Add Dialogue Block</span>
         </button>
       </div>
 
-      <div className="mt-auto pt-4 border-t border-slate-800">
+      <div className="mt-auto pt-4 border-t border-border-subtle">
         <button
           onClick={handleMasterRender}
           disabled={isSynthesizing || blocks.length === 0}
-          className="flex items-center justify-center gap-2 w-full py-4 min-h-[52px] bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-medium rounded-xl shadow-lg shadow-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] focus-ring"
+          className="flex items-center justify-center gap-2 w-full py-4 min-h-[52px] bg-sky-600 hover:bg-sky-500 text-white font-medium rounded-xl shadow-md shadow-sky-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98] focus-ring"
         >
           <Layers size={18} />
           {isSynthesizing ? 'Master Rendering...' : 'Master Render Sequence'}

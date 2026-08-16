@@ -18,8 +18,8 @@ export const MetricBadge: React.FC<MetricBadgeProps> = ({
 }) => {
   const isRTF = type === 'rtf';
   const Icon = isRTF ? Activity : Clock;
-  const colorClass = isRTF ? 'text-indigo-400' : 'text-violet-400';
-  const strokeColor = isRTF ? '#818cf8' : '#a78bfa';
+  const colorClass = isRTF ? 'text-sky-400' : 'text-cyan-400';
+  const strokeColor = isRTF ? '#38bdf8' : '#22d3ee';
 
   // Generate simple SVG sparkline path
   const sparklinePath = useMemo(() => {
@@ -42,17 +42,17 @@ export const MetricBadge: React.FC<MetricBadgeProps> = ({
   }, [history, value]);
 
   return (
-    <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-900/80 border border-slate-800 rounded-xl text-xs shadow-inner">
+    <div className="flex items-center gap-3 px-3 py-1.5 bg-surface-panel border border-border-subtle rounded-xl text-xs shadow-inner">
       <div className="flex items-center gap-2">
         <Icon className={`w-3.5 h-3.5 ${colorClass}`} />
-        <span className="text-slate-400">{label}:</span>
-        <span className="font-mono font-medium text-slate-200">
+        <span className="text-text-secondary">{label}:</span>
+        <span className="font-mono font-medium text-text-primary">
           {value}{unit ? ` ${unit}` : ''}
         </span>
       </div>
 
       {sparklinePath && (
-        <div className="w-10 h-4 border-l border-slate-700/50 pl-2 ml-1 flex items-center">
+        <div className="w-10 h-4 border-l border-border-subtle pl-2 ml-1 flex items-center">
           <svg width="40" height="16" viewBox="0 0 40 16" className="overflow-visible">
             <path 
               d={sparklinePath} 

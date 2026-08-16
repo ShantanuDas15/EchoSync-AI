@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useOnboarding, getTourProgressPercent } from '@/lib/onboardingContext';
-import { X, ChevronRight, ChevronLeft, Check, Sparkles, HelpCircle, Compass } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Check, Sparkles, Compass } from 'lucide-react';
 
 export function OnboardingTour() {
   const {
@@ -91,7 +91,7 @@ export function OnboardingTour() {
       {/* Darkened Backdrop Overlay */}
       <div 
         onClick={skipTour}
-        className="absolute inset-0 bg-slate-950/75 backdrop-blur-[2px] transition-all"
+        className="absolute inset-0 bg-surface-root/80 backdrop-blur-[2px] transition-all"
         aria-hidden="true"
       />
 
@@ -105,11 +105,11 @@ export function OnboardingTour() {
             width: `${targetRect.width + 12}px`,
             height: `${targetRect.height + 12}px`,
             borderRadius: '16px',
-            boxShadow: '0 0 0 9999px rgba(3, 7, 18, 0.78), 0 0 25px 2px rgba(99, 102, 241, 0.4)',
+            boxShadow: '0 0 0 9999px rgba(3, 7, 18, 0.78), 0 0 20px 2px rgba(14, 165, 233, 0.35)',
             pointerEvents: 'none',
             zIndex: 10
           }}
-          className="border-2 border-indigo-400/80 transition-all duration-300 animate-pulse"
+          className="border-2 border-sky-400/80 transition-all duration-300 animate-pulse"
         />
       )}
 
@@ -117,27 +117,27 @@ export function OnboardingTour() {
       <div className="absolute inset-0 flex items-center justify-center p-4 z-20 pointer-events-none">
         <div
           ref={cardRef}
-          className="pointer-events-auto max-w-lg w-full bg-slate-900/95 border border-indigo-500/40 rounded-2xl shadow-2xl shadow-indigo-950/60 backdrop-blur-xl p-6 flex flex-col gap-4 text-slate-200 transition-all transform scale-100"
+          className="pointer-events-auto max-w-lg w-full bg-surface-panel border border-border-elevated rounded-2xl shadow-2xl backdrop-blur-xl p-6 flex flex-col gap-4 text-text-primary transition-all transform scale-100"
         >
           {/* Header & Step Badges */}
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+          <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
             <div className="flex items-center gap-2">
-              <span className="p-1.5 bg-indigo-500/20 text-indigo-300 rounded-lg border border-indigo-500/30">
+              <span className="p-1.5 bg-sky-500/10 text-sky-300 rounded-lg border border-sky-500/20">
                 <Compass size={16} />
               </span>
-              <span className="text-xs font-mono font-medium text-indigo-300 uppercase tracking-wider">
+              <span className="text-xs font-mono font-medium text-sky-300 uppercase tracking-wider">
                 {currentStep.badgeText || `Step ${currentStepIndex + 1} of ${totalSteps}`}
               </span>
             </div>
             
             <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-500 font-mono">
+              <span className="text-xs text-text-muted font-mono">
                 {currentStepIndex + 1} / {totalSteps}
               </span>
               <button
                 onClick={skipTour}
                 aria-label="Exit onboarding tour"
-                className="text-slate-400 hover:text-slate-200 p-1 hover:bg-slate-800 rounded-lg transition-colors focus-ring"
+                className="text-text-muted hover:text-text-primary p-1 hover:bg-surface-elevated rounded-lg transition-colors focus-ring"
                 title="Skip Tour (Esc)"
               >
                 <X size={18} />
@@ -146,43 +146,43 @@ export function OnboardingTour() {
           </div>
 
           {/* Progress Bar */}
-          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+          <div className="w-full bg-surface-root h-1.5 rounded-full overflow-hidden">
             <div
-              className="bg-gradient-to-r from-indigo-500 to-violet-500 h-full rounded-full transition-all duration-300"
+              className="bg-sky-500 h-full rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
 
           {/* Content Body */}
           <div className="space-y-2 py-1">
-            <h3 id="tour-step-title" className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+            <h3 id="tour-step-title" className="text-lg font-bold text-text-primary tracking-tight flex items-center gap-2">
               {currentStep.title}
             </h3>
-            <p id="tour-step-desc" className="text-sm text-slate-300 leading-relaxed">
+            <p id="tour-step-desc" className="text-sm text-text-secondary leading-relaxed">
               {currentStep.description}
             </p>
 
             {currentStep.actionHint && (
-              <div className="mt-3 p-2.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl flex items-center gap-2 text-xs text-indigo-300">
-                <Sparkles size={14} className="shrink-0 text-indigo-400" />
+              <div className="mt-3 p-2.5 bg-sky-500/10 border border-sky-500/20 rounded-xl flex items-center gap-2 text-xs text-sky-300">
+                <Sparkles size={14} className="shrink-0 text-sky-400" />
                 <span>{currentStep.actionHint}</span>
               </div>
             )}
           </div>
 
           {/* Action Buttons & Keyboard Helpers */}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-800">
-            <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-500 font-mono">
-              <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-400">Esc</kbd> Skip
+          <div className="flex items-center justify-between pt-3 border-t border-border-subtle">
+            <div className="hidden sm:flex items-center gap-2 text-[11px] text-text-muted font-mono">
+              <kbd className="px-1.5 py-0.5 bg-surface-elevated border border-border-subtle rounded text-text-secondary">Esc</kbd> Skip
               <span className="mx-1">•</span>
-              <kbd className="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-400">→</kbd> Next
+              <kbd className="px-1.5 py-0.5 bg-surface-elevated border border-border-subtle rounded text-text-secondary">→</kbd> Next
             </div>
 
             <div className="flex items-center gap-2 ml-auto">
               {currentStepIndex > 0 && (
                 <button
                   onClick={prevStep}
-                  className="px-3.5 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 rounded-xl transition-all flex items-center gap-1 focus-ring"
+                  className="px-3.5 py-2 text-xs font-medium text-text-secondary hover:text-text-primary bg-surface-elevated hover:bg-surface-panel border border-border-subtle rounded-xl transition-all flex items-center gap-1 focus-ring"
                 >
                   <ChevronLeft size={14} />
                   Back
@@ -191,7 +191,7 @@ export function OnboardingTour() {
 
               <button
                 onClick={isLastStep ? completeTour : nextStep}
-                className="px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-1.5 focus-ring active:scale-95"
+                className="px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-md shadow-sky-600/20 transition-all flex items-center gap-1.5 focus-ring active:scale-95"
               >
                 <span>{isLastStep ? 'Get Started' : 'Next Step'}</span>
                 {isLastStep ? <Check size={14} /> : <ChevronRight size={14} />}

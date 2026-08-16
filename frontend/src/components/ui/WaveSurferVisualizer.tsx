@@ -29,9 +29,9 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
 
     const wavesurfer = WaveSurfer.create({
       container: containerRef.current,
-      waveColor: '#6366f1', // Indigo 500
-      progressColor: '#c7d2fe', // Indigo 200
-      cursorColor: '#818cf8',
+      waveColor: '#0ea5e9', // Sky 500
+      progressColor: '#bae6fd', // Sky 200
+      cursorColor: '#38bdf8',
       barWidth: 2,
       barGap: 3,
       barRadius: 2,
@@ -104,7 +104,7 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
 
   return (
     <div className="flex flex-col gap-5 p-5 glass-panel rounded-2xl relative">
-      <div className="w-full relative rounded-lg overflow-hidden bg-slate-900/50 p-2" ref={containerRef} />
+      <div className="w-full relative rounded-lg overflow-hidden bg-surface-panel p-2 border border-border-subtle" ref={containerRef} />
       
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Playback Controls */}
@@ -112,7 +112,7 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
           <button
             onClick={togglePlay}
             disabled={!isReady}
-            className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 disabled:opacity-50 disabled:cursor-not-allowed rounded-full text-white shadow-lg transition-all active:scale-95 focus-ring"
+            className="flex items-center justify-center w-12 h-12 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-full text-white shadow-md shadow-sky-600/20 transition-all active:scale-95 focus-ring"
           >
             {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
           </button>
@@ -120,7 +120,7 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
           <select 
             value={playbackRate} 
             onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
-            className="bg-slate-800 text-xs font-mono font-medium text-slate-300 rounded px-2 py-1 outline-none border border-slate-700 focus:border-indigo-500 transition-colors"
+            className="bg-surface-elevated text-xs font-mono font-medium text-text-primary rounded px-2 py-1 outline-none border border-border-subtle focus:border-sky-400 transition-colors"
           >
             {[0.75, 1.0, 1.25, 1.5, 2.0].map(rate => (
               <option key={rate} value={rate}>{rate}x</option>
@@ -129,9 +129,9 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
         </div>
 
         {/* Volume & Zoom */}
-        <div className="flex items-center gap-6 text-slate-400">
+        <div className="flex items-center gap-6 text-text-secondary">
           <div className="flex items-center gap-2">
-            <button onClick={() => setIsMuted(!isMuted)} className="hover:text-indigo-400 transition-colors">
+            <button onClick={() => setIsMuted(!isMuted)} className="hover:text-sky-400 transition-colors">
               {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
             <input 
@@ -142,7 +142,7 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
                 setVolume(parseFloat(e.target.value));
                 if (isMuted) setIsMuted(false);
               }}
-              className="w-20 accent-indigo-500 cursor-pointer"
+              className="w-20 accent-sky-500 cursor-pointer"
             />
           </div>
           
@@ -153,7 +153,7 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
               min="10" max="200" step="10" 
               value={zoom} 
               onChange={(e) => setZoom(parseInt(e.target.value))}
-              className="w-24 accent-indigo-500 cursor-pointer"
+              className="w-24 accent-sky-500 cursor-pointer"
             />
             <ZoomIn size={16} />
           </div>
@@ -164,16 +164,16 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
           <button 
             onClick={() => setShowExportMenu(!showExportMenu)}
             disabled={!isReady}
-            className="flex items-center justify-center w-10 h-10 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-full transition-colors disabled:opacity-50"
+            className="flex items-center justify-center w-10 h-10 bg-surface-elevated hover:bg-surface-panel text-text-secondary rounded-full transition-colors disabled:opacity-50 border border-border-subtle"
           >
             <MoreVertical size={20} />
           </button>
 
           {showExportMenu && (
-            <div className="absolute right-0 bottom-full mb-2 w-48 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95">
+            <div className="absolute right-0 bottom-full mb-2 w-48 bg-surface-elevated border border-border-elevated rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95">
               <button 
                 onClick={() => { handleDownloadWav(); setShowExportMenu(false); }}
-                className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-indigo-500 hover:text-white flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-sky-600 hover:text-white flex items-center gap-2 transition-colors"
               >
                 <Download size={16} /> Download .WAV
               </button>
@@ -183,13 +183,13 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
                   else alert("MP3 download functionality requires external FFmpeg encoding or server-side conversion.");
                   setShowExportMenu(false); 
                 }}
-                className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-indigo-500 hover:text-white flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-sky-600 hover:text-white flex items-center gap-2 transition-colors"
               >
                 <Download size={16} /> Download .MP3
               </button>
               <button 
                 onClick={() => { handleCopyUrl(); setShowExportMenu(false); }}
-                className="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-indigo-500 hover:text-white flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-sky-600 hover:text-white flex items-center gap-2 transition-colors"
               >
                 <LinkIcon size={16} /> Copy URL
               </button>

@@ -36,7 +36,7 @@ export function useSpectrogram(audioContext: AudioContext | null, sourceNode: Au
 
     analyser.getByteFrequencyData(dataArray);
 
-    ctx.fillStyle = 'rgb(15, 23, 42)'; // Slate 900
+    ctx.fillStyle = 'rgb(13, 15, 18)'; // Charcoal base
     ctx.fillRect(0, 0, width, height);
 
     const barWidth = (width / bufferLength) * 2.5;
@@ -45,10 +45,10 @@ export function useSpectrogram(audioContext: AudioContext | null, sourceNode: Au
     for (let i = 0; i < bufferLength; i++) {
       const barHeight = (dataArray[i] / 255) * height;
 
-      // Gradient for sleek aesthetic
+      // Clean Cerulean to Arctic Cyan Gradient for spectrogram
       const gradient = ctx.createLinearGradient(0, height, 0, height - barHeight);
-      gradient.addColorStop(0, '#3b82f6'); // blue-500
-      gradient.addColorStop(1, '#8b5cf6'); // violet-500
+      gradient.addColorStop(0, '#0284c7'); // sky-600
+      gradient.addColorStop(1, '#38bdf8'); // sky-400
 
       ctx.fillStyle = gradient;
       ctx.fillRect(x, height - barHeight, barWidth, barHeight);

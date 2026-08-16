@@ -3,42 +3,67 @@
 @tailwind utilities;
 
 :root {
-  --bg-surface-root: #030712;
-  --bg-surface-panel: rgba(15, 23, 42, 0.75);
-  --bg-surface-elevated: rgba(30, 41, 59, 0.7);
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border-subtle: rgba(51, 65, 85, 0.5);
-  --brand-primary: #6366f1;
-  --brand-accent: #8b5cf6;
-  --status-online: #10b981;
-  --status-warning: #f59e0b;
-  --status-error: #ef4444;
+  /* Dark Charcoal & Obsidian Foundation (Default Theme) */
+  --bg-surface-root: hsl(220, 18%, 6%);
+  --bg-surface-panel: hsla(220, 16%, 10%, 0.85);
+  --bg-surface-elevated: hsla(220, 16%, 15%, 0.9);
+  --text-primary: hsl(210, 24%, 98%);
+  --text-secondary: hsl(215, 14%, 68%);
+  --text-muted: hsl(215, 12%, 46%);
+  --border-subtle: hsla(215, 16%, 20%, 0.65);
+  --border-elevated: hsla(215, 16%, 28%, 0.8);
   
+  /* Refined Cerulean / Cyan Brand Functional Accents (No Purple/Indigo) */
+  --brand-primary: hsl(201, 96%, 42%);
+  --brand-hover: hsl(201, 96%, 48%);
+  --brand-accent: hsl(192, 91%, 46%);
+  
+  /* Status Signals */
+  --status-online: hsl(158, 64%, 48%);
+  --status-warning: hsl(38, 92%, 50%);
+  --status-error: hsl(0, 72%, 51%);
+  
+  /* Typography Variables */
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 [data-theme="light"] {
-  --bg-surface-root: #f8fafc;
-  --bg-surface-panel: rgba(255, 255, 255, 0.85);
-  --bg-surface-elevated: rgba(241, 245, 249, 0.9);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --border-subtle: rgba(203, 213, 225, 0.8);
-  --brand-primary: #4f46e5;
-  --brand-accent: #7c3aed;
+  --bg-surface-root: hsl(210, 20%, 98%);
+  --bg-surface-panel: hsla(0, 0%, 100%, 0.92);
+  --bg-surface-elevated: hsla(210, 20%, 94%, 0.95);
+  --text-primary: hsl(222, 24%, 10%);
+  --text-secondary: hsl(215, 16%, 38%);
+  --text-muted: hsl(215, 12%, 56%);
+  --border-subtle: hsla(215, 20%, 84%, 0.8);
+  --border-elevated: hsla(215, 20%, 74%, 0.9);
+  
+  --brand-primary: hsl(201, 96%, 38%);
+  --brand-hover: hsl(201, 96%, 44%);
+  --brand-accent: hsl(192, 91%, 38%);
+  
+  --status-online: hsl(158, 64%, 40%);
+  --status-warning: hsl(38, 92%, 44%);
+  --status-error: hsl(0, 72%, 48%);
 }
 
 [data-theme="high-contrast"] {
-  --bg-surface-root: #000000;
-  --bg-surface-panel: #0a0a0a;
-  --bg-surface-elevated: #171717;
-  --text-primary: #ffffff;
-  --text-secondary: #e5e5e5;
-  --border-subtle: #ffffff;
-  --brand-primary: #818cf8;
-  --brand-accent: #a78bfa;
+  --bg-surface-root: hsl(0, 0%, 0%);
+  --bg-surface-panel: hsl(0, 0%, 5%);
+  --bg-surface-elevated: hsl(0, 0%, 10%);
+  --text-primary: hsl(0, 0%, 100%);
+  --text-secondary: hsl(0, 0%, 92%);
+  --text-muted: hsl(0, 0%, 75%);
+  --border-subtle: hsl(0, 0%, 100%);
+  --border-elevated: hsl(0, 0%, 100%);
+  
+  --brand-primary: hsl(199, 100%, 65%);
+  --brand-hover: hsl(199, 100%, 75%);
+  --brand-accent: hsl(187, 100%, 65%);
+  
+  --status-online: hsl(150, 100%, 60%);
+  --status-warning: hsl(45, 100%, 60%);
+  --status-error: hsl(0, 100%, 65%);
 }
 
 [data-reduced-motion="true"] *,
@@ -59,45 +84,51 @@
     background-color: var(--bg-surface-root);
     color: var(--text-primary);
     font-family: var(--font-sans);
+    letter-spacing: -0.011em;
     @apply antialiased min-h-screen flex flex-col;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.025em;
+    font-weight: 600;
   }
 }
 
-/* Custom Sleek Scrollbar */
+/* Custom Sleek Monochromatic Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: hsla(220, 16%, 10%, 0.6);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.6);
+  background: hsla(215, 16%, 28%, 0.6);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.5);
+  background: var(--brand-primary);
 }
 
-/* Glassmorphism Panels */
+/* Refined Panels with Subtle Depth & Monochromatic Borders */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: var(--bg-surface-panel);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(51, 65, 85, 0.4);
+  border: 1px solid var(--border-subtle);
 }
 
 .glass-panel-elevated {
-  background: rgba(30, 41, 59, 0.7);
+  background: var(--bg-surface-elevated);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(71, 85, 105, 0.5);
+  border: 1px solid var(--border-elevated);
 }
 
-/* Focus Ring Utilities */
+/* High-Contrast Monochromatic Focus Ring (Eliminates glowing colored outlines) */
 .focus-ring {
-  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
 }

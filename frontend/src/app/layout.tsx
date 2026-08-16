@@ -1,5 +1,6 @@
 import React from 'react';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 import { ThemeProvider } from '@/lib/themeContext';
 import { SettingsDrawer } from '@/components/ui/SettingsDrawer';
@@ -9,6 +10,18 @@ import { ToastProvider } from '@/lib/toastContext';
 import { PresenceProvider } from '@/lib/presenceContext';
 import { LiveCursors } from '@/components/collaboration/LiveCursors';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-mono',
+});
 
 export const metadata = {
   title: 'EchoSync AI | Neural Zero-Shot Voice Synthesis Studio',
@@ -26,8 +39,8 @@ export default function RootLayout({
         <OnboardingProvider>
           <ToastProvider>
             <PresenceProvider>
-              <html lang="en">
-                <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+              <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+                <body className="bg-surface-root text-text-primary min-h-screen flex flex-col font-sans selection:bg-sky-500/20 selection:text-sky-100 antialiased">
                   {children}
                   <LiveCursors />
                   <CommandPalette />
