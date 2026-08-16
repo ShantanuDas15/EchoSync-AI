@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Folder as FolderIcon,
@@ -15,9 +15,17 @@ import {
   HardDrive,
   Users,
   Grid,
+  List,
   Filter,
   X,
-  Play
+  Play,
+  ArrowUpDown,
+  History,
+  Trash2,
+  ChevronRight,
+  TrendingUp,
+  Activity,
+  Layers
 } from 'lucide-react';
 import { NavigationHeader } from '@/components/layout/NavigationHeader';
 import { KeyboardShortcutFooter } from '@/components/layout/KeyboardShortcutFooter';
@@ -34,12 +42,12 @@ import {
   rollbackRevision,
 } from '@/lib/workspaceUtils';
 
-// Mock Quick-Start Templates
+// Curated Quick-Start Production Templates
 const STARTER_TEMPLATES: Template[] = [
   {
     id: 'tpl-1',
     title: 'Two-Host Dialogue Podcast',
-    description: 'Banter template with alternating host and guest voices and audio pacing pauses.',
+    description: 'Dynamic conversational banter template with alternating host and guest voices and natural cadence pacing.',
     duration: '2m 15s',
     voices: ['Sarah (Broadcast)', 'James (Podcast)'],
     category: 'Podcast',
@@ -48,7 +56,7 @@ const STARTER_TEMPLATES: Template[] = [
   {
     id: 'tpl-2',
     title: 'Documentary Nature Narration',
-    description: 'Deep, cinematic voice styling with SSML soft pauses and calm pacing.',
+    description: 'Deep, cinematic voice styling with SSML soft pauses and atmospheric cadence.',
     duration: '1m 40s',
     voices: ['Marcus (Gaming)'],
     category: 'Narrative',
@@ -57,7 +65,7 @@ const STARTER_TEMPLATES: Template[] = [
   {
     id: 'tpl-3',
     title: 'High-Energy Commercial Ad Spot',
-    description: 'Fast-paced, high dynamic range pitch modulation for consumer audio promos.',
+    description: 'Fast-paced, high dynamic range pitch modulation tailored for consumer audio promos.',
     duration: '30s',
     voices: ['Sarah (Broadcast)'],
     category: 'Commercial',
@@ -66,7 +74,7 @@ const STARTER_TEMPLATES: Template[] = [
   {
     id: 'tpl-4',
     title: 'Audiobook Chapter Intro',
-    description: 'Warm character voice profiles with expressive chapter transitions.',
+    description: 'Warm character voice profiles with expressive chapter transitions and emotional timbre.',
     duration: '3m 10s',
     voices: ['Alice (Narrative)', 'James (Podcast)'],
     category: 'Audiobook',
@@ -156,12 +164,29 @@ export default function WorkspaceDashboardPage() {
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState<'recent' | 'title' | 'duration'>('recent');
   
   // Modals & Drawers
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [newProjectFolderId, setNewProjectFolderId] = useState<string | null>(null);
+  const [selectedStarterTemplateId, setSelectedStarterTemplateId] = useState<string | null>(null);
   const [activeRevisionProject, setActiveRevisionProject] = useState<Project | null>(null);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Global Keyboard Shortcut for Search ('/' key)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Folder Counts mapping
   const projectCounts = useMemo(() => {
@@ -174,20 +199,34 @@ export default function WorkspaceDashboardPage() {
     return counts;
   }, [projects]);
 
-  // Filtered Projects
+  // Filtered and Sorted Projects
   const filteredProjects = useMemo(() => {
-    return projects.filter((p) => {
+    const matched = projects.filter((p) => {
       const matchesSearch =
         p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.script.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.voices.some((v) => v.toLowerCase().includes(searchQuery.toLowerCase()));
+        p.voices.some((v) => v.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        p.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
       const matchesFolder =
         selectedFolderId === null || p.folderId === selectedFolderId;
 
       return matchesSearch && matchesFolder;
     });
-  }, [projects, searchQuery, selectedFolderId]);
+
+    return matched.sort((a, b) => {
+      if (sortBy === 'recent') {
+        return new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime();
+      }
+      if (sortBy === 'title') {
+        return a.title.localeCompare(b.title);
+      }
+      if (sortBy === 'duration') {
+        return a.duration.localeCompare(b.duration);
+      }
+      return 0;
+    });
+  }, [projects, searchQuery, selectedFolderId, sortBy]);
 
   // Handle Folder Actions
   const handleCreateFolder = (name: string, parentId: string | null) => {
@@ -236,10 +275,12 @@ export default function WorkspaceDashboardPage() {
           author: 'User',
         },
       ],
+      tags: ['New'],
     };
     setProjects((prev) => [newProject, ...prev]);
     setShowNewProjectModal(false);
     setNewProjectTitle('');
+    setSelectedStarterTemplateId(null);
   };
 
   const handleCreateFromTemplate = (template: Template) => {
@@ -275,25 +316,26 @@ export default function WorkspaceDashboardPage() {
       totalProjects,
       totalVoices: Math.max(totalVoices, 4),
       storageUsedMb: (totalProjects * 18.5).toFixed(1),
-      totalRenderedMin: 21.5 + totalProjects * 3.2,
+      totalRenderedMin: (21.5 + totalProjects * 3.2).toFixed(1),
     };
   }, [projects]);
 
   const currentFolderName = folders.find((f) => f.id === selectedFolderId)?.name;
 
   return (
-    <main className="min-h-screen bg-slate-950 flex flex-col font-sans text-slate-200">
+    <main className="min-h-screen bg-surface-root flex flex-col font-sans text-text-primary selection:bg-sky-500/30">
       <NavigationHeader activeTab="dashboard" />
 
-      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
-        {/* Workspace Title & Stats Banner */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
+      <div className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-8">
+        
+        {/* Top Header & Quick Action */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-light text-slate-100 tracking-tight flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-primary flex items-center gap-3">
               Workspace & Projects
             </h1>
-            <p className="text-slate-400 mt-1 text-sm">
-              Manage non-linear timelines, historical synthesis projects, and team folders
+            <p className="text-text-secondary mt-1 text-sm">
+              Manage multi-track storyboards, neural voice assets, and historical project revisions
             </p>
           </div>
 
@@ -303,67 +345,107 @@ export default function WorkspaceDashboardPage() {
                 setNewProjectFolderId(selectedFolderId);
                 setShowNewProjectModal(true);
               }}
-              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl transition-all font-medium shadow-lg shadow-indigo-500/20 active:scale-[0.98]"
+              className="flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-slate-950 px-5 py-2.5 rounded-xl transition-all font-semibold shadow-lg shadow-sky-500/20 active:scale-[0.98] focus-ring cursor-pointer"
             >
-              <Plus size={18} /> New Project
+              <Plus size={18} /> 
+              <span>New Project</span>
             </button>
           </div>
         </div>
 
-        {/* Metric Usage Stats Cards */}
+        {/* Telemetry Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
-            <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-indigo-400">
-              <FileAudio size={20} />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Total Projects</div>
-              <div className="text-xl font-bold text-white font-mono">{stats.totalProjects}</div>
-            </div>
-          </div>
-
-          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
-            <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400">
-              <Clock size={20} />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Audio Rendered</div>
-              <div className="text-xl font-bold text-emerald-400 font-mono">
-                {stats.totalRenderedMin.toFixed(1)} <span className="text-xs text-slate-400">mins</span>
+          {/* Total Projects */}
+          <div className="bg-surface-panel border border-border-subtle hover:border-border-elevated rounded-2xl p-4.5 flex flex-col justify-between transition-all backdrop-blur-xl shadow-sm group">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-text-muted font-medium uppercase font-mono tracking-wider">
+                Total Projects
+              </span>
+              <div className="p-2 bg-sky-500/10 rounded-xl border border-sky-500/20 text-sky-400">
+                <FileAudio size={18} />
               </div>
             </div>
-          </div>
-
-          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
-            <div className="p-3 bg-violet-500/10 rounded-xl border border-violet-500/20 text-violet-400">
-              <Users size={20} />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Active Voices</div>
-              <div className="text-xl font-bold text-violet-300 font-mono">{stats.totalVoices}</div>
-            </div>
-          </div>
-
-          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
-            <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400">
-              <HardDrive size={20} />
-            </div>
-            <div>
-              <div className="text-xs text-slate-400 font-medium">Storage Consumed</div>
-              <div className="text-xl font-bold text-amber-300 font-mono">
-                {stats.storageUsedMb} <span className="text-xs text-slate-400">MB</span>
+            <div className="flex items-baseline justify-between">
+              <div className="text-2xl font-bold font-mono text-text-primary tracking-tight">
+                {stats.totalProjects}
               </div>
+              <span className="text-[11px] font-mono text-text-muted">
+                {folders.length} folders
+              </span>
+            </div>
+          </div>
+
+          {/* Audio Rendered */}
+          <div className="bg-surface-panel border border-border-subtle hover:border-border-elevated rounded-2xl p-4.5 flex flex-col justify-between transition-all backdrop-blur-xl shadow-sm group">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-text-muted font-medium uppercase font-mono tracking-wider">
+                Audio Rendered
+              </span>
+              <div className="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400">
+                <Clock size={18} />
+              </div>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <div className="text-2xl font-bold font-mono text-emerald-400 tracking-tight">
+                {stats.totalRenderedMin} <span className="text-xs font-normal text-text-muted">mins</span>
+              </div>
+              <span className="text-[11px] font-mono text-emerald-400/80 flex items-center gap-1">
+                <TrendingUp size={12} /> Live RTF
+              </span>
+            </div>
+          </div>
+
+          {/* Active Voice Profiles */}
+          <div className="bg-surface-panel border border-border-subtle hover:border-border-elevated rounded-2xl p-4.5 flex flex-col justify-between transition-all backdrop-blur-xl shadow-sm group">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-text-muted font-medium uppercase font-mono tracking-wider">
+                Active Voices
+              </span>
+              <div className="p-2 bg-sky-500/10 rounded-xl border border-sky-500/20 text-sky-400">
+                <Users size={18} />
+              </div>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <div className="text-2xl font-bold font-mono text-text-primary tracking-tight">
+                {stats.totalVoices}
+              </div>
+              <span className="text-[11px] font-mono text-text-muted">
+                256-d embeddings
+              </span>
+            </div>
+          </div>
+
+          {/* Storage & Cloud Cache */}
+          <div className="bg-surface-panel border border-border-subtle hover:border-border-elevated rounded-2xl p-4.5 flex flex-col justify-between transition-all backdrop-blur-xl shadow-sm group">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-text-muted font-medium uppercase font-mono tracking-wider">
+                Edge Cache Storage
+              </span>
+              <div className="p-2 bg-amber-500/10 rounded-xl border border-amber-500/20 text-amber-400">
+                <HardDrive size={18} />
+              </div>
+            </div>
+            <div className="flex items-baseline justify-between">
+              <div className="text-2xl font-bold font-mono text-amber-300 tracking-tight">
+                {stats.storageUsedMb} <span className="text-xs font-normal text-text-muted">MB</span>
+              </div>
+              <span className="text-[11px] font-mono text-text-muted">
+                Edge Synced
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Quick-Start Templates Carousel/Grid */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 text-slate-300">
-            <Sparkles size={16} className="text-indigo-400" />
-            <h2 className="text-xs font-semibold uppercase tracking-wider font-mono">
-              Quick-Start Templates
-            </h2>
+        {/* Quick-Start Templates Showcase */}
+        <section className="space-y-3.5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-text-secondary">
+              <Sparkles size={16} className="text-sky-400" />
+              <h2 className="text-xs font-semibold uppercase tracking-wider font-mono">
+                Curated Starter Templates
+              </h2>
+            </div>
+            <span className="text-xs text-text-muted">Click to instant-clone into workspace</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -371,35 +453,39 @@ export default function WorkspaceDashboardPage() {
               <div
                 key={tpl.id}
                 onClick={() => handleCreateFromTemplate(tpl)}
-                className="group p-4 bg-slate-900/40 hover:bg-slate-900/80 border border-slate-800/80 hover:border-indigo-500/40 rounded-2xl cursor-pointer transition-all flex flex-col justify-between shadow-sm hover:shadow-indigo-500/10"
+                className="group p-4.5 bg-surface-panel hover:bg-surface-panel/90 border border-border-subtle hover:border-sky-500/40 rounded-2xl cursor-pointer transition-all duration-200 flex flex-col justify-between shadow-sm hover:shadow-md backdrop-blur-xl"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700/50">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-surface-elevated text-sky-300 border border-border-subtle">
                       {tpl.category}
                     </span>
-                    <span className="text-[10px] font-mono text-slate-500">{tpl.duration}</span>
+                    <span className="text-[10px] font-mono text-text-muted flex items-center gap-1">
+                      <Clock size={10} />
+                      {tpl.duration}
+                    </span>
                   </div>
 
-                  <h3 className="text-sm font-medium text-slate-200 group-hover:text-indigo-300 transition-colors mb-1">
+                  <h3 className="text-sm font-semibold text-text-primary group-hover:text-sky-300 transition-colors mb-1 tracking-tight">
                     {tpl.title}
                   </h3>
-                  <p className="text-xs text-slate-400 line-clamp-2">{tpl.description}</p>
+                  <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">{tpl.description}</p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-800/50 flex items-center justify-between text-xs text-indigo-400 group-hover:text-indigo-300">
-                  <span className="text-[11px] font-medium">Use Template</span>
+                <div className="mt-4 pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-sky-400 group-hover:text-sky-300">
+                  <span className="text-[11px] font-medium">Clone Template</span>
                   <Plus size={14} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        {/* Main Workspace Area (Sidebar Folders + Project Grid) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-2">
+        {/* Main Workspace Area: Sidebar Folders + Project Explorer */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
           {/* Left Column: Hierarchical Folder Tree */}
-          <div className="lg:col-span-4 xl:col-span-3">
+          <div className="lg:col-span-4 xl:col-span-3 sticky top-20">
             <FolderTree
               folders={folders}
               selectedFolderId={selectedFolderId}
@@ -411,71 +497,119 @@ export default function WorkspaceDashboardPage() {
             />
           </div>
 
-          {/* Right Column: Search Toolbar & Project Grid */}
+          {/* Right Column: Search Toolbar & Project Explorer */}
           <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-4">
-            {/* Toolbar */}
-            <div className="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row gap-3 justify-between items-center">
-              <div className="relative w-full sm:w-80">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+            
+            {/* Unified Explorer Toolbar */}
+            <div className="bg-surface-panel border border-border-subtle p-3 sm:p-4 rounded-2xl flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center backdrop-blur-xl shadow-sm">
+              
+              {/* Search Bar */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" size={15} />
                 <input
+                  ref={searchInputRef}
                   type="text"
-                  placeholder="Search projects by title, voice, or script..."
+                  placeholder="Search projects by title, voice, or script... (Press '/' to focus)"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 transition-colors"
+                  className="w-full bg-surface-elevated border border-border-subtle focus:border-sky-500/60 rounded-xl pl-9.5 pr-8 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none transition-colors"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary p-0.5 transition-colors focus-ring rounded"
+                    aria-label="Clear search"
                   >
                     <X size={14} />
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                <span className="text-xs text-slate-400 font-mono">
-                  {currentFolderName ? (
-                    <span className="text-indigo-300 font-semibold">{currentFolderName}</span>
-                  ) : (
-                    'All Projects'
-                  )}{' '}
-                  ({filteredProjects.length})
-                </span>
+              {/* View Toggles & Sort */}
+              <div className="flex items-center gap-2 justify-between sm:justify-end flex-wrap">
+                
+                {/* Active Folder Filter Tag */}
+                <div className="flex items-center gap-1.5 text-xs text-text-muted font-mono">
+                  <span className="text-text-primary font-semibold">
+                    {currentFolderName || 'All Projects'}
+                  </span>
+                  <span>({filteredProjects.length})</span>
+                  {selectedFolderId && (
+                    <button
+                      onClick={() => setSelectedFolderId(null)}
+                      className="ml-1 text-[10px] text-sky-400 hover:text-sky-300 underline cursor-pointer"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
 
-                {selectedFolderId && (
-                  <button
-                    onClick={() => setSelectedFolderId(null)}
-                    className="text-[11px] text-indigo-400 hover:underline flex items-center gap-1"
+                <div className="h-4 w-px bg-border-subtle hidden sm:block mx-1" />
+
+                {/* Sort Selector */}
+                <div className="flex items-center gap-1.5 bg-surface-elevated px-2.5 py-1.5 rounded-xl border border-border-subtle text-xs text-text-secondary">
+                  <ArrowUpDown size={13} className="text-text-muted" />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="bg-transparent text-text-secondary text-xs focus:outline-none cursor-pointer"
                   >
-                    <X size={12} /> Clear Filter
+                    <option value="recent">Most Recent</option>
+                    <option value="title">Title (A-Z)</option>
+                    <option value="duration">Duration</option>
+                  </select>
+                </div>
+
+                {/* View Mode Toggle (Grid vs List) */}
+                <div className="flex items-center gap-1 bg-surface-elevated p-1 rounded-xl border border-border-subtle">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-1.5 rounded-lg transition-colors focus-ring ${
+                      viewMode === 'grid'
+                        ? 'bg-sky-500/20 text-sky-300 shadow-sm'
+                        : 'text-text-muted hover:text-text-primary'
+                    }`}
+                    title="Grid View"
+                  >
+                    <Grid size={14} />
                   </button>
-                )}
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-1.5 rounded-lg transition-colors focus-ring ${
+                      viewMode === 'list'
+                        ? 'bg-sky-500/20 text-sky-300 shadow-sm'
+                        : 'text-text-muted hover:text-text-primary'
+                    }`}
+                    title="List View"
+                  >
+                    <List size={14} />
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Projects Grid */}
+            {/* Projects Explorer Display */}
             {filteredProjects.length === 0 ? (
-              <div className="flex-1 min-h-[300px] flex flex-col items-center justify-center text-slate-500 glass-panel rounded-2xl p-8 text-center">
-                <FileAudio size={44} className="mb-3 opacity-20 text-indigo-400" />
-                <h4 className="text-sm font-medium text-slate-300 mb-1">No synthesis projects found</h4>
-                <p className="text-xs text-slate-500 max-w-sm mb-4">
+              <div className="flex-1 min-h-[320px] flex flex-col items-center justify-center text-text-muted bg-surface-panel border border-border-subtle rounded-2xl p-8 text-center backdrop-blur-xl">
+                <FileAudio size={44} className="mb-3 opacity-30 text-sky-400" />
+                <h4 className="text-sm font-semibold text-text-primary mb-1">No synthesis projects found</h4>
+                <p className="text-xs text-text-secondary max-w-sm mb-5 leading-relaxed">
                   {searchQuery
-                    ? 'No projects match your current search query.'
-                    : 'Create your first project or start from one of our quick-start templates above.'}
+                    ? 'No projects match your current search query. Try searching with different keywords.'
+                    : 'Create your first project or clone one of the curated starter templates above.'}
                 </p>
                 <button
                   onClick={() => {
                     setNewProjectFolderId(selectedFolderId);
                     setShowNewProjectModal(true);
                   }}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-medium transition-colors"
+                  className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl text-xs font-semibold shadow-lg shadow-sky-500/20 transition-colors focus-ring cursor-pointer"
                 >
                   Create Project
                 </button>
               </div>
-            ) : (
+            ) : viewMode === 'grid' ? (
+              /* Grid View */
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredProjects.map((project) => (
                   <ProjectCard
@@ -489,6 +623,97 @@ export default function WorkspaceDashboardPage() {
                     onMoveProject={handleMoveProject}
                   />
                 ))}
+              </div>
+            ) : (
+              /* List / Table View */
+              <div className="bg-surface-panel border border-border-subtle rounded-2xl overflow-hidden backdrop-blur-xl shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-border-subtle bg-surface-elevated/50 text-[11px] font-mono uppercase tracking-wider text-text-muted">
+                        <th className="py-3 px-4 font-medium">Project</th>
+                        <th className="py-3 px-4 font-medium">Folder</th>
+                        <th className="py-3 px-4 font-medium">Duration</th>
+                        <th className="py-3 px-4 font-medium">Voices</th>
+                        <th className="py-3 px-4 font-medium">Revisions</th>
+                        <th className="py-3 px-4 font-medium">Modified</th>
+                        <th className="py-3 px-4 font-medium text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border-subtle">
+                      {filteredProjects.map((p) => {
+                        const folder = folders.find((f) => f.id === p.folderId);
+                        return (
+                          <tr
+                            key={p.id}
+                            className="group hover:bg-surface-elevated/40 transition-colors"
+                          >
+                            <td className="py-3 px-4">
+                              <div className="font-semibold text-text-primary hover:text-sky-300 cursor-pointer" onClick={() => router.push('/')}>
+                                {p.title}
+                              </div>
+                              <div className="text-[11px] text-text-muted truncate max-w-xs mt-0.5">
+                                {p.script}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-text-muted font-mono">
+                              {folder ? (
+                                <span className="inline-flex items-center gap-1 bg-surface-elevated px-2 py-0.5 rounded text-[10px] text-text-secondary border border-border-subtle">
+                                  <FolderIcon size={10} className="text-sky-400" />
+                                  {folder.name}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-text-muted">Root</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-text-secondary font-mono">
+                              {p.duration}
+                            </td>
+                            <td className="py-3 px-4">
+                              <div className="flex gap-1 flex-wrap">
+                                {p.voices.map((v) => (
+                                  <span key={v} className="text-[10px] bg-surface-elevated text-text-secondary px-1.5 py-0.5 rounded border border-border-subtle">
+                                    {v}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4">
+                              <button
+                                onClick={() => setActiveRevisionProject(p)}
+                                className="inline-flex items-center gap-1 text-[11px] font-mono text-text-muted hover:text-sky-300 bg-surface-elevated px-2 py-0.5 rounded border border-border-subtle transition-colors focus-ring"
+                              >
+                                <History size={11} className="text-sky-400" />
+                                v{p.versions.length}
+                              </button>
+                            </td>
+                            <td className="py-3 px-4 text-text-muted font-mono text-[11px]">
+                              {p.lastModified}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => router.push('/')}
+                                  className="p-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 rounded-lg border border-sky-500/30 transition-all focus-ring"
+                                  title="Open in Studio"
+                                >
+                                  <Play size={12} className="fill-sky-400 text-sky-400" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteProject(p.id)}
+                                  className="p-1.5 text-text-muted hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors focus-ring"
+                                  title="Delete Project"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
@@ -505,34 +730,48 @@ export default function WorkspaceDashboardPage() {
         onRestoreRevision={handleRestoreRevision}
       />
 
-      {/* New Project Modal */}
+      {/* Production-Grade New Project Modal */}
       {showNewProjectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in">
+          <div className="bg-surface-panel border border-border-elevated rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
             <button
-              onClick={() => setShowNewProjectModal(false)}
-              className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
+              onClick={() => {
+                setShowNewProjectModal(false);
+                setSelectedStarterTemplateId(null);
+              }}
+              className="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors focus-ring rounded-lg p-1"
+              aria-label="Close modal"
             >
-              <X size={18} />
+              <X size={16} />
             </button>
 
-            <h3 className="text-base font-semibold text-white mb-1 flex items-center gap-2">
-              <Plus className="text-indigo-400" size={18} />
-              Create New Synthesis Project
-            </h3>
-            <p className="text-xs text-slate-400 mb-4">
-              Initialize a project for multi-track audio storyboarding and neural synthesis.
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <div className="p-2 bg-sky-500/10 rounded-xl border border-sky-500/20 text-sky-400">
+                <Plus size={18} />
+              </div>
+              <h3 className="text-base font-semibold text-text-primary">
+                Create New Project
+              </h3>
+            </div>
+            
+            <p className="text-xs text-text-muted mb-4 pl-0.5">
+              Initialize a project for multi-track dialogue storyboarding and neural synthesis.
             </p>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleCreateProject(newProjectTitle, newProjectFolderId);
+                const template = STARTER_TEMPLATES.find((t) => t.id === selectedStarterTemplateId);
+                handleCreateProject(
+                  newProjectTitle,
+                  newProjectFolderId,
+                  template ? template.defaultScript : ''
+                );
               }}
               className="space-y-4"
             >
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-text-secondary mb-1.5">
                   Project Title
                 </label>
                 <input
@@ -541,18 +780,18 @@ export default function WorkspaceDashboardPage() {
                   value={newProjectTitle}
                   onChange={(e) => setNewProjectTitle(e.target.value)}
                   autoFocus
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-surface-elevated border border-border-subtle focus:border-sky-500/60 rounded-xl px-3.5 py-2.5 text-xs text-text-primary focus:outline-none transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
-                  Folder Destination
+                <label className="block text-xs font-medium text-text-secondary mb-1.5">
+                  Target Workspace Folder
                 </label>
                 <select
                   value={newProjectFolderId || ''}
                   onChange={(e) => setNewProjectFolderId(e.target.value ? e.target.value : null)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-surface-elevated border border-border-subtle focus:border-sky-500/60 rounded-xl px-3.5 py-2.5 text-xs text-text-primary focus:outline-none transition-colors cursor-pointer"
                 >
                   <option value="">Root (No Folder)</option>
                   {folders.map((f) => (
@@ -563,20 +802,53 @@ export default function WorkspaceDashboardPage() {
                 </select>
               </div>
 
+              {/* Starter Template Pre-select Chips */}
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-1.5">
+                  Starter Template (Optional)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {STARTER_TEMPLATES.map((tpl) => {
+                    const isSelected = selectedStarterTemplateId === tpl.id;
+                    return (
+                      <div
+                        key={tpl.id}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedStarterTemplateId(null);
+                          } else {
+                            setSelectedStarterTemplateId(tpl.id);
+                            if (!newProjectTitle) setNewProjectTitle(tpl.title);
+                          }
+                        }}
+                        className={`p-2.5 rounded-xl border text-xs cursor-pointer transition-all ${
+                          isSelected
+                            ? 'bg-sky-500/15 border-sky-500/40 text-text-primary font-medium shadow-sm'
+                            : 'bg-surface-elevated/40 border-border-subtle text-text-muted hover:border-border-elevated hover:text-text-secondary'
+                        }`}
+                      >
+                        <div className="font-medium truncate">{tpl.category}</div>
+                        <div className="text-[10px] text-text-muted truncate">{tpl.duration}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowNewProjectModal(false)}
-                  className="px-4 py-2 text-xs font-medium text-slate-400 hover:bg-slate-800 rounded-xl transition-colors"
+                  className="px-4 py-2 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-elevated rounded-xl transition-colors focus-ring"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!newProjectTitle.trim()}
-                  className="px-5 py-2 text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20 disabled:opacity-50 transition-colors"
+                  className="px-5 py-2 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl shadow-lg shadow-sky-500/20 disabled:opacity-50 transition-colors focus-ring cursor-pointer"
                 >
-                  Create
+                  Create Project
                 </button>
               </div>
             </form>
