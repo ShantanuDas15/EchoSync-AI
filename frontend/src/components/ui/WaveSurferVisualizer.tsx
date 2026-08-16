@@ -2,27 +2,62 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
-import { Play, Pause, ZoomIn, ZoomOut, Volume2, VolumeX, Download, Link as LinkIcon, MoreVertical } from 'lucide-react';
+import { Play, Pause, ZoomIn, ZoomOut, Volume2, VolumeX, Download, Link as LinkIcon, MoreVertical, Loader2 } from 'lucide-react';
+import { fetchPresignedAudioUrl } from '@/lib/secureAudioUtils';
 
 interface WaveSurferVisualizerProps {
+  assetId?: string;
   audioUrl?: string;
   audioBlob?: Blob;
-  onDownloadMp3?: () => void; // Optional hook for external mp3 conversion
+  onDownloadMp3?: () => void;
 }
 
-export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: WaveSurferVisualizerProps) {
+export function WaveSurferVisualizer({ assetId, audioUrl, audioBlob, onDownloadMp3 }: WaveSurferVisualizerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isLoadingAsset, setIsLoadingAsset] = useState(false);
+  const [resolvedUrl, setResolvedUrl] = useState<string | undefined>(audioUrl);
   const [zoom, setZoom] = useState(50);
   const [volume, setVolume] = useState(1.0);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showExportMenu, setShowExportMenu] = useState(false);
-  
-  const activeAudioUrl = audioBlob ? URL.createObjectURL(audioBlob) : audioUrl;
+
+  // Resolve pre-signed URL if assetId is provided
+  useEffect(() => {
+    let isCancelled = false;
+
+    if (audioBlob) {
+      const blobUrl = URL.createObjectURL(audioBlob);
+      setResolvedUrl(blobUrl);
+      return () => {
+        URL.revokeObjectURL(blobUrl);
+      };
+    } else if (assetId) {
+      setIsLoadingAsset(true);
+      fetchPresignedAudioUrl(assetId)
+        .then((url) => {
+          if (!isCancelled) {
+            setResolvedUrl(url);
+            setIsLoadingAsset(false);
+          }
+        })
+        .catch(() => {
+          if (!isCancelled) {
+            setIsLoadingAsset(false);
+          }
+        });
+    } else {
+      setResolvedUrl(audioUrl);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [assetId, audioUrl, audioBlob]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -57,10 +92,10 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
   }, []);
 
   useEffect(() => {
-    if (wavesurferRef.current && activeAudioUrl) {
-      wavesurferRef.current.load(activeAudioUrl);
+    if (wavesurferRef.current && resolvedUrl) {
+      wavesurferRef.current.load(resolvedUrl);
     }
-  }, [activeAudioUrl]);
+  }, [resolvedUrl]);
 
   useEffect(() => {
     if (wavesurferRef.current) {
@@ -85,17 +120,17 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
   };
 
   const handleDownloadWav = () => {
-    if (activeAudioUrl) {
+    if (resolvedUrl) {
       const a = document.createElement('a');
-      a.href = activeAudioUrl;
+      a.href = resolvedUrl;
       a.download = `recording-${new Date().getTime()}.wav`;
       a.click();
     }
   };
 
   const handleCopyUrl = async () => {
-    if (audioUrl) {
-      await navigator.clipboard.writeText(audioUrl);
+    if (resolvedUrl) {
+      await navigator.clipboard.writeText(resolvedUrl);
       alert('URL copied to clipboard!');
     } else {
       alert('No public URL available for this audio.');
@@ -104,14 +139,23 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
 
   return (
     <div className="flex flex-col gap-5 p-5 glass-panel rounded-2xl relative">
-      <div className="w-full relative rounded-lg overflow-hidden bg-surface-panel p-2 border border-border-subtle" ref={containerRef} />
+      <div className="w-full relative rounded-lg overflow-hidden bg-surface-panel p-2 border border-border-subtle min-h-[112px] flex items-center justify-center">
+        {isLoadingAsset ? (
+          <div className="flex items-center gap-2 text-text-muted text-xs font-mono">
+            <Loader2 size={16} className="animate-spin text-sky-400" />
+            <span>Resolving secure audio stream...</span>
+          </div>
+        ) : (
+          <div className="w-full" ref={containerRef} />
+        )}
+      </div>
       
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Playback Controls */}
         <div className="flex items-center gap-3">
           <button
             onClick={togglePlay}
-            disabled={!isReady}
+            disabled={!isReady || isLoadingAsset}
             className="flex items-center justify-center w-12 h-12 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-full text-white shadow-md shadow-sky-600/20 transition-all active:scale-95 focus-ring"
           >
             {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
@@ -163,7 +207,7 @@ export function WaveSurferVisualizer({ audioUrl, audioBlob, onDownloadMp3 }: Wav
         <div className="relative">
           <button 
             onClick={() => setShowExportMenu(!showExportMenu)}
-            disabled={!isReady}
+            disabled={!isReady || isLoadingAsset}
             className="flex items-center justify-center w-10 h-10 bg-surface-elevated hover:bg-surface-panel text-text-secondary rounded-full transition-colors disabled:opacity-50 border border-border-subtle"
           >
             <MoreVertical size={20} />

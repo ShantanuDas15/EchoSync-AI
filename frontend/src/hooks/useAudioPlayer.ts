@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { fetchPresignedAudioUrl } from '@/lib/secureAudioUtils';
 
 // Global singleton reference for currently active preview
 let globalPlayingId: string | null = null;
@@ -13,6 +14,8 @@ function notifyListeners(id: string | null) {
 
 export function useAudioPlayer() {
   const [activeId, setActiveId] = useState<string | null>(globalPlayingId);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -32,38 +35,73 @@ export function useAudioPlayer() {
       audioRef.current.currentTime = 0;
     }
     notifyListeners(null);
+    setIsLoading(false);
   }, []);
 
-  const play = useCallback((id: string, audioUrl?: string) => {
+  const play = useCallback(async (id: string, audioSource?: string, isAssetId: boolean = false) => {
     if (globalPlayingId && globalPlayingId !== id) {
       stop();
     }
 
-    if (audioUrl && typeof Audio !== 'undefined') {
-      try {
+    setError(null);
+    setIsLoading(true);
+
+    let resolvedUrl = audioSource;
+
+    try {
+      if (isAssetId && audioSource) {
+        resolvedUrl = await fetchPresignedAudioUrl(audioSource);
+      }
+
+      if (resolvedUrl && typeof Audio !== 'undefined') {
         if (!audioRef.current) {
-          audioRef.current = new Audio(audioUrl);
-          audioRef.current.onended = () => notifyListeners(null);
+          audioRef.current = new Audio(resolvedUrl);
+          audioRef.current.onended = () => {
+            notifyListeners(null);
+            setIsLoading(false);
+          };
+          audioRef.current.onerror = async () => {
+            // If asset URL expired (403), attempt a force refresh once
+            if (isAssetId && audioSource) {
+              try {
+                const refreshedUrl = await fetchPresignedAudioUrl(audioSource, { forceRefresh: true });
+                if (audioRef.current) {
+                  audioRef.current.src = refreshedUrl;
+                  await audioRef.current.play();
+                  return;
+                }
+              } catch {
+                // Ignore fallback error
+              }
+            }
+            notifyListeners(null);
+            setIsLoading(false);
+            setError('Failed to play audio stream');
+          };
         } else {
-          audioRef.current.src = audioUrl;
+          audioRef.current.src = resolvedUrl;
           audioRef.current.currentTime = 0;
         }
-        audioRef.current.play().catch(() => {
+
+        await audioRef.current.play().catch(() => {
           // Fallback if browser blocks unprompted autoplay
         });
-      } catch {
-        // Safe mock handling for non-browser / test environments
       }
-    }
 
-    notifyListeners(id);
+      notifyListeners(id);
+    } catch (err: any) {
+      setError(err?.message || 'Audio playback error');
+      notifyListeners(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, [stop]);
 
-  const toggle = useCallback((id: string, audioUrl?: string) => {
+  const toggle = useCallback((id: string, audioSource?: string, isAssetId: boolean = false) => {
     if (globalPlayingId === id) {
       stop();
     } else {
-      play(id, audioUrl);
+      play(id, audioSource, isAssetId);
     }
   }, [play, stop]);
 
@@ -74,6 +112,8 @@ export function useAudioPlayer() {
   return {
     activeId,
     isPlaying,
+    isLoading,
+    error,
     play,
     stop,
     toggle

@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Play, Pause, Activity, MoreVertical } from 'lucide-react';
+import { Play, Pause, Activity, MoreVertical, Loader2 } from 'lucide-react';
 import { TiltCard } from './TiltCard';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { VolumeNormalizationBadge } from './VolumeNormalizationBadge';
@@ -15,6 +15,7 @@ export interface SpeakerProfile {
   similarityScore: number;
   dVectorNorm: number;
   sampleAudioUrl?: string;
+  referenceAudioId?: string;
 }
 
 interface VoiceCardProps {
@@ -25,12 +26,15 @@ interface VoiceCardProps {
 }
 
 export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: VoiceCardProps) {
-  const { isPlaying, toggle } = useAudioPlayer();
+  const { isPlaying, toggle, isLoading, activeId } = useAudioPlayer();
   const currentlyPlaying = isPlaying(profile.id);
+  const isCurrentlyLoading = isLoading && activeId === profile.id;
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggle(profile.id, profile.sampleAudioUrl);
+    const audioSource = profile.referenceAudioId || profile.sampleAudioUrl;
+    const isAsset = Boolean(profile.referenceAudioId);
+    toggle(profile.id, audioSource, isAsset);
   };
 
   const handleInspect = (e: React.MouseEvent) => {
@@ -69,10 +73,17 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
           
           <button 
             onClick={togglePlay}
+            disabled={isCurrentlyLoading}
             aria-label={currentlyPlaying ? `Pause ${profile.name}` : `Play ${profile.name}`}
             className="w-9 h-9 flex items-center justify-center rounded-full bg-sky-500/15 text-sky-400 hover:bg-sky-500 hover:text-white transition-colors focus-ring"
           >
-            {currentlyPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+            {isCurrentlyLoading ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : currentlyPlaying ? (
+              <Pause size={14} fill="currentColor" />
+            ) : (
+              <Play size={14} fill="currentColor" className="ml-0.5" />
+            )}
           </button>
           
           <button onClick={handleInspect} aria-label="Inspect voice vector" className="text-text-muted hover:text-text-primary focus-ring p-1 rounded">
@@ -103,10 +114,17 @@ export function VoiceCard({ profile, onClick, onInspectVector, viewMode }: Voice
             <img src={profile.avatarUrl} alt={profile.name} className="w-20 h-20 rounded-full object-cover border-2 border-border-subtle shadow-md" />
             <button 
               onClick={togglePlay}
+              disabled={isCurrentlyLoading}
               aria-label={currentlyPlaying ? `Pause ${profile.name}` : `Play ${profile.name}`}
               className="absolute -bottom-2 -right-2 w-8 h-8 flex items-center justify-center rounded-full bg-sky-600 text-white shadow-md hover:scale-105 transition-transform focus-ring"
             >
-              {currentlyPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+              {isCurrentlyLoading ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : currentlyPlaying ? (
+                <Pause size={14} fill="currentColor" />
+              ) : (
+                <Play size={14} fill="currentColor" className="ml-0.5" />
+              )}
             </button>
           </div>
           

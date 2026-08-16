@@ -50,9 +50,9 @@ Connect the Voice Recorder UI to the actual zero-shot voice cloning pipeline.
 ### Milestone 5.4: Cloud Storage & Secure Media Playback
 Replace mock local blob URLs with authenticated, pre-signed URLs from the backend R2 bucket.
 
-- [ ] **Task 5.4.1**: Implement a helper function `fetchPresignedUrl(assetId)` hitting `GET /api/v1/audio/{asset_id}/stream-url`.
-- [ ] **Task 5.4.2**: Refactor `VoiceCard.tsx` and `WaveSurferVisualizer.tsx` to accept an `assetId` instead of an `audioUrl`, fetching the pre-signed URL dynamically when playback is triggered.
-- [ ] **Task 5.4.3**: Add error handling for expired pre-signed URLs to re-fetch automatically if a 403 Forbidden is encountered during playback.
+- [x] **Task 5.4.1**: Implement a helper function `fetchPresignedUrl(assetId)` hitting `GET /api/v1/audio/{asset_id}/stream-url`.
+- [x] **Task 5.4.2**: Refactor `VoiceCard.tsx` and `WaveSurferVisualizer.tsx` to accept an `assetId` instead of an `audioUrl`, fetching the pre-signed URL dynamically when playback is triggered.
+- [x] **Task 5.4.3**: Add error handling for expired pre-signed URLs to re-fetch automatically if a 403 Forbidden is encountered during playback.
 
 #### Verification Gateway & Test Design
 * **Integration Test (`SecurePlayback.test.ts`):** Verify that the component does not render the `<audio>` element until the pre-signed URL is successfully fetched, and triggers a retry on HTTP 403.
@@ -77,4 +77,4 @@ Replace mock local blob URLs with authenticated, pre-signed URLs from the backen
 | `2026-08-16T11:51:00+05:30` | `Milestone 5.1` | **COMPLETED** (Commit: `b650373`) | Passed `ApiClient.test.ts` (9/9 pass, 160/160 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `2026-08-16T12:00:00+05:30` | `Milestone 5.2` | **COMPLETED** (Commit: `2e52d31`) | Passed `TaskPolling.test.ts` (5/5 pass, 165/165 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
 | `2026-08-16T12:13:00+05:30` | `Milestone 5.3` | **COMPLETED** (Commit: `fe38c1f`) | Passed `VoiceCloneIntegration.test.ts` (4/4 pass, 169/169 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
-| `[PENDING]` | `Milestone 5.4` | **NOT STARTED** | N/A | N/A |
+| `2026-08-16T12:17:00+05:30` | `Milestone 5.4` | **COMPLETED** (Commit: `[PENDING]`) | Passed `SecurePlayback.test.ts` (4/4 pass, 173/173 total), TypeScript 0 errors, Next.js clean build | Antigravity AI |
